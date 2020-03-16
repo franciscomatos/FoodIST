@@ -1,10 +1,5 @@
 package pt.ulisboa.tecnico.cmov.foodist;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -12,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -23,24 +17,22 @@ import java.util.List;
 
 public class fetchData extends AsyncTask<Void, Void, Void> {
 
-    private ListFoodServices listFoodServices;
+    private ListFoodServicesView listFoodServices;
 
-    private List<String> names = Arrays.asList("ABILIO", "AE", "CIVIL");
-    private List<String> latitudes = Arrays.asList("38.737125","38.736416","38.737148");
-    private List<String> longitudes =  Arrays.asList("-9.137688", "-9.137238","-9.140159");
     //private String key = "AIzaSyBIH4tIRgLyZYG6xLpnUOQHA6BL6No2CHY"; OLD KEY
     private String key = "AIzaSyAVuqTJjlLwltDajwlrHBwgqpm58hQFeQw";
     private String URL;
     private String data = "";
 
-    public fetchData(ListFoodServices list, String latFrom, String longFrom) {
+    public fetchData(ListFoodServicesView list, GlobalClass global) {
         this.listFoodServices = list;
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=";
-        url += latFrom+","+longFrom;
+        url += global.getLatitude()+","+global.getLongitude();
         url += "&destinations=";
-        for (int i = 0; i<names.size(); i++) {
-           url+=latitudes.get(i)+",";
-           url+=longitudes.get(i)+ "|";
+        ArrayList<FoodService> FoodServiceList = global.getCampusFoodServices(global.getCampus());
+        for (int i = 0; i<FoodServiceList.size(); i++) {
+           url += FoodServiceList.get(i).getLatitude()+",";
+           url += FoodServiceList.get(i).getLongitude()+ "|";
         }
         url = url.substring(0, url.length()-1); //remove last "|"
         url += "&mode=walking";
@@ -81,7 +73,7 @@ public class fetchData extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         Log.i("RESPONSE", data);
-        this.listFoodServices.AddWhenReady(data);
+        this.listFoodServices.setView(data);
     }
 
     //Convert JSON-like string to view text

@@ -7,9 +7,9 @@ import android.util.Log;
 
 public class MyLocationListener implements LocationListener {
 
-    private ListFoodServices listFoodServices;
+    private ListFoodServicesView listFoodServices;
 
-    public MyLocationListener(ListFoodServices lfs) {
+    public MyLocationListener(ListFoodServicesView lfs) {
         this.listFoodServices = lfs;
     }
 

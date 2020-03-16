@@ -52,7 +52,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.name.setText(mDataset.get(position).getName());
         holder.openingHour.setText(mDataset.get(position).getOpeningHour());
         holder.closingHour.setText(mDataset.get(position).getClosingHour());
-        holder.ETA.setText(mDataset.get(position).getETA());
+        holder.ETA.setText(mDataset.get(position).getLatitude()+""); //FIXME should be the ETA
     }
 
     // Return the size of your dataset (invoked by the layout manager)

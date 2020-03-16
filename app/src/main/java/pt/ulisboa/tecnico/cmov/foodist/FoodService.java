@@ -9,20 +9,19 @@ public class FoodService {
     private String name;
     private String openingHour;
     private String closingHour;
-    private String ETA;
+    private double latitude;
+    private double longitude;
 
     public String getName() {
         return name;
     }
 
-    public FoodService(String name, String openingHour, String closingHour, String ETA) {
+    public FoodService(String name, String openingHour, String closingHour , double latitude, double longitude) {
         this.name = name;
         this.openingHour = openingHour;
         this.closingHour = closingHour;
-        this.ETA = ETA; //just to test
-      /*  Log.i("MyLOG: ", name + openingHour + closingHour);
-        fetchData process = new fetchData();
-        process.execute();*/
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public void setName(String name) {
@@ -46,12 +45,21 @@ public class FoodService {
     }
 
 
-    public String getETA() {
-        return ETA;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setETA(String ETA) {
-        this.ETA = ETA;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
 
 }
