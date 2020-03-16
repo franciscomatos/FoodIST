@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -25,11 +26,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class AddPictureActivity extends AppCompatActivity {
+	//TODO: fix rotation, (save the image views)
 
 	static final int REQUEST_TAKE_PHOTO = 1;
 	static final int REQUEST_GET_PHOTO = 2;
-	ImageView imageView;
-	String currentPhotoPath;
+	private ImageView imageView;
+	private String currentPhotoPath;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +59,6 @@ public class AddPictureActivity extends AppCompatActivity {
 		intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
 		// Launching the Intent
 		startActivityForResult(intent,REQUEST_GET_PHOTO);
-
 	}
 
 	private void dispatchTakePictureIntent() {
@@ -83,7 +84,15 @@ public class AddPictureActivity extends AppCompatActivity {
 		}
 	}
 
-	//Aux functions
+	/*
+	 *	Returns an abstract representation of the file just created, as well as
+	 * 	pathnames (?)
+	 *
+	 * 	@param format 	in what format should the file be (e.g. jpeg, png, ..)
+	 * 	@return 		File
+	 *
+	 *
+	 * */
 	private File createImageFile(String format) throws IOException {
 		// Create an image file name
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -94,33 +103,33 @@ public class AddPictureActivity extends AppCompatActivity {
 				".jpg",         /* suffix */
 				storageDir      /* directory */
 		);
-
 		// Save a file: path for use with ACTION_VIEW intents
 		currentPhotoPath = image.getAbsolutePath();
 		return image;
 	}
 
-	public void savePicture(ImageView iv,Uri uri) {
-		//TODO: transform this into an ASync Task, because it does not need to run in the main thread
-
+	/*
+	*	Responsible for caching the images being imported to the app.
+	*	Since the image size can be too big, do the actual saving in the background.
+	* 	@param iv place where the image is to be displayed
+	* 	@param uri where the image is
+	*
+	*
+	* */
+	private void savePicture(ImageView iv,Uri uri) {
 		//create the file
 		File photoFile = null;
+		BitmapDrawable drawable = (BitmapDrawable) iv.getDrawable();
+		Bitmap bitmap = drawable.getBitmap();
+
 		try {
 			photoFile = createImageFile("JPEG_");
 		} catch (IOException ex) {
 			// Error occurred while creating the File
 			Log.w("AddPictureActivity", "Error creating " + ex);
 		}
-
-		BitmapDrawable drawable = (BitmapDrawable) iv.getDrawable();
-		Bitmap bitmap = drawable.getBitmap();
-
-		try {
-			bitmap.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(photoFile));
-		} catch (FileNotFoundException e) {
-			Log.w("AddPictureActivity", "File not found ..." + e);
-			e.printStackTrace();
-		}
+		Thread thread = new Thread(new SaveImageRunnable(bitmap,photoFile));
+		thread.start();
 	}
 
 
@@ -130,16 +139,15 @@ public class AddPictureActivity extends AppCompatActivity {
 		if(resultCode == Activity.RESULT_OK)
 			switch (requestCode){
 				case REQUEST_GET_PHOTO:
-
-					imageView.setImageURI(data.getData());
-					savePicture(imageView,data.getData());
-
-					//TODO: Choose how to deal with the image here
+					Uri uri = data.getData();
+					imageView.setImageURI(uri);
+					savePicture(imageView,uri);
+					//TODO: save the images in server (use some kind of AsyncTask)
 					break;
 				case REQUEST_TAKE_PHOTO:
 					imageView.setImageURI(Uri.parse(currentPhotoPath));
+					//TODO: save the images in server (use some kind of AsyncTask)
 					break;
-
 				default:
 					Log.d("onActivityResult","not a valid request code");
 			}
@@ -149,4 +157,23 @@ public class AddPictureActivity extends AppCompatActivity {
 		//TODO ?
 	}
 
+	public class SaveImageRunnable implements Runnable {
+		private Bitmap bitmap;
+		private File photoFile;
+
+		public SaveImageRunnable(Bitmap bt, File pf){
+				bitmap = bt;
+				photoFile = pf;
+		}
+		@Override
+		public void run(){
+			try {
+				bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(photoFile));
+			} catch (FileNotFoundException e) {
+				Log.w("AddPictureActivity", "File not found ..." + e);
+				e.printStackTrace();
+			}
+
+		}
+	}
 }
