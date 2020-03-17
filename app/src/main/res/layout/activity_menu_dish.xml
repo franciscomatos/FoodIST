@@ -2,7 +2,7 @@
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal|left">
 
     <LinearLayout
         android:layout_width="175dp"
@@ -10,16 +10,13 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="20dp"
         android:background="#FFFFFF"
-        android:orientation="vertical"
-        android:radius="360dp">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/menuDishNameLeft"
             android:layout_width="match_parent"
-            android:layout_height="125dp"
-            android:gravity="center" />
+            android:layout_height="125dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,15 +27,13 @@
                 android:id="@+id/menuDishCategoryLeft"
                 android:layout_width="62.5dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center" />
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/menuDishPriceLeft"
-                android:layout_width="wrap_content"
+                android:layout_width="62.5dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center" />
+                android:layout_weight="1" />
         </LinearLayout>
     </LinearLayout>
 
@@ -48,7 +43,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="20dp"
         android:background="#FFFFFF"
         android:orientation="vertical"
         android:radius="360dp">
@@ -56,8 +50,7 @@
         <TextView
             android:id="@+id/menuDishNameRight"
             android:layout_width="match_parent"
-            android:layout_height="125dp"
-            android:gravity="center" />
+            android:layout_height="125dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -68,15 +61,13 @@
                 android:id="@+id/menuDishCategoryRight"
                 android:layout_width="62.5dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center" />
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/menuDishPriceRight"
                 android:layout_width="62.5dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center" />
+                android:layout_weight="1" />
         </LinearLayout>
     </LinearLayout>
 </TableRow>
