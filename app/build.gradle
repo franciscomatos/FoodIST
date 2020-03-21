@@ -32,7 +32,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    implementation 'com.marvinlabs:android-slideshow-widget:0.5.0'
-    implementation 'com.marvinlabs:android-slideshow-widget-picasso-plugin:0.5.0'
-    implementation 'com.marvinlabs:android-slideshow-widget:0.4.0'
+    implementation 'com.synnapps:carouselview:0.1.4'
 }

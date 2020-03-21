@@ -12,7 +12,17 @@
         android:orientation="horizontal"
         android:id="@+id/slideshow">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <com.synnapps.carouselview.CarouselView
+            android:id="@+id/carouselView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:fillColor="#FFFFFFFF"
+            app:pageColor="#00000000"
+            app:radius="6dp"
+            app:slideInterval="3000"
+            app:strokeColor="#FF777777"
+            app:strokeWidth="1dp"/>
+        <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floatingActionButton"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
@@ -47,7 +57,7 @@
             app:fabSize="normal"
             android:layout_alignParentRight="true"
             android:background="@null"
-            app:backgroundTint="@android:color/transparent" />
+            app:backgroundTint="@android:color/transparent" />-->
     </RelativeLayout>
 
     <LinearLayout

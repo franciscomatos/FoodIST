@@ -10,18 +10,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.synnapps.carouselview.CarouselView;
+import com.synnapps.carouselview.ImageListener;
+
 import pt.ulisboa.tecnico.cmov.foodist.R;
 
 public class DishActivity extends FragmentActivity {
+
+    private CarouselView carouselView;
+    private int[] sampleImages = {R.drawable.food1, R.drawable.food2, R.drawable.food3};
+    private ImageListener imageListener = new ImageListener() {
+        @Override
+        public void setImageForPosition(int position, ImageView imageView) {
+            imageView.setImageResource(sampleImages[position]);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish);
 
-        ImageView iv_background =findViewById(R.id.iv_background);
+        /*ImageView iv_background =findViewById(R.id.iv_background);
         AnimationDrawable animationDrawable = (AnimationDrawable) iv_background.getDrawable();
-        animationDrawable.start();
+        animationDrawable.start();*/
+
+        carouselView = findViewById(R.id.carouselView);
+        carouselView.setPageCount(sampleImages.length);
+        carouselView.setImageListener(imageListener);
 
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
