@@ -3,8 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:gravity="center_horizontal|left">
-
     <LinearLayout
+        android:id="@+id/menuLeftDish"
         android:layout_width="175dp"
         android:layout_height="250dp"
         android:layout_marginLeft="20dp"
@@ -38,6 +38,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/menuRightDish"
         android:layout_width="175dp"
         android:layout_height="250dp"
         android:layout_marginLeft="10dp"

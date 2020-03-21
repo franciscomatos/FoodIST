@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.foodist.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,13 +20,14 @@ import pt.ulisboa.tecnico.cmov.foodist.states.MenuState;
 public class MenuActivity extends AppCompatActivity {
 
     private TableLayout tableLayout;
+    private MenuState menuState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        MenuState menuState = (MenuState) getApplicationContext();
+        this.menuState = (MenuState) getApplicationContext();
 
         Log.i("MenuActivity", "got Context");
 
@@ -55,6 +57,35 @@ public class MenuActivity extends AppCompatActivity {
             dishPriceLeftView.setText(String.format(menuState.getDish(i).getPrice().toString()));
             TextView dishPriceRightView = tr.findViewById(R.id.menuDishPriceRight);
             dishPriceRightView.setText(String.format(menuState.getDish(i+1).getPrice().toString()));
+
+            LinearLayout leftLayout = tr.findViewById(R.id.menuLeftDish);
+            LinearLayout rightLayout = tr.findViewById(R.id.menuRightDish);
+
+            leftLayout.setTag(menuState.getDish(i));
+            rightLayout.setTag(menuState.getDish(i+1));
+
+            final int index = i;
+            leftLayout.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Dish dish = menuState.getDish(index);
+                    Intent intent = new Intent(getBaseContext(), DishActivity.class);
+                    intent.putExtra("name", dish.getName());
+                    intent.putExtra("category", dish.getCategory());
+                    intent.putExtra("price", dish.getPrice().toString());
+                    startActivity(intent);
+                }
+            });
+
+            rightLayout.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Dish dish = menuState.getDish(index+1);
+                    Intent intent = new Intent(getBaseContext(), DishActivity.class);
+                    intent.putExtra("name", dish.getName());
+                    intent.putExtra("category", dish.getCategory());
+                    intent.putExtra("price", dish.getPrice().toString());
+                    startActivity(intent);
+                }
+            });
 
             this.tableLayout.addView(tr);
             Log.i("MenuActivity", "added row to table");
