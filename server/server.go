@@ -5,6 +5,7 @@ import(
 	"net/http"
 	"encoding/json"
 	"time"
+	"strconv"
 )
 
 
@@ -59,6 +60,32 @@ type LogoutResponse struct {
 	Status string `json:"status"`
 }
 
+type AddMenuRequest struct { //TODO: ADD the dietry restritions
+	NameMenu    	string `json:"namemenu"`
+	NameCanteen    	string `json:"namecanteen"`
+	Price 			string `json:"price"`
+	Username    	string `json:"username"`
+	Password 		string `json:"password"`
+
+}
+
+type AddMenuResponse struct {
+	Status string `json:"status"`
+}
+
+type AddImageRequest struct {
+	NameMenu    	string `json:"namemenu"`
+	NameCanteen    	string `json:"namecanteen"`
+	NameImage    	string `json:"nameimage"`
+	Image    		string `json:"image"`
+	Username    	string `json:"username"`
+	Password 		string `json:"password"`
+
+}
+
+type AddImageResponse struct {
+	Status string `json:"status"`
+}
 
 
 //Business Logic structs
@@ -70,9 +97,8 @@ type TimeInterval struct {
 	Open	time.Time
 	Close	time.Time
 }
-
 type Canteen struct {
-	Menus		map[string]Menu
+	Menus		map[string]*Menu
 	Location	Coordinates
 	OpenHours	map[int]TimeInterval
 }
@@ -99,7 +125,51 @@ var users = make(map[string]User) //Key is user and Value is password
 
 var places = make(map[string]Canteen) // Key is the place name and Value is its contents
 
+//Aux Functions
+func validadeUser( username, password string)	(*User,string,int){
 
+	if len(username) == 0{
+		return nil,"Empty Username", http.StatusUnauthorized
+	}
+
+	if len(password) == 0{
+		return nil,"Empty Password", http.StatusUnauthorized
+	}
+
+	user, ok := users[username]
+	if !ok{
+		return nil,"User does not exist", http.StatusUnauthorized
+	}
+
+	if user.Password != password{
+		return nil,"Wrong Password", http.StatusUnauthorized
+	}
+
+	if ok && !user.LoggedIn{
+		return &user,"Not Logged in", http.StatusUnauthorized
+	}
+
+	if ok && user.LoggedIn && user.Password == password{
+		return &user, "OK" , http.StatusOK
+	}
+
+	return nil, "Unexpected error" , http.StatusBadRequest
+}
+func validadeCanteen( canteenName string)	(*Canteen,string,int){
+
+	if len(canteenName) == 0{
+		return nil,"Empty Canteen Name", http.StatusBadRequest
+	}
+
+	canteen, ok := places[canteenName]
+	if !ok{
+		return nil,"Canteen does not exist", http.StatusBadRequest
+	}
+
+	return &canteen, "OK" , http.StatusOK
+	
+
+}
 //Handlers
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest RegisterRequest
@@ -147,29 +217,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("New login  received")
 	log.Println("Request body: Username: "+userRequest.Username+" Password: "+userRequest.Password)
 	
-	//test if the user already exists
-	user, ok := users[userRequest.Username]
-	if !ok{
-		log.Println("[ERROR] User does not exist")
-		http.Error(w, "User does not exist", http.StatusBadRequest)
-		return
-	}
-
-	if len(userRequest.Username) == 0{
-		log.Println("[ERROR] Empty Username")
-		http.Error(w, "Empty Username", http.StatusBadRequest)
-		return
-	}
-
-	if len(userRequest.Password) == 0{
-		log.Println("[ERROR] Empty Password")
-		http.Error(w, "Empty Password", http.StatusBadRequest)
-		return
-	}
-
-	if userRequest.Password != user.Password{
-		log.Println("[ERROR] Wrong Password")
-		http.Error(w, "Wrong Password", http.StatusBadRequest)
+	//test if the user exists
+	user, stmt ,status := validadeUser(userRequest.Username,userRequest.Password)
+	if user == nil{
+		log.Println("[ERROR] ",stmt)
+		http.Error(w,stmt, status)
 		return
 	}
 
@@ -186,32 +238,14 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest LogoutRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
-	log.Println("New login  received")
+	log.Println("New logout  received")
 	log.Println("Request body: Username: "+userRequest.Username+" Password: "+userRequest.Password)
 	
-	//test if the user already exists
-	user, ok := users[userRequest.Username]
-	if !ok{
-		log.Println("[ERROR] User does not exist")
-		http.Error(w, "User does not exist", http.StatusBadRequest)
-		return
-	}
-
-	if len(userRequest.Username) == 0{
-		log.Println("[ERROR] Empty Username")
-		http.Error(w, "Empty Username", http.StatusBadRequest)
-		return
-	}
-
-	if len(userRequest.Password) == 0{
-		log.Println("[ERROR] Empty Password")
-		http.Error(w, "Empty Password", http.StatusBadRequest)
-		return
-	}
-
-	if userRequest.Password != user.Password{
-		log.Println("[ERROR] Wrong Password")
-		http.Error(w, "Wrong Password", http.StatusBadRequest)
+	//test if the user exists
+	user, stmt, status := validadeUser(userRequest.Username,userRequest.Password)
+	if status != http.StatusOK{
+		log.Println("[ERROR] ",stmt)
+		http.Error(w, stmt, status)
 		return
 	}
 
@@ -223,10 +257,77 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func addMenuHandler(w http.ResponseWriter, r *http.Request){
+
+	var userRequest AddMenuRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("New menu  received")
+	log.Println("Request body: NameMenu: ",userRequest.NameMenu," Price: ",userRequest.Price," Canteen: ",userRequest.NameCanteen)
+
+	//test if the user already exists
+	_, stmt, status := validadeUser(userRequest.Username,userRequest.Password)
+	if status != http.StatusOK{
+		log.Println("[ERROR] ",stmt)
+		http.Error(w,stmt, status)
+		return
+	}
+
+	canteen, stmt, status := validadeCanteen(userRequest.NameCanteen)
+	if status != http.StatusOK{
+		log.Println("[ERROR] ",stmt)
+		http.Error(w,stmt, status)
+		return
+	}
+
+	if s, err := strconv.ParseFloat(userRequest.Price, 32); err == nil {
+		canteen.Menus[userRequest.NameMenu] = &Menu{Price : s}
+	}else{
+		log.Println("[ERROR] Bad Price value")
+		http.Error(w,"Bad Price value", http.StatusBadRequest)
+		return
+	}
+
+	response := AddMenuResponse{
+		Status:			"OK"}
+		
+	json.NewEncoder(w).Encode(response)
+}
+
+func addImageHandler(w http.ResponseWriter, r *http.Request){
+
+	var userRequest AddImageRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("New menu  received")
+	log.Println("Request body: NameMenu: ",userRequest.NameMenu, "Canteen: ",userRequest.NameCanteen)
+
+	//test if the user already exists
+	_, stmt, status := validadeUser(userRequest.Username,userRequest.Password)
+	if status != http.StatusOK{
+		log.Println("[ERROR] ",stmt)
+		http.Error(w,stmt, status)
+		return
+	}
+
+	canteen, stmt, status := validadeCanteen(userRequest.NameCanteen)
+	if status != http.StatusOK{
+		log.Println("[ERROR] ",stmt)
+		http.Error(w,stmt, status)
+		return
+	}
+
+	canteen.Menus[userRequest.NameMenu].Gallery = append(canteen.Menus[userRequest.NameMenu].Gallery,Image{Name : userRequest.NameImage, Image : userRequest.Image})
+
+	response := AddImageResponse{
+		Status:			"OK"}
+		
+	json.NewEncoder(w).Encode(response)
+}
 // INITIALIZATION FUNCTIONS
 
 func addPlace( name string, coord Coordinates, times map[int]TimeInterval ){
-	places[name] = 	Canteen{	Menus : make(map[string]Menu),
+	places[name] = 	Canteen{	Menus : make(map[string]*Menu),
 								Location : coord,
 								OpenHours : times}
 }
@@ -254,8 +355,8 @@ func main() {
 	mux_http.HandleFunc("/register", registerHandler)
 	mux_http.HandleFunc("/login", loginHandler)
 	mux_http.HandleFunc("/logout", logoutHandler)
-	// mux_http.HandleFunc("/addPhoto", showHandler)
-	// mux_http.HandleFunc("/addMenu", showHandler)
+	mux_http.HandleFunc("/addImage", addImageHandler)
+	mux_http.HandleFunc("/addMenu", addMenuHandler)
 	// mux_http.HandleFunc("/rateImage", scoreHandler)
 	// mux_http.HandleFunc("/rateImage", scoreHandler)
 
