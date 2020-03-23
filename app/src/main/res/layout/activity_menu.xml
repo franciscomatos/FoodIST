@@ -47,6 +47,7 @@
             android:layout_weight="1"
             android:scrollbars="none">
 
+
             <TableLayout
                 android:id="@+id/menuTable"
                 android:layout_width="match_parent"
