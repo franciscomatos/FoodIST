@@ -5,9 +5,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,30 +40,13 @@ public class PopUpClass {
         //Set the location of the window on the screen
         this.popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
-        //Initialize the elements of our window, install the handler
-
-        /*TextView test2 = popupView.findViewById(R.id.titleText);
-        test2.setText("teste");
-
-        Button buttonEdit = popupView.findViewById(R.id.messageButton);
-        buttonEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                //As an example, display the message
-                Toast.makeText(view.getContext(), "Wow, popup action button", Toast.LENGTH_SHORT).show();
-
-            }
-        });*/
 
         return popupView;
 
     }
 
-    public boolean onTouch(View v, MotionEvent event) {
-
+    public void onTouch() {
         //Close the window when clicked
         this.popupWindow.dismiss();
-        return true;
     }
 }
