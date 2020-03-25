@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         configureFoodListButton();
         GlobalClass global = (GlobalClass) getApplicationContext();
-        global.setFusedLocationClient(LocationServices.getFusedLocationProviderClient(this));
+        //global.setFusedLocationClient(LocationServices.getFusedLocationProviderClient(this));
 
     }
 

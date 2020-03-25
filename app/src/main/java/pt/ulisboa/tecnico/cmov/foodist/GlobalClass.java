@@ -11,7 +11,7 @@ public class GlobalClass extends Application {
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
-    private FusedLocationProviderClient fusedLocationClient;
+   // private FusedLocationProviderClient fusedLocationClient;
 
     private double[] AlamedaLatitude = new double[]{38.735740, 38.739740 };
     private double[] AlamedaLongitude = new double[]{38.735740, 38.739740 };
@@ -96,11 +96,11 @@ public class GlobalClass extends Application {
         TagusLongitude = tagusLongitude;
     }
 
-    public FusedLocationProviderClient getFusedLocationClient() {
+   /* public FusedLocationProviderClient getFusedLocationClient() {
         return fusedLocationClient;
     }
 
     public void setFusedLocationClient(FusedLocationProviderClient fusedLocationClient) {
         this.fusedLocationClient = fusedLocationClient;
-    }
+    }*/
 }

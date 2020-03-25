@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.foodist;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,10 +8,15 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private ArrayList<FoodService> mDataset;
+    private JSONArray durations;
 
     // Provide a reference to the views for each data item
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -28,8 +34,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             ETA = (TextView) v.findViewById(R.id.ETA);
         }
     }
-    public MyAdapter(ArrayList<FoodService> listFoodServices) {
+    public MyAdapter(ArrayList<FoodService> listFoodServices, String data) {
         mDataset = listFoodServices;
+        try {
+            JSONObject json = new JSONObject(data);
+            durations = json.getJSONArray("durations").getJSONArray(0);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     // Create new views (invoked by the layout manager)
@@ -47,12 +60,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
+
         holder.name.setText(mDataset.get(position).getName());
         holder.openingHour.setText(mDataset.get(position).getOpeningHour());
         holder.closingHour.setText(mDataset.get(position).getClosingHour());
-        holder.ETA.setText(mDataset.get(position).getLatitude()+""); //FIXME should be the ETA
+        try {
+            holder.ETA.setText(getTime((int)durations.getDouble(position)));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getTime(int duration) {
+        Log.i("MYLOGS", duration +"");
+        return duration/60 + " mins";
     }
 
     // Return the size of your dataset (invoked by the layout manager)
