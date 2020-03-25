@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.foodist;
+package pt.ulisboa.tecnico.cmov.foodist.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +10,8 @@ import android.widget.Button;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+import pt.ulisboa.tecnico.cmov.foodist.R;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -20,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
         GlobalClass global = (GlobalClass) getApplicationContext();
         //global.setFusedLocationClient(LocationServices.getFusedLocationProviderClient(this));
 
+
+        Intent intent = new Intent(this, MenuActivity.class);
+        startActivity(intent);
     }
 
 
