@@ -11,13 +11,15 @@ public class FoodService {
     private String closingHour;
     private double latitude;
     private double longitude;
+    private String type;
 
     public String getName() {
         return name;
     }
 
-    public FoodService(String name, String openingHour, String closingHour , double latitude, double longitude) {
+    public FoodService(String name, String type, String openingHour, String closingHour , double latitude, double longitude) {
         this.name = name;
+        this.type = type;
         this.openingHour = openingHour;
         this.closingHour = closingHour;
         this.latitude = latitude;
@@ -61,5 +63,11 @@ public class FoodService {
         this.longitude = longitude;
     }
 
+    public String getType() {
+        return type;
+    }
 
+    public void setType(String type) {
+        this.type = type;
+    }
 }

@@ -2,5 +2,10 @@
     <string name="app_name">FoodIST</string>
     <string name="foodListButton">See food list</string>
     <string name="title_activity_map_test">Map</string>
+    <string name="service_name">Name</string>
+    <string name="opening_hour">Opening</string>
+    <string name="is_open">Status</string>
+    <string name="distance">Distance</string>
+    <string name="service_photo">Service Photo</string>
     <string name="url">https://maps.googleapis.com/maps/api/distancematrix/json?origins=Lisboa&amp;destinations=Tomar&amp;mode=walking&amp;language=pt-PT&amp;key=</string>
 </resources>

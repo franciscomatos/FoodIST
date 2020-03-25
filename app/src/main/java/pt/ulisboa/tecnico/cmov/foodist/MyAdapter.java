@@ -1,9 +1,11 @@
 package pt.ulisboa.tecnico.cmov.foodist;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +15,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private ArrayList<FoodService> mDataset;
@@ -23,14 +28,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         public TextView name;
         public TextView openingHour;
-        public TextView closingHour;
+        public TextView status;
         public TextView ETA;
+        public ImageView icon;
 
         public MyViewHolder(View v) {
             super(v);
             name = (TextView) v.findViewById(R.id.name);
+            icon = (ImageView) v.findViewById(R.id.service_photo);
             openingHour = (TextView) v.findViewById(R.id.openingHour);
-            closingHour = (TextView) v.findViewById(R.id.closingHour);
+            status = (TextView) v.findViewById(R.id.is_open);
             ETA = (TextView) v.findViewById(R.id.ETA);
         }
     }
@@ -62,12 +69,43 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
         holder.name.setText(mDataset.get(position).getName());
-        holder.openingHour.setText(mDataset.get(position).getOpeningHour());
-        holder.closingHour.setText(mDataset.get(position).getClosingHour());
+        if (mDataset.get(position).getType() == "RESTAURANT") {
+            holder.icon.setImageResource(R.drawable.ic_restaurant);
+        } else {
+            holder.icon.setImageResource(R.drawable.coffee4);
+        }
+        holder.openingHour.setText(mDataset.get(position).getOpeningHour() + " - " + mDataset.get(position).getClosingHour());
         try {
-            holder.ETA.setText(getTime((int)durations.getDouble(position)));
+            holder.ETA.setText(getTime((int) durations.getDouble(position)));
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+
+        Date date = new Date();   // given date
+        Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+        calendar.setTime(date);   // assigns calendar to given date
+        int hours = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+        int minutes = calendar.get(Calendar.MINUTE);
+        String[] openingSplit = mDataset.get(position).getOpeningHour().split(":");
+        String[] closingSplit = mDataset.get(position).getClosingHour().split(":");
+        Log.i("MYLOGS", openingSplit[0] + " " + closingSplit[0]);
+        Log.i("MYLOGS", openingSplit[1] + " " + closingSplit[1]);
+        Log.i("MYLOGS", hours + " " + minutes);
+        if (Integer.parseInt(openingSplit[0]) == hours && Integer.parseInt(openingSplit[1]) <= minutes) {
+            holder.status.setText("Open");
+            holder.status.setTextColor(0xFF00AA00);
+
+        } else if (Integer.parseInt(closingSplit[0]) == hours && Integer.parseInt(closingSplit[1]) > minutes ) {
+            holder.status.setText("Open");
+            holder.status.setTextColor(0xFF00AA00);
+
+        } else if( Integer.parseInt(openingSplit[0]) < hours &&
+                    Integer.parseInt(closingSplit[0]) > hours ) {
+            holder.status.setText("Open");
+            holder.status.setTextColor(0xFF00AA00);
+        } else {
+            holder.status.setText("Closed");
+            holder.status.setTextColor(Color.RED);
         }
     }
 

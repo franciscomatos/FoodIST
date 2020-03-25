@@ -22,12 +22,12 @@ public class GlobalClass extends Application {
     public ArrayList<FoodService> getCampusFoodServices(String campus) {
         ArrayList<FoodService> listFoodServices = new ArrayList<FoodService>();
         if (campus == "Alameda") {
-            listFoodServices.add(new FoodService("CIVIL", "10:00", "20:00", 38.737069, -9.140017));
-            listFoodServices.add(new FoodService("ABILIO", "10:00", "20:00", 38.737135, -9.137655));
-            listFoodServices.add(new FoodService("AE", "10:00", "22:00", 38.736221, -9.137195));
+            listFoodServices.add(new FoodService("CIVIL", "RESTAURANT", "10:00", "20:00", 38.737069, -9.140017));
+            listFoodServices.add(new FoodService("ABILIO","BAR", "10:00", "20:00", 38.737135, -9.137655));
+            listFoodServices.add(new FoodService("AE","RESTAURANT", "10:00", "22:00", 38.736221, -9.137195));
         } else if (campus == "Taguspark") {
-            listFoodServices.add(new FoodService("GreenBar Tagus", "10:00", "20:00", 38.738019, -9.303139 ));
-            listFoodServices.add(new FoodService("Cafetaria", "10:00", "20:00", 38.736582,  -9.302166 ));
+            listFoodServices.add(new FoodService("GreenBar Tagus","BAR", "10:00", "20:00", 38.738019, -9.303139 ));
+            listFoodServices.add(new FoodService("Cafetaria","RESTAURANT", "10:00", "20:00", 38.736582,  -9.302166 ));
         }
         return listFoodServices;
     }
