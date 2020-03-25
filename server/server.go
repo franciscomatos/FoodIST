@@ -13,11 +13,11 @@ import (
 */
 
 const ( //0,1,...
-	GeneralPublic = iota
-	Student
-	Professor
-	Researcher
-	Staff
+	GeneralPublic = "0"
+	Student       = "1"
+	Professor     = "2"
+	Researcher    = "3"
+	Staff         = "4"
 )
 
 //
@@ -32,7 +32,7 @@ const ( //0,1,...
 type RegisterRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Level    int    `json:"level"`
+	Level    string `json:"level"`
 	Dietry   []bool `json:"dietry"`
 }
 
@@ -80,8 +80,9 @@ type RateMenuRequest struct {
 }
 
 type RateMenuResponse struct {
-	Status  string  `json:"status"`
-	Average float64 `json:"average"`
+	Status    string  `json:"status"`
+	Average   float64 `json:"average"`
+	NumRating int     `json:"numrating"`
 }
 
 type AddImageRequest struct {
@@ -97,32 +98,57 @@ type AddImageResponse struct {
 	Status string `json:"status"`
 }
 
-type GetCanteenRequest struct {
-	NameMenu    string `json:"namemenu"`
-	NameCanteen string `json:"namecanteen"`
-	NameImage   string `json:"nameimage"`
-	Image       string `json:"image"`
-	Username    string `json:"username"`
-	Password    string `json:"password"`
+type GetMenusRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Canteen  string `json:"canteen"`
+}
+type GetMenusResponse struct {
+	Menus  []MenusInterface `json:"menus"`
+	Status string           `json:"status"`
 }
 
-type GetCanteenResponse struct {
-	Status string `json:"status"`
+type MenusInterface struct {
+	Name    string  `json:"name"`
+	Price   float64 `json:"price"`
+	Dietry  []bool  `json:"dietry"`
+	Ratings float64 `json:"ratings"`
+}
+
+type GetCanteensRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Campus   string `json:"campus"`
+}
+type GetCanteensResponse struct {
+	Canteens []CanteenInterface `json:"canteens"`
+	Status   string             `json:"status"`
+}
+
+type CanteenInterface struct {
+	Coord     Coordinates  `json:"coords"`
+	Name      string       `json:"name"`
+	OpenHours TimeInterval `json:"openhours"`
+	Queue     int          `json:"queue"`
 }
 
 //Business Logic structs
 type Coordinates struct {
-	Lat float64
-	Lng float64
+	Lat float64 `json:"lat"`
+	Lng float64 `json:"lng"`
 }
+
 type TimeInterval struct {
-	Open  time.Time
-	Close time.Time
+	Open  time.Time `json:"open"`
+	Close time.Time `json:"close"`
 }
+
 type Canteen struct {
 	Menus     map[string]*Menu
 	Location  Coordinates
-	OpenHours map[int]TimeInterval
+	OpenHours map[string]TimeInterval
+	Queue     []User
+	Campus    string
 }
 
 type Menu struct {
@@ -139,7 +165,7 @@ type Image struct {
 
 type User struct {
 	Password string
-	Level    int
+	Level    string
 	Dietry   []bool
 	LoggedIn bool
 }
@@ -379,18 +405,101 @@ func rateMenuHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := RateMenuResponse{
-		Status:  "OK",
-		Average: sum / count}
+		Status:    "OK",
+		Average:   sum / count,
+		NumRating: int(count)}
 
 	json.NewEncoder(w).Encode(response)
 }
 
+func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
+	var userRequest GetCanteensRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	//test if the user already exists
+	user, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	var canteens []CanteenInterface
+
+	for key, value := range places {
+		if value.Campus == userRequest.Campus {
+			canteens = append(canteens, CanteenInterface{
+				Coord:     value.Location,
+				Name:      key,
+				OpenHours: value.OpenHours[user.Level],
+				Queue:     len(value.Queue)})
+		}
+	}
+	response := GetCanteensResponse{
+		Status:   "OK",
+		Canteens: canteens}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func getMenuHandler(w http.ResponseWriter, r *http.Request) {
+	var userRequest GetMenusRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	//test if the user already exists
+	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	canteen, stmt, status := validadeCanteen(userRequest.Canteen)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	var menus []MenusInterface
+
+	for key, value := range canteen.Menus {
+
+		sum := 0.0
+		count := 0.0
+		for _, rating := range value.Ratings {
+			sum += rating
+			count++
+		}
+
+		menus = append(menus, MenusInterface{
+			Price:   value.Price,
+			Name:    key,
+			Dietry:  value.Dietry,
+			Ratings: sum / count})
+	}
+
+	response := GetMenusResponse{
+		Status: "OK",
+		Menus:  menus}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+/*
+	Name    string  `json:"name"`
+	Price   float64 `json:"price"`
+	Dietry  []bool  `json:"dietry"`
+	Ratings float64 `json:"ratings"`
+*/
+
 // INITIALIZATION FUNCTIONS
 
-func addPlace(name string, coord Coordinates, times map[int]TimeInterval) {
+func addPlace(name string, coord Coordinates, times map[string]TimeInterval) {
 	places[name] = Canteen{Menus: make(map[string]*Menu),
 		Location:  coord,
-		OpenHours: times}
+		OpenHours: times,
+		Campus:    "Alameda"}
 }
 
 func initPlaces() { // initiate more if needed
@@ -398,7 +507,7 @@ func initPlaces() { // initiate more if needed
 	MonicaOpenHours, _ := time.Parse(timeLayout, "08:00:00")
 	MonicaCloseHours, _ := time.Parse(timeLayout, "17:00:00")
 
-	openingHours := map[int]TimeInterval{
+	openingHours := map[string]TimeInterval{
 		GeneralPublic: TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
 		Student:       TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
 		Professor:     TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
@@ -419,6 +528,8 @@ func main() {
 	muxhttp.HandleFunc("/addImage", addImageHandler)
 	muxhttp.HandleFunc("/addMenu", addMenuHandler)
 	muxhttp.HandleFunc("/rateMenu", rateMenuHandler)
+	muxhttp.HandleFunc("/getCanteens", getCanteensHandler)
+	muxhttp.HandleFunc("/getMenu", getMenuHandler)
 	// muxhttp.HandleFunc("/rateImage", scoreHandler)
 	// muxhttp.HandleFunc("/rateImage", scoreHandler)
 
