@@ -1,0 +1,11 @@
+POST http://localhost:8000/addMenu HTTP/1.1
+content-type: application/json
+
+{
+    "namemenu":     "Tosta",
+    "namecanteen":  "Monica",
+    "price":        "1.50",
+    "username": "pedro",
+    "password": "123",
+    "dietry":   ["false","false","false","false"]
+}

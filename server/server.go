@@ -28,12 +28,14 @@ const ( //0,1,...
 	Vegan
 )
 
+var SIZE = 10
+
 //Rest API structs
 type RegisterRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Level    string `json:"level"`
-	Dietry   []bool `json:"dietry"`
+	Level    string `json:"level"`  //FIXME: verify field
+	Dietry   []bool `json:"dietry"` //FIXME: Test for size!
 }
 
 type RegisterResponse struct {
@@ -72,11 +74,11 @@ type AddMenuResponse struct {
 }
 
 type RateMenuRequest struct {
-	NameMenu    string  `json:"namemenu"`
-	NameCanteen string  `json:"namecanteen"`
-	Username    string  `json:"username"`
-	Password    string  `json:"password"`
-	Rate        float64 `json:"rate"`
+	NameMenu    string `json:"namemenu"`
+	NameCanteen string `json:"namecanteen"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	Rate        int    `json:"rate,string"`
 }
 
 type RateMenuResponse struct {
@@ -132,6 +134,18 @@ type CanteenInterface struct {
 	Queue     int          `json:"queue"`
 }
 
+type GetImagesRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Canteen  string `json:"canteen"`
+	Menu     string `json:"menu"`
+	Page     int    `json:"page,string"`
+}
+type GetImagesResponse struct {
+	Images []Image `json:"images"`
+	Status string  `json:"status"`
+}
+
 //Business Logic structs
 type Coordinates struct {
 	Lat float64 `json:"lat"`
@@ -155,12 +169,12 @@ type Menu struct {
 	Price   float64 //should work?
 	Gallery []Image //slice of images
 	Dietry  []bool
-	Ratings map[string]float64
+	Ratings map[string]int //TODO: Update this part with more info (more detailed breakdown of user ratings (e.g.histogram))
 }
 
 type Image struct {
-	Image string //base64
-	Name  string //TODO: maybe transform this into timestamp+username
+	Name  string `json:"name"`
+	Image string `json:"image"`
 }
 
 type User struct {
@@ -171,9 +185,9 @@ type User struct {
 }
 
 //Global Variables
-var users = make(map[string]User) //Key is user and Value is password
+var users = make(map[string]*User) //Key is user and Value is password
 
-var places = make(map[string]Canteen) // Key is the place name and Value is its contents
+var places = make(map[string]*Canteen) // Key is the place name and Value is its contents
 
 //Aux Functions
 func validadeUser(username, password string) (*User, string, int) {
@@ -196,11 +210,11 @@ func validadeUser(username, password string) (*User, string, int) {
 	}
 
 	if ok && !user.LoggedIn {
-		return &user, "Not Logged in", http.StatusUnauthorized
+		return user, "Not Logged in", http.StatusUnauthorized
 	}
 
 	if ok && user.LoggedIn && user.Password == password {
-		return &user, "OK", http.StatusOK
+		return user, "OK", http.StatusOK
 	}
 
 	return nil, "Unexpected error", http.StatusBadRequest
@@ -216,7 +230,7 @@ func validadeCanteen(canteenName string) (*Canteen, string, int) {
 		return nil, "Canteen does not exist", http.StatusBadRequest
 	}
 
-	return &canteen, "OK", http.StatusOK
+	return canteen, "OK", http.StatusOK
 
 }
 
@@ -226,7 +240,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
 	log.Println("New register  received")
-	log.Println("Request body: Username: " + userRequest.Username + " Password: " + userRequest.Password)
+	log.Println(userRequest)
 
 	//test if the user already exists
 	_, ok := users[userRequest.Username]
@@ -248,7 +262,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users[userRequest.Username] = User{Password: userRequest.Password,
+	users[userRequest.Username] = &User{Password: userRequest.Password,
 		Level:    userRequest.Level,
 		Dietry:   userRequest.Dietry,
 		LoggedIn: false}
@@ -266,7 +280,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
 	log.Println("New login  received")
-	log.Println("Request body: Username: " + userRequest.Username + " Password: " + userRequest.Password)
+	log.Println(userRequest)
 
 	//test if the user exists
 	user, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
@@ -277,7 +291,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user.LoggedIn = true
-
 	response := LoginResponse{
 		Status: "OK"}
 
@@ -290,11 +303,12 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
 	log.Println("New logout  received")
-	log.Println("Request body: Username: " + userRequest.Username + " Password: " + userRequest.Password)
+	log.Println(userRequest)
 
 	//test if the user exists
 	user, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
 	if status != http.StatusOK {
+		log.Println(user)
 		log.Println("[ERROR] ", stmt)
 		http.Error(w, stmt, status)
 		return
@@ -313,8 +327,8 @@ func addMenuHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest AddMenuRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
-	log.Println("New menu  received")
-	log.Println("Request body: NameMenu: ", userRequest.NameMenu, " Price: ", userRequest.Price, " Canteen: ", userRequest.NameCanteen)
+	log.Println("New menu received")
+	log.Println(userRequest)
 
 	//test if the user already exists
 	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
@@ -331,8 +345,8 @@ func addMenuHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if s, err := strconv.ParseFloat(userRequest.Price, 32); err == nil {
-		canteen.Menus[userRequest.NameMenu] = &Menu{Price: s, Dietry: userRequest.Dietry, Ratings: make(map[string]float64)}
+	if s, err := strconv.ParseFloat(userRequest.Price, 64); err == nil {
+		canteen.Menus[userRequest.NameMenu] = &Menu{Price: s, Dietry: userRequest.Dietry, Ratings: make(map[string]int)}
 	} else {
 		log.Println("[ERROR] Bad Price value")
 		http.Error(w, "Bad Price value", http.StatusBadRequest)
@@ -350,8 +364,8 @@ func addImageHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest AddImageRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
-	log.Println("New menu  received")
-	log.Println("Request body: NameMenu: ", userRequest.NameMenu, "Canteen: ", userRequest.NameCanteen)
+	log.Println("New Image Received")
+	log.Println(userRequest)
 
 	//test if the user already exists
 	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
@@ -380,6 +394,8 @@ func rateMenuHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest RateMenuRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
+	log.Println("New Rating Received")
+	log.Println(userRequest)
 	//test if the user already exists
 	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
 	if status != http.StatusOK {
@@ -397,8 +413,8 @@ func rateMenuHandler(w http.ResponseWriter, r *http.Request) {
 
 	canteen.Menus[userRequest.NameMenu].Ratings[userRequest.Username] = userRequest.Rate
 
-	count := 0.0
-	sum := 0.0
+	count := 0
+	sum := 0
 	for _, value := range canteen.Menus[userRequest.NameMenu].Ratings {
 		count++
 		sum += value
@@ -406,8 +422,8 @@ func rateMenuHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := RateMenuResponse{
 		Status:    "OK",
-		Average:   sum / count,
-		NumRating: int(count)}
+		Average:   float64(sum) / float64(count),
+		NumRating: count}
 
 	json.NewEncoder(w).Encode(response)
 }
@@ -416,6 +432,8 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest GetCanteensRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
+	log.Println("New request for canteens Received")
+	log.Println(userRequest)
 	//test if the user already exists
 	user, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
 	if status != http.StatusOK {
@@ -442,9 +460,12 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func getMenuHandler(w http.ResponseWriter, r *http.Request) {
+func getMenusHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest GetMenusRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("New request for menus Received")
+	log.Println(userRequest)
 
 	//test if the user already exists
 	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
@@ -465,24 +486,68 @@ func getMenuHandler(w http.ResponseWriter, r *http.Request) {
 
 	for key, value := range canteen.Menus {
 
-		sum := 0.0
-		count := 0.0
+		sum := 0
+		count := 0
 		for _, rating := range value.Ratings {
 			sum += rating
 			count++
 		}
-
-		menus = append(menus, MenusInterface{
-			Price:   value.Price,
-			Name:    key,
-			Dietry:  value.Dietry,
-			Ratings: sum / count})
+		if count == 0 {
+			menus = append(menus, MenusInterface{
+				Price:   value.Price,
+				Name:    key,
+				Dietry:  value.Dietry,
+				Ratings: 0})
+		} else {
+			menus = append(menus, MenusInterface{
+				Price:   value.Price,
+				Name:    key,
+				Dietry:  value.Dietry,
+				Ratings: float64(sum) / float64(count)})
+		}
 	}
-
 	response := GetMenusResponse{
 		Status: "OK",
 		Menus:  menus}
 
+	json.NewEncoder(w).Encode(response)
+}
+
+func getImagesHandler(w http.ResponseWriter, r *http.Request) {
+	var userRequest GetImagesRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("New request for images Received")
+	log.Println(userRequest)
+
+	//test if the user already exists
+	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	canteen, stmt, status := validadeCanteen(userRequest.Canteen)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+	begin := SIZE * userRequest.Page
+	end := SIZE*userRequest.Page + SIZE
+
+	var response GetImagesResponse
+
+	if end >= len(canteen.Menus[userRequest.Menu].Gallery) {
+		response = GetImagesResponse{
+			Status: "OK",
+			Images: canteen.Menus[userRequest.Menu].Gallery[begin:]}
+	} else {
+		response = GetImagesResponse{
+			Status: "OK",
+			Images: canteen.Menus[userRequest.Menu].Gallery[begin:end]}
+	}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -496,7 +561,7 @@ func getMenuHandler(w http.ResponseWriter, r *http.Request) {
 // INITIALIZATION FUNCTIONS
 
 func addPlace(name string, coord Coordinates, times map[string]TimeInterval) {
-	places[name] = Canteen{Menus: make(map[string]*Menu),
+	places[name] = &Canteen{Menus: make(map[string]*Menu),
 		Location:  coord,
 		OpenHours: times,
 		Campus:    "Alameda"}
@@ -529,9 +594,8 @@ func main() {
 	muxhttp.HandleFunc("/addMenu", addMenuHandler)
 	muxhttp.HandleFunc("/rateMenu", rateMenuHandler)
 	muxhttp.HandleFunc("/getCanteens", getCanteensHandler)
-	muxhttp.HandleFunc("/getMenu", getMenuHandler)
-	// muxhttp.HandleFunc("/rateImage", scoreHandler)
-	// muxhttp.HandleFunc("/rateImage", scoreHandler)
+	muxhttp.HandleFunc("/getMenus", getMenusHandler)
+	muxhttp.HandleFunc("/getImages", getImagesHandler)
 
 	go func() {
 		log.Println("Serving HTTP")

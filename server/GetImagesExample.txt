@@ -1,0 +1,10 @@
+POST http://localhost:8000/getImages HTTP/1.1
+content-type: application/json
+
+{
+    "username": "pedro",
+    "password": "123",
+    "canteen":    "Monica",
+    "menu": "Tosta",
+    "page":"0"
+}

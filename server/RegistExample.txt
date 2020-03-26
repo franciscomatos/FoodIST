@@ -1,0 +1,9 @@
+POST http://localhost:8000/register HTTP/1.1
+content-type: application/json
+
+{
+    "username": "pedro",
+    "password": "123",
+    "level":    "1",
+    "dietry":   ["false","false","false","false"]
+}

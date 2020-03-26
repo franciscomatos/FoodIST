@@ -1,0 +1,10 @@
+POST http://localhost:8000/rateMenu HTTP/1.1
+content-type: application/json
+
+{
+    "namemenu":     "Tosta",
+    "namecanteen":  "Monica",
+    "username": "pedro",
+    "password": "123",
+    "rate":   "5"
+}

@@ -1,0 +1,8 @@
+POST http://localhost:8000/getMenus HTTP/1.1
+content-type: application/json
+
+{
+    "username": "pedro",
+    "password": "123",
+    "canteen":    "Monica"
+}
