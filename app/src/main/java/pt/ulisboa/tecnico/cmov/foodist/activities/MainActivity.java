@@ -11,6 +11,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
+import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,9 +23,6 @@ public class MainActivity extends AppCompatActivity {
         GlobalClass global = (GlobalClass) getApplicationContext();
         //global.setFusedLocationClient(LocationServices.getFusedLocationProviderClient(this));
 
-
-        Intent intent = new Intent(this, MenuActivity.class);
-        startActivity(intent);
     }
 
 
@@ -33,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         foodListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                startActivity(new Intent(MainActivity.this, ListFoodServicesView.class));
+                startActivity(new Intent(MainActivity.this, ListFoodServicesActivity.class));
             }
         });
     }

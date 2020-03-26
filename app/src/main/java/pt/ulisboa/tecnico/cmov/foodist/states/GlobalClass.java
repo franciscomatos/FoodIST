@@ -1,10 +1,14 @@
-package pt.ulisboa.tecnico.cmov.foodist;
+package pt.ulisboa.tecnico.cmov.foodist.states;
 
 import android.app.Application;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
+
+import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
+import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 
 public class GlobalClass extends Application {
     private String CAMPUS = "Select a campus";
@@ -17,17 +21,27 @@ public class GlobalClass extends Application {
     private double[] AlamedaLongitude = new double[]{38.735740, 38.739740 };
     private double[] TagusLatitude = new double[]{38.735740, 38.739740 };
     private double[] TagusLongitude = new double[]{38.735740, 38.739740 };
+    private ArrayList<FoodService> listFoodServices;
+    private Map<String, FoodService> foodServices = new HashMap<String, FoodService>(){{
+        put("CIVIL", new FoodService("CIVIL", "RESTAURANT", "10:00", "20:00", 38.737069, -9.140017, new Menu()));
+        put("ABILIO", new FoodService("ABILIO","BAR", "10:00", "20:00", 38.737135, -9.137655, new Menu()));
+        put("AE", new FoodService("AE","RESTAURANT", "10:00", "22:00", 38.736221, -9.137195, new Menu()));
+        put("GreenBar Tagus",new FoodService("GreenBar Tagus","BAR", "10:00", "20:00", 38.738019, -9.303139, new Menu() ));
+        put("Cafetaria", new FoodService("Cafetaria","RESTAURANT", "10:00", "20:00", 38.736582,  -9.302166, new Menu() ));
+    }};
 
 
     public ArrayList<FoodService> getCampusFoodServices(String campus) {
-        ArrayList<FoodService> listFoodServices = new ArrayList<FoodService>();
+        listFoodServices = new ArrayList<FoodService>();
         if (campus == "Alameda") {
-            listFoodServices.add(new FoodService("CIVIL", "RESTAURANT", "10:00", "20:00", 38.737069, -9.140017));
-            listFoodServices.add(new FoodService("ABILIO","BAR", "10:00", "20:00", 38.737135, -9.137655));
-            listFoodServices.add(new FoodService("AE","RESTAURANT", "10:00", "22:00", 38.736221, -9.137195));
+            listFoodServices.add(foodServices.get("CIVIL"));
+            listFoodServices.add(foodServices.get("ABILIO"));
+            listFoodServices.add(foodServices.get("AE"));
+
         } else if (campus == "Taguspark") {
-            listFoodServices.add(new FoodService("GreenBar Tagus","BAR", "10:00", "20:00", 38.738019, -9.303139 ));
-            listFoodServices.add(new FoodService("Cafetaria","RESTAURANT", "10:00", "20:00", 38.736582,  -9.302166 ));
+            listFoodServices.add(foodServices.get("GreenBar Tagus"));
+            listFoodServices.add(foodServices.get("Cafetaria"));
+
         }
         return listFoodServices;
     }
@@ -96,11 +110,15 @@ public class GlobalClass extends Application {
         TagusLongitude = tagusLongitude;
     }
 
-   /* public FusedLocationProviderClient getFusedLocationClient() {
-        return fusedLocationClient;
+    public ArrayList<FoodService> getListFoodServices() {
+        return listFoodServices;
     }
 
-    public void setFusedLocationClient(FusedLocationProviderClient fusedLocationClient) {
-        this.fusedLocationClient = fusedLocationClient;
-    }*/
+    public void setListFoodServices(ArrayList<FoodService> listFoodServices) {
+        this.listFoodServices = listFoodServices;
+    }
+
+    public FoodService getFoodService(String name) {
+        return foodServices.get(name);
+    }
 }

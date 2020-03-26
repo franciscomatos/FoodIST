@@ -19,12 +19,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
+
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private ArrayList<FoodService> mDataset;
     private JSONArray durations;
+    private View.OnClickListener mOnItemClickListener;
+
 
     // Provide a reference to the views for each data item
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder {
 
         public TextView name;
         public TextView openingHour;
@@ -39,6 +43,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             openingHour = (TextView) v.findViewById(R.id.openingHour);
             status = (TextView) v.findViewById(R.id.is_open);
             ETA = (TextView) v.findViewById(R.id.ETA);
+            v.setTag(this);
+            v.setOnClickListener(mOnItemClickListener);
         }
     }
     public MyAdapter(ArrayList<FoodService> listFoodServices, String data) {
@@ -118,6 +124,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public int getItemCount() {
         return mDataset.size();
+    }
+
+    public void setOnItemClickListener(View.OnClickListener itemClickListener) {
+        mOnItemClickListener = itemClickListener;
     }
 
 }

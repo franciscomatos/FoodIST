@@ -3,25 +3,14 @@ package pt.ulisboa.tecnico.cmov.foodist.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.RectF;
-import android.graphics.Shader;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewParent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -29,19 +18,16 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import pt.ulisboa.tecnico.cmov.foodist.PopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
-import pt.ulisboa.tecnico.cmov.foodist.states.MenuState;
-
-import static android.graphics.Color.GRAY;
+import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class MenuActivity extends AppCompatActivity {
 
     private TableLayout tableLayout;
-    private MenuState menuState;
+    private Menu menuState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +36,16 @@ public class MenuActivity extends AppCompatActivity {
 
         FrameLayout background = findViewById(R.id.background);
         background.getForeground().setAlpha(0); // restore
-
-        this.menuState = (MenuState) getApplicationContext();
+        GlobalClass global = (GlobalClass) getApplicationContext();
+        String foodServiceName = getIntent().getStringExtra("foodService");
+        Log.i("MYLOGS", foodServiceName);
+        this.menuState = global.getFoodService(foodServiceName).getMenu();
 
         Log.i("MenuActivity", "got Context");
-
+/*
         for(int i = 0; i < 6; i++)
             menuState.addDish(new Dish("Dish " + i, 5.5, "Category " + i));
-
+*/
         Log.i("MenuActivity", "added Dishes");
 
         this.tableLayout = findViewById(R.id.menuTable);

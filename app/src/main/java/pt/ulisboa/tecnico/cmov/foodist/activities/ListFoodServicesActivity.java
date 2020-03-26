@@ -1,8 +1,7 @@
-package pt.ulisboa.tecnico.cmov.foodist;
+package pt.ulisboa.tecnico.cmov.foodist.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,24 +18,53 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-
-import com.google.android.gms.tasks.OnSuccessListener;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListFoodServicesView extends AppCompatActivity {
+import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
+import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
+import pt.ulisboa.tecnico.cmov.foodist.MyAdapter;
+import pt.ulisboa.tecnico.cmov.foodist.R;
+import pt.ulisboa.tecnico.cmov.foodist.fetchData;
+
+public class ListFoodServicesActivity extends AppCompatActivity {
 
 
     private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
 
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private MyAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<FoodService> listFoodServices;
     private GlobalClass global;
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private View.OnClickListener onItemClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            //TODO: Step 4 of 4: Finally call getTag() on the view.
+            // This viewHolder will have all required values.
+            RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
+            int position = viewHolder.getAdapterPosition();
+            FoodService foodService = listFoodServices.get(position);
+            Intent intent = new Intent(ListFoodServicesActivity.this, MenuActivity.class);
+            intent.putExtra("foodService", foodService.getName());
+
+            //Toast.makeText(ListFoodServicesActivity.this, "You Clicked: " + foodService.getName(), Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+        }
+    };
+
+
+    private class MyViewHolder extends RecyclerView.ViewHolder {
+        public MyViewHolder(View itemView) {
+            super(itemView);
+            itemView.setTag(this);
+            itemView.setOnClickListener(onItemClickListener);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +73,6 @@ public class ListFoodServicesView extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.FoodServices);
         recyclerView.setHasFixedSize(true);
         this.global = (GlobalClass) getApplicationContext();
-
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -76,16 +103,12 @@ public class ListFoodServicesView extends AppCompatActivity {
             }
         };
 
+
         getLocation2();
 
-       // getLocation();
         getCampus();
 
-        //fetchData process = new fetchData(this, global);
-        //process.execute();
-
-
-        ListFoodServicesView listFoodServicesView = this;
+        ListFoodServicesActivity listFoodServicesActivity = this;
         Spinner dropdown = findViewById(R.id.campus);
         dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -94,10 +117,10 @@ public class ListFoodServicesView extends AppCompatActivity {
                 if (global.getCampus() != newCampus ) {
                     setCampus(newCampus);
                     getLocation2();
-                    fetchData process = new fetchData(listFoodServicesView, global);
+                    fetchData process = new fetchData(listFoodServicesActivity, global);
                     process.execute();
                     updateSpinner(global.getCampus(), dropdown);
-                    Log.i("LOL", "Campus set to " + global.getCampus());
+                    //Log.i("LOL", "Campus set to " + global.getCampus());
                 }
 
             }
@@ -108,17 +131,12 @@ public class ListFoodServicesView extends AppCompatActivity {
             }
         });
         updateSpinner(global.getCampus(), dropdown);
+
     }
 
     private void getLocation2() {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    Activity#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for Activity#requestPermissions for more details.
+
             requestPermissions(new String[] {
                     Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET
             }, 10);
@@ -182,7 +200,7 @@ public class ListFoodServicesView extends AppCompatActivity {
         Location location = getLastKnownLocation();
         global.setLatitude(location.getLatitude());
         global.setLongitude(location.getLongitude());
-        Log.i("Location: ", "long-lat" + global.getLongitude() + "-" + global.getLatitude());
+        //Log.i("Location: ", "long-lat" + global.getLongitude() + "-" + global.getLatitude());
     }
 
     private Location getLastKnownLocation() {
@@ -208,32 +226,18 @@ public class ListFoodServicesView extends AppCompatActivity {
         }
         return bestLocation;
     }
-/*
-    private void getLocation() {
 
-        global.getFusedLocationClient().getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            global.setLatitude(location.getLatitude());
-                            global.setLongitude(location.getLongitude());
-                            Log.i("MyLOCATION", location.getLongitude() + " " + location.getLatitude());
-
-                        }
-                    }
-                });
-    }
-
-*/
     public void setView(String data) {
 
         listFoodServices = global.getCampusFoodServices(global.getCampus());
-        for (int i=0; i< listFoodServices.size(); i++) {
-        }
         mAdapter = new MyAdapter(listFoodServices, data);
+        mAdapter.setOnItemClickListener(onItemClickListener);
         recyclerView.setAdapter(mAdapter);
 
+    }
+
+    public void setItemClickListener(View.OnClickListener clickListener) {
+        onItemClickListener = clickListener;
     }
 
 

@@ -9,7 +9,7 @@ android {
     buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "pt.ulisboa.tecnico.cmov.foodist"
-        minSdkVersion 24 // was 21 in Francisco version
+        minSdkVersion 27 // was 21 in Francisco version
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"

@@ -5,11 +5,13 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 
+import pt.ulisboa.tecnico.cmov.foodist.activities.ListFoodServicesActivity;
+
 public class MyLocationListener implements LocationListener {
 
-    private ListFoodServicesView listFoodServices;
+    private ListFoodServicesActivity listFoodServices;
 
-    public MyLocationListener(ListFoodServicesView lfs) {
+    public MyLocationListener(ListFoodServicesActivity lfs) {
         this.listFoodServices = lfs;
     }
 

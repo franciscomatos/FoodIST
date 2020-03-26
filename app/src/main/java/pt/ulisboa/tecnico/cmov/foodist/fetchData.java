@@ -3,14 +3,9 @@ package pt.ulisboa.tecnico.cmov.foodist;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,17 +15,18 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+
+import pt.ulisboa.tecnico.cmov.foodist.activities.ListFoodServicesActivity;
+import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
+import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 
 public class fetchData extends AsyncTask<Void, Void, Void> {
 
-    private ListFoodServicesView listFoodServices;
+    private ListFoodServicesActivity listFoodServices;
 
     //private String key = "AIzaSyAVuqTJjlLwltDajwlrHBwgqpm58hQFeQw"; OLD KEY
     private String key = "5b3ce3597851110001cf6248fb8cf9c19bae4bf08f17f4d3454d90ff";
@@ -42,7 +38,7 @@ public class fetchData extends AsyncTask<Void, Void, Void> {
     private GlobalClass global;
     private String whereToIndex;
 
-    public fetchData(ListFoodServicesView list, GlobalClass global) {
+    public fetchData(ListFoodServicesActivity list, GlobalClass global) {
         this.listFoodServices = list;
         this.global = global;
 

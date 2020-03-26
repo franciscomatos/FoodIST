@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.foodist;
+package pt.ulisboa.tecnico.cmov.foodist.domain;
 
 import android.util.Log;
 
@@ -12,18 +12,20 @@ public class FoodService {
     private double latitude;
     private double longitude;
     private String type;
+    private Menu menu;
 
     public String getName() {
         return name;
     }
 
-    public FoodService(String name, String type, String openingHour, String closingHour , double latitude, double longitude) {
+    public FoodService(String name, String type, String openingHour, String closingHour , double latitude, double longitude, Menu menu) {
         this.name = name;
         this.type = type;
         this.openingHour = openingHour;
         this.closingHour = closingHour;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.menu = menu;
     }
 
     public void setName(String name) {
@@ -69,5 +71,13 @@ public class FoodService {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public void setMenu(Menu menu) {
+        this.menu = menu;
     }
 }
