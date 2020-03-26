@@ -93,7 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:text="@string/dish_price"
+                android:hint="@string/dish_price"
                 android:inputType="numberDecimal" />
 
             <LinearLayout

@@ -20,14 +20,14 @@
 
             <ImageView
                 android:id="@+id/service_photo"
-                android:layout_width="0dp"
+                android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_weight="0"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/service_photo"
                 android:padding="10dp"
                 android:scaleType="fitXY"
-                tools:srcCompat="@mipmap/ic_launcher_round" />
+                tools:srcCompat="@drawable/ic_restaurant" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
