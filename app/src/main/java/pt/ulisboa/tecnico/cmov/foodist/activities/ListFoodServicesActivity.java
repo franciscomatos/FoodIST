@@ -49,7 +49,7 @@ public class ListFoodServicesActivity extends AppCompatActivity {
             RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
             int position = viewHolder.getAdapterPosition();
             FoodService foodService = listFoodServices.get(position);
-            Intent intent = new Intent(ListFoodServicesActivity.this, MenuActivity.class);
+            Intent intent = new Intent(ListFoodServicesActivity.this, FoodServiceActivity.class);
             intent.putExtra("foodService", foodService.getName());
 
             //Toast.makeText(ListFoodServicesActivity.this, "You Clicked: " + foodService.getName(), Toast.LENGTH_SHORT).show();

@@ -2,6 +2,8 @@ package pt.ulisboa.tecnico.cmov.foodist.domain;
 
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.time.LocalTime;
 
 public class FoodService {
@@ -13,7 +15,7 @@ public class FoodService {
     private double longitude;
     private String type;
     private Menu menu;
-
+    private JSONObject map;
     public String getName() {
         return name;
     }
@@ -79,5 +81,13 @@ public class FoodService {
 
     public void setMenu(Menu menu) {
         this.menu = menu;
+    }
+
+    public JSONObject getMap() {
+        return map;
+    }
+
+    public void setMap(JSONObject map) {
+        this.map = map;
     }
 }

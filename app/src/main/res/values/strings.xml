@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">FoodIST</string>
+    <string name="key">5b3ce3597851110001cf6248fb8cf9c19bae4bf08f17f4d3454d90ff</string>
     <string name="foodListButton">See food list</string>
     <string name="title_activity_map_test">Map</string>
     <string name="service_name">Name</string>
@@ -7,7 +8,6 @@
     <string name="is_open">Status</string>
     <string name="distance">Distance</string>
     <string name="service_photo">Service Photo</string>
-    <string name="url">https://maps.googleapis.com/maps/api/distancematrix/json?origins=Lisboa&amp;destinations=Tomar&amp;mode=walking&amp;language=pt-PT&amp;key=</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="new_dish">Add a new dish</string>
     <string name="dish_name">Dish name</string>
