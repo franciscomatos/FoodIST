@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,6 +41,7 @@ public class FoodServiceActivity extends AppCompatActivity implements OnMapReady
     private Menu menuState;
     private String route;
     private FoodService foodService;
+    private MapView mapView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +52,14 @@ public class FoodServiceActivity extends AppCompatActivity implements OnMapReady
         this.menuState = this.foodService.getMenu();
         fetchMap process = new fetchMap(this, getStartEnd() );
         process.execute();
-        MapView mapView = (MapView) findViewById(R.id.map);
+        mapView = (MapView) findViewById(R.id.map);
         mapView.setClickable(false);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+        mapView.setVisibility(View.GONE);
+
+        LinearLayout info = (LinearLayout) findViewById(R.id.info);
+        info.setVisibility(info.isShown() ? View.GONE : View.VISIBLE);
        // Log.i("MYLOGS", route);
 
     }
@@ -111,5 +118,11 @@ public class FoodServiceActivity extends AppCompatActivity implements OnMapReady
         map.addPolyline()
 
  */
+    }
+
+    public void toggle_contents(View view) {
+        mapView.setVisibility(mapView.isShown() ? View.GONE : View.VISIBLE);
+        LinearLayout info = (LinearLayout) findViewById(R.id.info);
+        info.setVisibility(info.isShown() ? View.GONE : View.VISIBLE);
     }
 }

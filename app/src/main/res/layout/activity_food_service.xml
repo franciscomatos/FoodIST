@@ -9,19 +9,126 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_marginHorizontal="100dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:orientation="vertical"
+        android:paddingTop="10dp"><![CDATA[
+
+        android:text="Info" />
+
+        ]]>
+
+        <TextView
+            android:id="@+id/infoText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00FF0404"
+            android:clickable="true"
+            android:onClick="toggle_contents"
+            android:padding="10dp"
+            android:paddingTop="10dp"
+            android:text="Info"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+
+        <LinearLayout
+            android:id="@+id/info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/service_photo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_weight="0"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/service_photo"
+                android:padding="10dp"
+                android:scaleType="fitXY"
+                tools:srcCompat="@drawable/ic_restaurant" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:padding="3dp"
+                    android:text="@string/service_name"
+                    android:textSize="24sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/openingHour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="3dp"
+                        android:text="@string/opening_hour" />
+
+                    <TextView
+                        android:id="@+id/is_open"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:padding="3dp"
+                        android:text="@string/opening_hour" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/ETA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:text="@string/distance"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/mapText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00FF0404"
+            android:clickable="true"
+            android:onClick="toggle_contents"
+            android:padding="10dp"
+            android:text="Map"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+        android:text="Map" />
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="386dp" />
+            android:layout_height="260dp" />
 
         <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
+            android:id="@+id/menuText"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Where is map?"
-            android:textSize="24sp" />
+            android:background="#00FF0404"
+            android:clickable="true"
+            android:onClick="toggle_contents"
+            android:padding="10dp"
+            android:text="Menu"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+        android:text="Menu" />
+
     </LinearLayout>
 
 </RelativeLayout>
