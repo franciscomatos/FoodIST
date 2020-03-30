@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
+
     tools:context=".activities.FoodServiceActivity">
 
     <LinearLayout
@@ -17,25 +19,17 @@
 
         android:text="Info" />
 
-        ]]>
 
-        <TextView
-            android:id="@+id/infoText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#00FF0404"
-            android:clickable="true"
-            android:onClick="toggle_contents"
-            android:padding="10dp"
-            android:paddingTop="10dp"
-            android:text="Info"
-            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+
+        ]]>
 
         <LinearLayout
             android:id="@+id/info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
             <ImageView
                 android:id="@+id/service_photo"
@@ -46,7 +40,7 @@
                 android:contentDescription="@string/service_photo"
                 android:padding="10dp"
                 android:scaleType="fitXY"
-                tools:srcCompat="@drawable/ic_restaurant" />
+                android:src="@drawable/ic_restaurant" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -61,6 +55,7 @@
                     android:layout_weight="0"
                     android:padding="3dp"
                     android:text="@string/service_name"
+                    android:textColor="#FFFFFF"
                     android:textSize="24sp" />
 
                 <LinearLayout
@@ -74,7 +69,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="3dp"
-                        android:text="@string/opening_hour" />
+                        android:text="@string/opening_hour"
+                        android:textColor="#FFFFFF" />
 
                     <TextView
                         android:id="@+id/is_open"
@@ -82,7 +78,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0"
                         android:padding="3dp"
-                        android:text="@string/opening_hour" />
+                        android:text="@string/opening_hour"
+                        android:textColor="#FFFFFF" />
 
                 </LinearLayout>
 
@@ -94,41 +91,35 @@
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:text="@string/distance"
+                    android:textColor="#FFFFFF"
                     android:textSize="18sp" />
 
             </LinearLayout>
 
-        </LinearLayout>
+        </LinearLayout><![CDATA[
 
-        <TextView
-            android:id="@+id/mapText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#00FF0404"
-            android:clickable="true"
-            android:onClick="toggle_contents"
-            android:padding="10dp"
-            android:text="Map"
-            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
         android:text="Map" />
+
+        ]]>
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
             android:layout_height="260dp" />
 
-        <TextView
-            android:id="@+id/menuText"
+        <Button
+            android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#00FF0404"
-            android:clickable="true"
-            android:onClick="toggle_contents"
-            android:padding="10dp"
-            android:text="Menu"
-            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+            android:layout_marginTop="10dp"
+            android:background="@color/colorPrimary"
+            android:text="View Menu"
+            android:textColor="#FFFFFF"
+            android:onClick="showMenu"/><![CDATA[
+
         android:text="Menu" />
 
+    ]]>
     </LinearLayout>
 
 </RelativeLayout>

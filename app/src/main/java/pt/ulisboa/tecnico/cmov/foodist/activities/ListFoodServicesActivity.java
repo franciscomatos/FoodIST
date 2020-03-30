@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -44,14 +45,13 @@ public class ListFoodServicesActivity extends AppCompatActivity {
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            //TODO: Step 4 of 4: Finally call getTag() on the view.
-            // This viewHolder will have all required values.
             RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
             int position = viewHolder.getAdapterPosition();
             FoodService foodService = listFoodServices.get(position);
             Intent intent = new Intent(ListFoodServicesActivity.this, FoodServiceActivity.class);
             intent.putExtra("foodService", foodService.getName());
-
+            TextView ETA = view.findViewById(R.id.ETA);
+            intent.putExtra("duration", ETA.getText());
             //Toast.makeText(ListFoodServicesActivity.this, "You Clicked: " + foodService.getName(), Toast.LENGTH_SHORT).show();
             startActivity(intent);
         }
@@ -76,37 +76,12 @@ public class ListFoodServicesActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                global.setLatitude(location.getLatitude());
-                global.setLongitude(location.getLongitude());
-                Log.i("Location: ", "long-lat" + global.getLongitude() + "-" + global.getLatitude());
-
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        };
-
-
-        getLocation2();
-
         getCampus();
+
+        if (global.getCampus() != "Select a campus") {
+            fetchData process = new fetchData(this, global);
+            process.execute();
+        }
 
         ListFoodServicesActivity listFoodServicesActivity = this;
         Spinner dropdown = findViewById(R.id.campus);
@@ -115,7 +90,7 @@ public class ListFoodServicesActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 String newCampus = dropdown.getSelectedItem().toString();
                 if (global.getCampus() != newCampus ) {
-                    setCampus(newCampus);
+                    global.setCampus(newCampus);
                     getLocation2();
                     fetchData process = new fetchData(listFoodServicesActivity, global);
                     process.execute();
@@ -133,6 +108,27 @@ public class ListFoodServicesActivity extends AppCompatActivity {
         updateSpinner(global.getCampus(), dropdown);
 
     }
+    
+    public void getCampus() { //TODO change numbers to a class with min/max coordinates
+        GlobalClass global = (GlobalClass) getApplicationContext();
+        double latitude = global.getLatitude();
+        double longitude = global.getLatitude();
+        if (global.getAlamedaLatitude()[0] < latitude && latitude < global.getAlamedaLatitude()[1]) {
+            if (global.getAlamedaLongitude()[0] < longitude && longitude < global.getAlamedaLongitude()[1]) {
+                global.setCampus("Alameda");
+                Log.i("CAMPUS", global.getCampus());
+
+            }
+        } else if (global.getTagusLatitude()[0] < latitude && latitude < global.getTagusLatitude()[1]) {
+            if (global.getTagusLongitude()[0] < longitude && longitude < global.getTagusLongitude()[1]) {
+                global.setCampus("Taguspark");
+
+            }
+        } else { // keep the original
+            return;
+        }
+    }
+
 
     private void getLocation2() {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -145,15 +141,7 @@ public class ListFoodServicesActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates("gps", 60000, 50, locationListener);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
-            switch (requestCode) {
-                case 10:
-                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        getLocation2();
-                    }
-            }
-    }
+
 
     private void updateSpinner(String campus, Spinner dropdown) {
         String[] items;
@@ -166,66 +154,6 @@ public class ListFoodServicesActivity extends AppCompatActivity {
         dropdown.setAdapter(adapter);
     }
 
-    public void setCampus(String campus) {
-        if (campus == "Alameda") {
-            global.setCampus("Alameda");
-            global.setOtherCampus("Taguspark");
-        } else if (campus == "Taguspark") {
-            global.setCampus("Taguspark");
-            global.setOtherCampus("Alameda");
-        }
-
-    }
-
-    public void getCampus() { //TODO change numbers to a class with min/max coordinates
-        double latitude = global.getLatitude();
-        double longitude = global.getLatitude();
-        if (global.getAlamedaLatitude()[0] < latitude && latitude < global.getAlamedaLatitude()[1]) {
-            if (global.getAlamedaLongitude()[0] < longitude && longitude < global.getAlamedaLongitude()[1]) {
-                setCampus("Alameda");
-            }
-        } else if (global.getTagusLatitude()[0] < latitude && latitude < global.getTagusLatitude()[1]) {
-            if (global.getTagusLongitude()[0] < longitude && longitude < global.getTagusLongitude()[1]) {
-                setCampus("Taguspark");
-            }
-        } else { // keep the original
-            return;
-        }
-    }
-
-
-    public void getLocation() {
-        LocationManager mLocationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        // Location location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
-        Location location = getLastKnownLocation();
-        global.setLatitude(location.getLatitude());
-        global.setLongitude(location.getLongitude());
-        //Log.i("Location: ", "long-lat" + global.getLongitude() + "-" + global.getLatitude());
-    }
-
-    private Location getLastKnownLocation() {
-        LocationManager mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
-        List<String> providers = mLocationManager.getProviders(true);
-        Location bestLocation = null;
-        for (String provider : providers) {
-            Log.i("MYLOGS", provider);
-            Location l = mLocationManager.getLastKnownLocation(provider);
-            if (l == null) {
-                Log.i("MYLOGS", provider + " null");
-
-                continue;
-            }
-            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                // Found best last known location: %s", l);
-                bestLocation = l;
-            }
-        }
-        return bestLocation;
-    }
 
     public void setView(String data) {
 

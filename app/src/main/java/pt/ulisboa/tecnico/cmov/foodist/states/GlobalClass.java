@@ -51,6 +51,11 @@ public class GlobalClass extends Application {
     }
     public void setCampus(String campus) {
         this.CAMPUS = campus;
+        if (campus == "Alameda") {
+            this.OTHERCAMPUS = "Taguspark";
+        } else {
+            this.OTHERCAMPUS = "Alameda";
+        }
     }
 
     public String getOtherCampus() {
