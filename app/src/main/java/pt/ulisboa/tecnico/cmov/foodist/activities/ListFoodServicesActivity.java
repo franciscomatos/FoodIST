@@ -75,6 +75,33 @@ public class ListFoodServicesActivity extends AppCompatActivity {
         this.global = (GlobalClass) getApplicationContext();
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+                global.setLatitude(location.getLatitude());
+                global.setLongitude(location.getLongitude());
+                Log.i("Location: ", "long-lat" + global.getLongitude() + "-" + global.getLatitude());
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        };
 
         getCampus();
 
@@ -108,7 +135,7 @@ public class ListFoodServicesActivity extends AppCompatActivity {
         updateSpinner(global.getCampus(), dropdown);
 
     }
-    
+
     public void getCampus() { //TODO change numbers to a class with min/max coordinates
         GlobalClass global = (GlobalClass) getApplicationContext();
         double latitude = global.getLatitude();
@@ -140,6 +167,17 @@ public class ListFoodServicesActivity extends AppCompatActivity {
         }
         locationManager.requestLocationUpdates("gps", 60000, 50, locationListener);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        switch (requestCode) {
+            case 10:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getLocation2();
+                }
+        }
+    }
+
 
 
 
