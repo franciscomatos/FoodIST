@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.FoodServiceActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="100dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:orientation="vertical"
+        android:paddingTop="10dp"><![CDATA[
+
+        android:text="Info" />
+
+
+
+        ]]>
+
+        <LinearLayout
+            android:id="@+id/info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:id="@+id/service_photo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_weight="0"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/service_photo"
+                android:padding="10dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_restaurant" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:padding="3dp"
+                    android:text="@string/service_name"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/openingHour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="3dp"
+                        android:text="@string/opening_hour"
+                        android:textColor="#FFFFFF" />
+
+                    <TextView
+                        android:id="@+id/is_open"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:padding="3dp"
+                        android:text="@string/opening_hour"
+                        android:textColor="#FFFFFF" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/ETA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:text="@string/distance"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+        </LinearLayout><![CDATA[
+
+        android:text="Map" />
+
+        ]]>
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="260dp" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/colorPrimary"
+            android:text="View Menu"
+            android:textColor="#FFFFFF"
+            android:onClick="showMenu"/><![CDATA[
+
+        android:text="Menu" />
+
+    ]]>
+    </LinearLayout>
+
+</RelativeLayout>
