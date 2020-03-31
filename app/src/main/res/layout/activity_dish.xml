@@ -130,7 +130,8 @@
             android:id="@+id/submitPhotoButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit Photo" />
+            android:text="Submit Photo"
+            android:onClick="goToAddPictureActivity"/>
     </LinearLayout>
 
 </RelativeLayout>

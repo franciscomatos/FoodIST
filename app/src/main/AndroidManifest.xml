@@ -55,7 +55,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".AddPictureActivity"/>
+        <activity android:name=".activities.AddPictureActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -1,9 +1,10 @@
-package pt.ulisboa.tecnico.cmov.foodist;
+package pt.ulisboa.tecnico.cmov.foodist.activities;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +27,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import pt.ulisboa.tecnico.cmov.foodist.R;
+
 public class AddPictureActivity extends AppCompatActivity {
 	//TODO: fix rotation, (save the image views)
 
@@ -32,12 +36,22 @@ public class AddPictureActivity extends AppCompatActivity {
 	static final int REQUEST_GET_PHOTO = 2;
 	private ImageView imageView;
 	private String currentPhotoPath;
+	private Button postButton;
+	private String dishName, category, price;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_picture);
 		imageView = findViewById(R.id.image_view);
+		postButton = findViewById(R.id.postButton);
+		postButton.setEnabled(false);
+
+		Intent intent = getIntent();
+		dishName = intent.getStringExtra("name");
+		category = intent.getStringExtra("category");
+		price = intent.getStringExtra("price");
+
 	}
 	//event handlers
 	public void takePictureClick(View view) {
@@ -47,6 +61,15 @@ public class AddPictureActivity extends AppCompatActivity {
 	public void importPictureClick(View view) {
 		//TODO: check if device has camera
 		dispatchImportPictureIntent();
+	}
+
+	public void addPictureToMenu(View v) {
+		// MISSING: SEND PICTURE TO SERVER
+		Intent intent = new Intent(AddPictureActivity.this, DishActivity.class);
+		intent.putExtra("name", dishName);
+		intent.putExtra("category", category);
+		intent.putExtra("price", price);
+		startActivity(intent);
 	}
 
 	private void dispatchImportPictureIntent() {
@@ -136,12 +159,13 @@ public class AddPictureActivity extends AppCompatActivity {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data){
-		if(resultCode == Activity.RESULT_OK)
-			switch (requestCode){
+		if(resultCode == Activity.RESULT_OK) {
+			switch (requestCode) {
 				case REQUEST_GET_PHOTO:
 					Uri uri = data.getData();
 					imageView.setImageURI(uri);
-					savePicture(imageView,uri);
+					savePicture(imageView, uri);
+
 					//TODO: save the images in server (use some kind of AsyncTask)
 					break;
 				case REQUEST_TAKE_PHOTO:
@@ -149,8 +173,12 @@ public class AddPictureActivity extends AppCompatActivity {
 					//TODO: save the images in server (use some kind of AsyncTask)
 					break;
 				default:
-					Log.d("onActivityResult","not a valid request code");
+					Log.d("onActivityResult", "not a valid request code");
 			}
+
+			postButton.setEnabled(true);
+			postButton.setTextColor(Color.WHITE);
+		}
 	}
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults){
