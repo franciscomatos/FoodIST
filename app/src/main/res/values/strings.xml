@@ -23,4 +23,5 @@
     <string name="import_picture">Import Picture</string>
     <string name="submit_photo">Submit photo</string>
     <string name="done">Done</string>
+    <string name="details">Details</string>
 </resources>

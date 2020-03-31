@@ -111,7 +111,7 @@ public class MenuActivity extends AppCompatActivity {
             } else {
                 LinearLayout rightLayout = tr.findViewById(R.id.menuRightDish);
                 rightLayout.removeAllViews();
-                rightLayout.setBackgroundColor(Color.parseColor("#EEEEEE"));
+                rightLayout.setBackgroundResource(0);
             }
 
 
