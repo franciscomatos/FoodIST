@@ -2,13 +2,35 @@ package pt.ulisboa.tecnico.cmov.foodist.domain;
 
 public class Dish {
 
+    public enum DishCategory
+    {
+        // This will call enum constructor with one
+        // String argument
+        FISH("Fish"), MEAT("Meat"), VEGETARIAN("Vegetarian"), VEGAN("Vegan");
+
+        // declaring private variable for getting values
+        private String category;
+
+        // getter method
+        public String getCategory()
+        {
+            return this.category;
+        }
+
+        // enum constructor - cannot be public or protected
+        private DishCategory(String category)
+        {
+            this.category = category;
+        }
+    }
+
     public static final int SCALE = 1000;
 
     private String name;
     private Double price;
-    private String category;
+    private DishCategory category;
 
-    public Dish(String name, Double price, String category) {
+    public Dish(String name, Double price, DishCategory category) {
         this.name = name;
         this.price = price;
         this.category = category;
@@ -28,8 +50,9 @@ public class Dish {
         return Math.round(getPrice() * SCALE);
     }
 
-    public String getCategory() {
-        return this.category;
+    public DishCategory getCategory() { return this.category; }
+    public String getCategoryString() {
+        return this.category.getCategory();
     }
 
     /* setters*/
@@ -42,7 +65,7 @@ public class Dish {
         this.price = price;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(DishCategory category) {
         this.category = category;
     }
 }
