@@ -32,8 +32,8 @@ public class GlobalClass extends Application {
     }};
 
     //FIXME:should be defined by the user
-    private String username;
-    private String password;
+    private String username = "pedro";
+    private String password = "123";
 
 
     public ArrayList<FoodService> getCampusFoodServices(String campus) {
