@@ -20,7 +20,12 @@ public class Menu {
     public List<Dish> getDishList() {
         return this.dishList;
     }
+    public void clear(){ //FIXME: dunno how to deal with the constraints
+        dishList.clear();
+        constraintDishList.clear();
+        //constraints.clear();
 
+    }
     public List<Dish> getConstraintDishList() { return this.constraintDishList; }
 
     public Dish getDish(int index) {

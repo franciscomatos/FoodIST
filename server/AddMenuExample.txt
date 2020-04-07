@@ -7,5 +7,5 @@ content-type: application/json
     "price":        "1.50",
     "username": "pedro",
     "password": "123",
-    "dietry":   ["false","false","false","false"]
+    "dietary":   "Meat"
 }

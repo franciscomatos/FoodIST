@@ -32,10 +32,10 @@ var SIZE = 10
 
 //Rest API structs
 type RegisterRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Level    string `json:"level"`  //FIXME: verify field
-	Dietry   []bool `json:"dietry"` //FIXME: Test for size!
+	Username string   `json:"username"`
+	Password string   `json:"password"`
+	Level    string   `json:"level"`   //FIXME: verify field
+	Dietary  []string `json:"dietary"` //FIXME: Test for size!
 }
 
 type RegisterResponse struct {
@@ -66,7 +66,7 @@ type AddMenuRequest struct {
 	Price       string `json:"price"`
 	Username    string `json:"username"`
 	Password    string `json:"password"`
-	Dietry      []bool `json:"dietry"`
+	Dietary     string `json:"dietary"`
 }
 
 type AddMenuResponse struct {
@@ -113,7 +113,7 @@ type GetMenusResponse struct {
 type MenusInterface struct {
 	Name    string  `json:"name"`
 	Price   float64 `json:"price"`
-	Dietry  []bool  `json:"dietry"`
+	Dietary string  `json:"dietary"`
 	Ratings float64 `json:"ratings"`
 }
 
@@ -170,7 +170,7 @@ type Canteen struct {
 type Menu struct {
 	Price   float64 //should work?
 	Gallery []Image //slice of images
-	Dietry  []bool
+	Dietary string
 	Ratings map[string]int //TODO: Update this part with more info (more detailed breakdown of user ratings (e.g.histogram))
 }
 
@@ -182,7 +182,7 @@ type Image struct {
 type User struct {
 	Password string
 	Level    string
-	Dietry   []bool
+	Dietary  []string
 	LoggedIn bool
 }
 
@@ -266,7 +266,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	users[userRequest.Username] = &User{Password: userRequest.Password,
 		Level:    userRequest.Level,
-		Dietry:   userRequest.Dietry,
+		Dietary:  userRequest.Dietary,
 		LoggedIn: false}
 	//FIXME: This is probably not needed
 	response := RegisterResponse{
@@ -348,7 +348,7 @@ func addMenuHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if s, err := strconv.ParseFloat(userRequest.Price, 64); err == nil {
-		canteen.Menus[userRequest.NameMenu] = &Menu{Price: s, Dietry: userRequest.Dietry, Ratings: make(map[string]int)}
+		canteen.Menus[userRequest.NameMenu] = &Menu{Price: s, Dietary: userRequest.Dietary, Ratings: make(map[string]int)}
 	} else {
 		log.Println("[ERROR] Bad Price value")
 		http.Error(w, "Bad Price value", http.StatusBadRequest)
@@ -488,7 +488,7 @@ func getMenusHandler(w http.ResponseWriter, r *http.Request) {
 	var menus []MenusInterface
 
 	for key, value := range canteen.Menus {
-
+		log.Println("[DEBUG] ", value)
 		sum := 0
 		count := 0
 		for _, rating := range value.Ratings {
@@ -499,13 +499,13 @@ func getMenusHandler(w http.ResponseWriter, r *http.Request) {
 			menus = append(menus, MenusInterface{
 				Price:   value.Price,
 				Name:    key,
-				Dietry:  value.Dietry,
+				Dietary: value.Dietary,
 				Ratings: 0})
 		} else {
 			menus = append(menus, MenusInterface{
 				Price:   value.Price,
 				Name:    key,
-				Dietry:  value.Dietry,
+				Dietary: value.Dietary,
 				Ratings: float64(sum) / float64(count)})
 		}
 	}
@@ -557,7 +557,7 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 /*
 	Name    string  `json:"name"`
 	Price   float64 `json:"price"`
-	Dietry  []bool  `json:"dietry"`
+	Dietary  []bool  `json:"dietary"`
 	Ratings float64 `json:"ratings"`
 */
 

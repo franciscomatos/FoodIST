@@ -27,12 +27,14 @@ import pt.ulisboa.tecnico.cmov.foodist.PopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+import pt.ulisboa.tecnico.cmov.foodist.fetchMenu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class MenuActivity extends AppCompatActivity {
 
     private TableLayout tableLayout;
     private Menu menuState;
+    private String foodServiceName;
     private List<Boolean> checkedBoxes = Arrays.asList(true, true, true, true);
 
     @Override
@@ -43,27 +45,28 @@ public class MenuActivity extends AppCompatActivity {
         FrameLayout background = findViewById(R.id.background);
         background.getForeground().setAlpha(0); // restore
         GlobalClass global = (GlobalClass) getApplicationContext();
-        String foodServiceName = getIntent().getStringExtra("foodService");
+        foodServiceName = getIntent().getStringExtra("foodService");
         Log.i("MYLOGS", foodServiceName);
-        this.menuState = global.getFoodService(foodServiceName).getMenu();
+        menuState = global.getFoodService(foodServiceName).getMenu();
 
         Log.i("MenuActivity", "got Context");
 /*
         for(int i = 0; i < 6; i++)
             menuState.addDish(new Dish("Dish " + i, 5.5, "Category " + i));
-*/
+
         menuState.addDish(new Dish("Dish Fish", 5.5, Dish.DishCategory.FISH));
         menuState.addDish(new Dish("Dish Meat", 5.5, Dish.DishCategory.MEAT));
         menuState.addDish(new Dish("Dish Vegetarian", 5.5, Dish.DishCategory.VEGETARIAN));
         menuState.addDish(new Dish("Dish Vegan", 5.5, Dish.DishCategory.VEGAN));
-
+*/
         Log.i("MenuActivity", "added Dishes");
 
         this.tableLayout = findViewById(R.id.menuTable);
 
         Log.i("MenuActivity", "found Table");
-
-        updateDishes();
+        menuState.clear();
+        fetchMenu process = new fetchMenu(this, menuState, foodServiceName,global);
+        process.execute();
 
     }
 

@@ -3,7 +3,7 @@ content-type: application/json
 
 {
     "namemenu":     "Tosta",
-    "namecanteen":  "Monica",
+    "namecanteen":  "CIVIL",
     "nameimage":    "asdsadsa",
     "username": "pedro",
     "password": "123",

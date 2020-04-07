@@ -96,7 +96,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             i = Instant.from(ta);
             Date close = Date.from(i);
 
-            holder.openingHour.setText(presDateFormat.format(open) + " - " + presDateFormat.format(close));
+            holder.openingHour.setText(String.format("%s - %s", presDateFormat.format(open), presDateFormat.format(close)));
 
             try {
                 holder.ETA.setText(getTime((int) durations.getDouble(position)));
@@ -109,10 +109,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
 
             if (current.compareTo(close) < 0) {
-                holder.status.setText("Open");
+                holder.status.setText(R.string.Open);
                 holder.status.setTextColor(0xFF00AA00);
             } else {
-                holder.status.setText("Closed");
+                holder.status.setText(R.string.Closed);
                 holder.status.setTextColor(Color.RED);
             }
 

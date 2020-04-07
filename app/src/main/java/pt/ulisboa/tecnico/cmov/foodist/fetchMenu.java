@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pt.ulisboa.tecnico.cmov.foodist.activities.ListFoodServicesActivity;
+import pt.ulisboa.tecnico.cmov.foodist.activities.MenuActivity;
+import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
@@ -29,17 +31,20 @@ import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class fetchMenu extends AsyncTask<Void, Void, Void> {
 
-	private ListFoodServicesActivity listActivity;
+	private MenuActivity menuActivity;
 
 		private String data = "";
 		private GlobalClass global;
 		private String URL ;
-		private Map<String, FoodService> newFoodServices = new  HashMap<String, FoodService>();
+		private String foodService ;
+		private Menu menu;
 
-	public fetchMenu(ListFoodServicesActivity list, GlobalClass global) {
+	public fetchMenu(MenuActivity activity, Menu m, String foodServiceName, GlobalClass global) {
 			this.global = global;
-			this.listActivity = list;
-			this.URL =  global.getURL() + "/getCanteens";
+			this.URL =  global.getURL() + "/getMenus";
+			this.menu = m;
+			this.foodService = foodServiceName;
+			this.menuActivity =  activity;
 	}
 
 	@Override
@@ -61,12 +66,11 @@ public class fetchMenu extends AsyncTask<Void, Void, Void> {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
 			writer.write("{\"username\":\"" + global.getUsername() + "\"," +
 					"\"password\":\"" + global.getPassword() +"\"," +
-					"\"campus\":\""+ global.getCampus()+"\"}");
+					"\"canteen\":\""+foodService+"\"}");
 			writer.flush();
 			writer.close();
 
 			httpURLConnection.connect();
-			Log.i("RESPONSE2", httpURLConnection.getResponseMessage());
 			InputStream inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 			String line="";
@@ -74,7 +78,6 @@ public class fetchMenu extends AsyncTask<Void, Void, Void> {
 				line = bufferedReader.readLine();
 				data = data+line;
 			}
-
 		} catch (MalformedURLException e) {
 			Log.e("ERROR", ": couldnt connect1");
 			e.printStackTrace();
@@ -83,40 +86,40 @@ public class fetchMenu extends AsyncTask<Void, Void, Void> {
 			Log.e("ERROR", ": couldnt connect2");
 			e.printStackTrace();
 		}
-
-		//FIXME: currently does not parse current queue
+		Log.i("FETCHMENU", this.data);
 		//parse the result and add it to the GlobalClass
+		//TODO: parse rating
 		try {
 			JSONObject response = new JSONObject(data);
 			if(!response.getString("status").equals("OK"))
-				throw new JSONException("Json wasnt ok");
+				throw new JSONException("Json wasn't ok");
 
-			JSONArray foodServices = response.getJSONArray("canteens");
-			for(int i=0;i<foodServices.length();i++){
-				JSONObject canteen = foodServices.getJSONObject(i);
-				JSONObject openhours = canteen.getJSONObject("openhours");
-				JSONObject coords = canteen.getJSONObject("coords");
+			JSONArray dishes = response.getJSONArray("menus");
 
-				newFoodServices.put(canteen.getString("name"),new FoodService(
-											canteen.getString("name"),
-											canteen.getString("type"),
-											openhours.getString("open"),
-											openhours.getString("close"),
-											coords.getDouble("lat"),
-											coords.getDouble("lng"),
-											new Menu()
-									));
+			for(int i = 0 ; i < dishes.length() ; i++) {
+
+				JSONObject dish = dishes.getJSONObject(i);
+				this.menu.addDish(
+						new Dish(dish.getString("name"),
+								dish.getDouble("price"),
+								Dish.DishCategory.valueOf(dish.getString("dietary").toUpperCase()))
+				);
 			}
-
 		} catch (JSONException e) {
 			Log.e("ERROR", ": Failed to parse the json");
+			e.printStackTrace();
+		}catch (Exception e) {
+			Log.e("ERROR", data);
+			Log.e("ERROR", Dish.DishCategory.MEAT.getCategory());
 			e.printStackTrace();
 		}
 		return null;
 	}
 
 	protected void onPostExecute(Void aVoid) {
+		//will update the activity
 		Log.i("FETCHMENU", this.data);
+		menuActivity.updateDishes();
 	}
 
 }

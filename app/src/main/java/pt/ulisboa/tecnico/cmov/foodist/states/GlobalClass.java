@@ -15,6 +15,7 @@ public class GlobalClass extends Application {
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
+    private String URL = "http://192.168.1.70:8000";
 
    // private FusedLocationProviderClient fusedLocationClient;
 
@@ -138,5 +139,9 @@ public class GlobalClass extends Application {
 
     public FoodService getFoodService(String name) {
         return foodServices.get(name);
+    }
+
+    public String getURL() {
+        return this.URL;
     }
 }

@@ -25,4 +25,6 @@
     <string name="done">Done</string>
     <string name="details">Details</string>
     <string name="dietary_constraints">Dietary Constraints</string>
+    <string name="Closed">Closed</string>
+    <string name="Open">Open</string>
 </resources>
