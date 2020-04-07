@@ -563,27 +563,39 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 
 // INITIALIZATION FUNCTIONS
 
-func addPlace(name string, typ string, coord Coordinates, times map[string]TimeInterval) {
+func addPlace(name string, typ string, coord Coordinates, times map[string]TimeInterval, campus string) {
 	places[name] = &Canteen{Menus: make(map[string]*Menu),
 		Type:      typ,
 		Location:  coord,
 		OpenHours: times,
-		Campus:    "Alameda"}
+		Campus:    campus}
 }
 
 func initPlaces() { // initiate more if needed
 	timeLayout := "15:04:05"
 	MonicaOpenHours, _ := time.Parse(timeLayout, "08:00:00")
 	MonicaCloseHours, _ := time.Parse(timeLayout, "17:00:00")
+	AbilioOpenHours, _ := time.Parse(timeLayout, "10:00:00")
+	AbilioCloseHours, _ := time.Parse(timeLayout, "20:00:00")
 
 	openingHours := map[string]TimeInterval{
+		GeneralPublic: TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+		Student:       TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+		Professor:     TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+		Researcher:    TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+		Staff:         TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours}}
+
+	openingHoursnd := map[string]TimeInterval{
 		GeneralPublic: TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
 		Student:       TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
 		Professor:     TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
 		Researcher:    TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
 		Staff:         TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours}}
 
-	addPlace("Monica", "BAR", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHours)
+	addPlace("CIVIL", "BAR", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHours, "Alamenda")
+	addPlace("AE", "RESTAURANT", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHoursnd, "Alamenda")
+	addPlace("GreenBar Tagus", "BAR", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHours, "Taguspark")
+	addPlace("Cafetaria", "RESTAURANT", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHoursnd, "Taguspark")
 }
 
 func main() {

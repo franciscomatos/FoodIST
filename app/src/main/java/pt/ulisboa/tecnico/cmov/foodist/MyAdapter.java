@@ -14,10 +14,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.temporal.TemporalAccessor;
+import  java.time.Instant;
+import java.time.format.DateTimeFormatter;
 
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 
@@ -80,39 +83,41 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         } else {
             holder.icon.setImageResource(R.drawable.coffee4);
         }
-        holder.openingHour.setText(mDataset.get(position).getOpeningHour() + " - " + mDataset.get(position).getClosingHour());
-        try {
-            holder.ETA.setText(getTime((int) durations.getDouble(position)));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
+        DateFormat presDateFormat = new SimpleDateFormat("HH:mm");
+        Date current = new Date();   // given date
 
-        Date date = new Date();   // given date
-        Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
-        calendar.setTime(date);   // assigns calendar to given date
-        int hours = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
-        int minutes = calendar.get(Calendar.MINUTE);
-        String[] openingSplit = mDataset.get(position).getOpeningHour().split(":");
-        String[] closingSplit = mDataset.get(position).getClosingHour().split(":");
-        Log.i("MYLOGS", openingSplit[0] + " " + closingSplit[0]);
-        Log.i("MYLOGS", openingSplit[1] + " " + closingSplit[1]);
-        Log.i("MYLOGS", hours + " " + minutes);
-        if (Integer.parseInt(openingSplit[0]) == hours && Integer.parseInt(openingSplit[1]) <= minutes) {
-            holder.status.setText("Open");
-            holder.status.setTextColor(0xFF00AA00);
 
-        } else if (Integer.parseInt(closingSplit[0]) == hours && Integer.parseInt(closingSplit[1]) > minutes ) {
-            holder.status.setText("Open");
-            holder.status.setTextColor(0xFF00AA00);
+            TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(mDataset.get(position).getOpeningHour());
+            Instant i = Instant.from(ta);
+            Date open = Date.from(i);
 
-        } else if( Integer.parseInt(openingSplit[0]) < hours &&
-                    Integer.parseInt(closingSplit[0]) > hours ) {
-            holder.status.setText("Open");
-            holder.status.setTextColor(0xFF00AA00);
-        } else {
-            holder.status.setText("Closed");
-            holder.status.setTextColor(Color.RED);
-        }
+            ta = DateTimeFormatter.ISO_INSTANT.parse(mDataset.get(position).getClosingHour());
+            i = Instant.from(ta);
+            Date close = Date.from(i);
+
+            holder.openingHour.setText(presDateFormat.format(open) + " - " + presDateFormat.format(close));
+
+            try {
+                holder.ETA.setText(getTime((int) durations.getDouble(position)));
+            } catch (JSONException e) {
+                Log.e("MYLOGS", "could not correctly parse duration json");
+                e.printStackTrace();
+            }
+
+            Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
+            Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
+
+            if (current.compareTo(close) < 0) {
+                holder.status.setText("Open");
+                holder.status.setTextColor(0xFF00AA00);
+            } else {
+                holder.status.setText("Closed");
+                holder.status.setTextColor(Color.RED);
+            }
+
+
+
     }
 
     private String getTime(int duration) {
