@@ -130,6 +130,7 @@ type GetCanteensResponse struct {
 type CanteenInterface struct {
 	Coord     Coordinates  `json:"coords"`
 	Name      string       `json:"name"`
+	Type      string       `json:"type"`
 	OpenHours TimeInterval `json:"openhours"`
 	Queue     int          `json:"queue"`
 }
@@ -163,6 +164,7 @@ type Canteen struct {
 	OpenHours map[string]TimeInterval
 	Queue     []User
 	Campus    string
+	Type      string
 }
 
 type Menu struct {
@@ -449,6 +451,7 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 			canteens = append(canteens, CanteenInterface{
 				Coord:     value.Location,
 				Name:      key,
+				Type:      value.Type,
 				OpenHours: value.OpenHours[user.Level],
 				Queue:     len(value.Queue)})
 		}
@@ -560,8 +563,9 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 
 // INITIALIZATION FUNCTIONS
 
-func addPlace(name string, coord Coordinates, times map[string]TimeInterval) {
+func addPlace(name string, typ string, coord Coordinates, times map[string]TimeInterval) {
 	places[name] = &Canteen{Menus: make(map[string]*Menu),
+		Type:      typ,
 		Location:  coord,
 		OpenHours: times,
 		Campus:    "Alameda"}
@@ -579,7 +583,7 @@ func initPlaces() { // initiate more if needed
 		Researcher:    TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
 		Staff:         TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours}}
 
-	addPlace("Monica", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHours)
+	addPlace("Monica", "BAR", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHours)
 }
 
 func main() {
