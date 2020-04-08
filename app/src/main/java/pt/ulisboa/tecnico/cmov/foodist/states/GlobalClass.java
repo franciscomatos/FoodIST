@@ -17,7 +17,7 @@ public class GlobalClass extends Application {
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
-    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+   // WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
    // private FusedLocationProviderClient fusedLocationClient;
 
     private double[] AlamedaLatitude = new double[]{38.735740, 38.739740 };

@@ -19,5 +19,6 @@
     <string name="vegan_category">Vegan</string>
     <string name="cancel">Cancel</string>
     <string name="ok">Ok</string>
+    <string name="port">10001</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

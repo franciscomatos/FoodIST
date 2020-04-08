@@ -5,11 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -20,15 +18,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.maps.android.geojson.GeoJsonLayer;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,7 +27,6 @@ import java.util.GregorianCalendar;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
-import pt.ulisboa.tecnico.cmov.foodist.fetchMap;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class FoodServiceActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -55,8 +44,6 @@ public class FoodServiceActivity extends AppCompatActivity implements OnMapReady
         GlobalClass global = (GlobalClass) getApplicationContext();
         this.foodService = global.getFoodService(getIntent().getStringExtra("foodService"));
         this.menuState = this.foodService.getMenu();
-        fetchMap process = new fetchMap(this, getStartEnd() );
-        process.execute();
         mapView = (MapView) findViewById(R.id.map);
         mapView.setClickable(false);
         mapView.onCreate(savedInstanceState);
@@ -115,32 +102,6 @@ public class FoodServiceActivity extends AppCompatActivity implements OnMapReady
         }
     }
 
-
-
-    private ArrayList<String> getStartEnd() {
-        GlobalClass global = (GlobalClass) getApplicationContext();
-
-        String sourceLatitude = global.getLatitude() + "";
-        String sourceLongitude = global.getLongitude() + "";
-        String targetLatitude = this.foodService.getLatitude() + "";
-        String targetLongitude = this.foodService.getLongitude() + "";
-        ArrayList<String> startEnd = new ArrayList<String>();
-        startEnd.add(sourceLongitude);
-        startEnd.add(sourceLatitude);
-        startEnd.add(targetLongitude);
-        startEnd.add(targetLatitude);
-        return startEnd;
-    }
-
-    public void setRoute(String response) {
-/*
-        MapView map = (MapView) findViewById(R.id.map);
-        map.getMapAsync(FoodServiceActivity.this);
-
-        JsonParser parser = new JsonParser();
-        GeoJsonLayer layer = new GeoJsonLayer(map, (JsonElement) parser.parse(route));*/
-        this.route = response;
-    }
 
     @Override
     public void onMapReady(GoogleMap map) {

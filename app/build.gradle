@@ -49,4 +49,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.synnapps:carouselview:0.1.4'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation project(path: ':Termite-WifiP2P-API')
+
 }
