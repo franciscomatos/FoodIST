@@ -29,6 +29,7 @@ import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.fetchMenu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
+import pt.ulisboa.tecnico.cmov.foodist.uploadDish;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -180,22 +181,12 @@ public class MenuActivity extends AppCompatActivity {
                 String dishCategory = dishCategoryButton.getText().toString();
                 Dish.DishCategory category = null;
 
-                switch (dishCategory) {
-                    case "Fish":
-                        category = Dish.DishCategory.FISH;
-                        break;
-                    case "Meat":
-                        category = Dish.DishCategory.MEAT;
-                        break;
-                    case "Vegetarian":
-                        category = Dish.DishCategory.VEGETARIAN;
-                        break;
-                    case "Vegan":
-                        category = Dish.DishCategory.VEGAN;
-                        break;
-                    default:
-                        break;
-                }
+                //better than the switch case
+                category = Dish.DishCategory.valueOf(dishCategory.toUpperCase());
+
+                //add the async task here
+                uploadDish process = new uploadDish(dishPrice,dishName, dishCategory, foodServiceName, (GlobalClass) getApplicationContext());
+                process.execute();
 
                 MenuActivity.this.menuState.addDish(new Dish(dishName, dishPrice, category));
                 MenuActivity.this.updateDishes();
