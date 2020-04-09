@@ -152,6 +152,11 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
         mReceiver = new WifiBroadcastReceiver(this);
         registerReceiver(mReceiver, filter);
+        Intent intent = new Intent(MainActivity.this, SimWifiP2pService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        mBound = true;
+        Log.i("WIFI", "wifi on");
+
 
         //wifi on
         /*
@@ -194,17 +199,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         Button foodListButton = (Button) findViewById(R.id.foodServicesButton);
         foodListButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
-
-                Intent intent = new Intent(v.getContext(), SimWifiP2pService.class);
-                bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-                mBound = true;
-                Log.i("WIFI", "wifi on");
-
-
-                // spawn the chat server background task
-             /*   new IncommingCommTask().executeOnExecutor(
-                        AsyncTask.THREAD_POOL_EXECUTOR);
-*/
+                startActivity(new Intent(MainActivity.this, ListFoodServicesActivity.class));
             }
         });
     }
