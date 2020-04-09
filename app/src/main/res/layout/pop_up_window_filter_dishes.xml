@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:gravity="center">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/appBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.AppBarOverlay">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/colorPrimary"
+                    ads:popupTheme="@style/AppTheme.PopupOverlay">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/dietary_constraints"
+                        android:textSize="30sp"
+                        android:gravity="center_vertical"/>
+
+                </androidx.appcompat.widget.Toolbar>
+
+
+            </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:layout_marginTop="56dp"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/selectCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/select_category"
+                android:textColor="@color/black" />
+
+            <CheckBox
+                android:id="@+id/fishCheckbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/fish_category"
+                android:onClick="onCheckboxClicked"
+                android:textColor="@color/black"/>
+
+            <CheckBox
+                android:id="@+id/meatCheckbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/meat_category"
+                android:onClick="onCheckboxClicked"
+                android:textColor="@color/black"/>
+
+            <CheckBox
+                android:id="@+id/vegetarianCheckbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/vegetarian_category"
+                android:onClick="onCheckboxClicked"
+                android:textColor="@color/black"/>
+
+            <CheckBox
+                android:id="@+id/veganCheckbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/vegan_category"
+                android:onClick="onCheckboxClicked"
+                android:textColor="@color/black"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/okButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/ok" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

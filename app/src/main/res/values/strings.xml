@@ -20,5 +20,12 @@
     <string name="cancel">Cancel</string>
     <string name="ok">Ok</string>
     <string name="port">10001</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="take_picture">Take Picture</string>
+    <string name="import_picture">Import Picture</string>
+    <string name="submit_photo">Submit photo</string>
+    <string name="done">Done</string>
+    <string name="details">Details</string>
+    <string name="dietary_constraints">Dietary Constraints</string>
+    <string name="Closed">Closed</string>
+    <string name="Open">Open</string>
 </resources>

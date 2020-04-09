@@ -5,5 +5,5 @@ content-type: application/json
     "username": "pedro",
     "password": "123",
     "level":    "1",
-    "dietry":   ["false","false","false","false"]
+    "dietary":   ["Fish","Meat","Vegetarian","Vegan"]
 }

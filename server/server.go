@@ -32,10 +32,10 @@ var SIZE = 10
 
 //Rest API structs
 type RegisterRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Level    string `json:"level"`  //FIXME: verify field
-	Dietry   []bool `json:"dietry"` //FIXME: Test for size!
+	Username string   `json:"username"`
+	Password string   `json:"password"`
+	Level    string   `json:"level"`   //FIXME: verify field
+	Dietary  []string `json:"dietary"` //FIXME: Test for size!
 }
 
 type RegisterResponse struct {
@@ -66,7 +66,7 @@ type AddMenuRequest struct {
 	Price       string `json:"price"`
 	Username    string `json:"username"`
 	Password    string `json:"password"`
-	Dietry      []bool `json:"dietry"`
+	Dietary     string `json:"dietary"`
 }
 
 type AddMenuResponse struct {
@@ -113,7 +113,7 @@ type GetMenusResponse struct {
 type MenusInterface struct {
 	Name    string  `json:"name"`
 	Price   float64 `json:"price"`
-	Dietry  []bool  `json:"dietry"`
+	Dietary string  `json:"dietary"`
 	Ratings float64 `json:"ratings"`
 }
 
@@ -130,6 +130,7 @@ type GetCanteensResponse struct {
 type CanteenInterface struct {
 	Coord     Coordinates  `json:"coords"`
 	Name      string       `json:"name"`
+	Type      string       `json:"type"`
 	OpenHours TimeInterval `json:"openhours"`
 	Queue     int          `json:"queue"`
 }
@@ -163,12 +164,13 @@ type Canteen struct {
 	OpenHours map[string]TimeInterval
 	Queue     []User
 	Campus    string
+	Type      string
 }
 
 type Menu struct {
 	Price   float64 //should work?
 	Gallery []Image //slice of images
-	Dietry  []bool
+	Dietary string
 	Ratings map[string]int //TODO: Update this part with more info (more detailed breakdown of user ratings (e.g.histogram))
 }
 
@@ -180,7 +182,7 @@ type Image struct {
 type User struct {
 	Password string
 	Level    string
-	Dietry   []bool
+	Dietary  []string
 	LoggedIn bool
 }
 
@@ -264,7 +266,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	users[userRequest.Username] = &User{Password: userRequest.Password,
 		Level:    userRequest.Level,
-		Dietry:   userRequest.Dietry,
+		Dietary:  userRequest.Dietary,
 		LoggedIn: false}
 	//FIXME: This is probably not needed
 	response := RegisterResponse{
@@ -346,7 +348,7 @@ func addMenuHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if s, err := strconv.ParseFloat(userRequest.Price, 64); err == nil {
-		canteen.Menus[userRequest.NameMenu] = &Menu{Price: s, Dietry: userRequest.Dietry, Ratings: make(map[string]int)}
+		canteen.Menus[userRequest.NameMenu] = &Menu{Price: s, Dietary: userRequest.Dietary, Ratings: make(map[string]int)}
 	} else {
 		log.Println("[ERROR] Bad Price value")
 		http.Error(w, "Bad Price value", http.StatusBadRequest)
@@ -449,6 +451,7 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 			canteens = append(canteens, CanteenInterface{
 				Coord:     value.Location,
 				Name:      key,
+				Type:      value.Type,
 				OpenHours: value.OpenHours[user.Level],
 				Queue:     len(value.Queue)})
 		}
@@ -485,7 +488,7 @@ func getMenusHandler(w http.ResponseWriter, r *http.Request) {
 	var menus []MenusInterface
 
 	for key, value := range canteen.Menus {
-
+		log.Println("[DEBUG] ", value)
 		sum := 0
 		count := 0
 		for _, rating := range value.Ratings {
@@ -496,13 +499,13 @@ func getMenusHandler(w http.ResponseWriter, r *http.Request) {
 			menus = append(menus, MenusInterface{
 				Price:   value.Price,
 				Name:    key,
-				Dietry:  value.Dietry,
+				Dietary: value.Dietary,
 				Ratings: 0})
 		} else {
 			menus = append(menus, MenusInterface{
 				Price:   value.Price,
 				Name:    key,
-				Dietry:  value.Dietry,
+				Dietary: value.Dietary,
 				Ratings: float64(sum) / float64(count)})
 		}
 	}
@@ -554,32 +557,45 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 /*
 	Name    string  `json:"name"`
 	Price   float64 `json:"price"`
-	Dietry  []bool  `json:"dietry"`
+	Dietary  []bool  `json:"dietary"`
 	Ratings float64 `json:"ratings"`
 */
 
 // INITIALIZATION FUNCTIONS
 
-func addPlace(name string, coord Coordinates, times map[string]TimeInterval) {
+func addPlace(name string, typ string, coord Coordinates, times map[string]TimeInterval, campus string) {
 	places[name] = &Canteen{Menus: make(map[string]*Menu),
+		Type:      typ,
 		Location:  coord,
 		OpenHours: times,
-		Campus:    "Alameda"}
+		Campus:    campus}
 }
 
 func initPlaces() { // initiate more if needed
 	timeLayout := "15:04:05"
 	MonicaOpenHours, _ := time.Parse(timeLayout, "08:00:00")
 	MonicaCloseHours, _ := time.Parse(timeLayout, "17:00:00")
+	AbilioOpenHours, _ := time.Parse(timeLayout, "10:00:00")
+	AbilioCloseHours, _ := time.Parse(timeLayout, "20:00:00")
 
 	openingHours := map[string]TimeInterval{
+		GeneralPublic: TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+		Student:       TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+		Professor:     TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+		Researcher:    TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+		Staff:         TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours}}
+
+	openingHoursnd := map[string]TimeInterval{
 		GeneralPublic: TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
 		Student:       TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
 		Professor:     TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
 		Researcher:    TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
 		Staff:         TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours}}
 
-	addPlace("Monica", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHours)
+	addPlace("CIVIL", "BAR", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHours, "Alamenda")
+	addPlace("AE", "RESTAURANT", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHoursnd, "Alamenda")
+	addPlace("GreenBar Tagus", "BAR", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHours, "Taguspark")
+	addPlace("Cafetaria", "RESTAURANT", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHoursnd, "Taguspark")
 }
 
 func main() {

@@ -19,6 +19,20 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.maps.android.geojson.GeoJsonLayer;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -71,35 +85,34 @@ public class FoodServiceActivity extends AppCompatActivity implements OnMapReady
         } else {
             photo.setImageResource(R.drawable.coffee4);
         }
-        openingHour.setText(foodService.getOpeningHour() + " - " + foodService.getClosingHour());
+
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
+        DateFormat presDateFormat = new SimpleDateFormat("HH:mm");
+        Date current = new Date();   // given date
+
+        TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(foodService.getOpeningHour());
+        Instant i = Instant.from(ta);
+        Date open = Date.from(i);
+
+        ta = DateTimeFormatter.ISO_INSTANT.parse(foodService.getClosingHour());
+        i = Instant.from(ta);
+        Date close = Date.from(i);
+
+        openingHour.setText(presDateFormat.format(open) + " - " + presDateFormat.format(close));
         distance.setText(duration);
 
-        Date date = new Date();   // given date
-        Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
-        calendar.setTime(date);   // assigns calendar to given date
-        int hours = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
-        int minutes = calendar.get(Calendar.MINUTE);
-        String[] openingSplit = foodService.getOpeningHour().split(":");
-        String[] closingSplit = foodService.getClosingHour().split(":");
-        Log.i("MYLOGS", openingSplit[0] + " " + closingSplit[0]);
-        Log.i("MYLOGS", openingSplit[1] + " " + closingSplit[1]);
-        Log.i("MYLOGS", hours + " " + minutes);
-        if (Integer.parseInt(openingSplit[0]) == hours && Integer.parseInt(openingSplit[1]) <= minutes) {
-            is_open.setText("Open");
-            is_open.setTextColor(0xFF00AA00);
+        Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
+        Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
 
-        } else if (Integer.parseInt(closingSplit[0]) == hours && Integer.parseInt(closingSplit[1]) > minutes ) {
-            is_open.setText("Open");
-            is_open.setTextColor(0xFF00AA00);
-
-        } else if( Integer.parseInt(openingSplit[0]) < hours &&
-                Integer.parseInt(closingSplit[0]) > hours ) {
+        if (current.compareTo(close) < 0) {
             is_open.setText("Open");
             is_open.setTextColor(0xFF00AA00);
         } else {
             is_open.setText("Closed");
             is_open.setTextColor(Color.RED);
         }
+
     }
 
 

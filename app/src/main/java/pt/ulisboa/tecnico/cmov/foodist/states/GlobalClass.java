@@ -17,8 +17,7 @@ public class GlobalClass extends Application {
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
-   // WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-   // private FusedLocationProviderClient fusedLocationClient;
+    private String URL = "http://192.168.1.70:8000";
 
     private double[] AlamedaLatitude = new double[]{38.735740, 38.739740 };
     private double[] AlamedaLongitude = new double[]{38.735740, 38.739740 };
@@ -26,12 +25,16 @@ public class GlobalClass extends Application {
     private double[] TagusLongitude = new double[]{38.735740, 38.739740 };
     private ArrayList<FoodService> listFoodServices;
     private Map<String, FoodService> foodServices = new HashMap<String, FoodService>(){{
-        put("CIVIL", new FoodService("CIVIL", "RESTAURANT", "10:00", "20:00", 38.737069, -9.140017, new Menu()));
-        put("ABILIO", new FoodService("ABILIO","BAR", "10:00", "20:00", 38.737135, -9.137655, new Menu()));
-        put("AE", new FoodService("AE","RESTAURANT", "10:00", "22:00", 38.736221, -9.137195, new Menu()));
-        put("GreenBar Tagus",new FoodService("GreenBar Tagus","BAR", "10:00", "20:00", 38.738019, -9.303139, new Menu() ));
-        put("Cafetaria", new FoodService("Cafetaria","RESTAURANT", "10:00", "20:00", 38.736582,  -9.302166, new Menu() ));
+        put("CIVIL", new FoodService("CIVIL", "RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.737069, -9.140017, new Menu()));
+        put("ABILIO", new FoodService("ABILIO","BAR", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.737135, -9.137655, new Menu()));
+        put("AE", new FoodService("AE","RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T22:00:00Z", 38.736221, -9.137195, new Menu()));
+        put("GreenBar Tagus",new FoodService("GreenBar Tagus","BAR", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.738019, -9.303139, new Menu() ));
+        put("Cafetaria", new FoodService("Cafetaria","RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.736582,  -9.302166, new Menu() ));
     }};
+
+    //FIXME:should be defined by the user
+    private String username = "pedro";
+    private String password = "123";
 
 
     public ArrayList<FoodService> getCampusFoodServices(String campus) {
@@ -110,6 +113,14 @@ public class GlobalClass extends Application {
         TagusLatitude = tagusLatitude;
     }
 
+    public String getUsername() { return this.username; }
+
+    public void setUsername(String user) { this.username = user; }
+
+    public String getPassword() { return this.password; }
+
+    public void setPassword(String pass) { this.password = pass; }
+
     public double[] getTagusLongitude() {
         return TagusLongitude;
     }
@@ -128,5 +139,9 @@ public class GlobalClass extends Application {
 
     public FoodService getFoodService(String name) {
         return foodServices.get(name);
+    }
+
+    public String getURL() {
+        return this.URL;
     }
 }
