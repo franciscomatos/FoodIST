@@ -42,8 +42,9 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
             // Request available peers from the wifi p2p manager. This is an
             // asynchronous call and the calling activity is notified with a
             // callback on PeerListListener.onPeersAvailable()
-
             activity.makeToast("Peer list changed");
+            activity.logQueue();
+            //toggleQueue
 
 
         } else if (SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION.equals(action)) {
