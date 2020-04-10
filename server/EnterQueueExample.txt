@@ -1,0 +1,9 @@
+POST http://localhost:8000/queue HTTP/1.1
+content-type: application/json
+
+{
+    "canteen":  "CIVIL",
+    "username": "pedro",
+    "password": "123",
+    "minutes":  "2500"
+ }

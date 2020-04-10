@@ -147,23 +147,13 @@ type GetImagesResponse struct {
 	Status string  `json:"status"`
 }
 
-type EnterQueueRequest struct {
+type QueueRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Canteen  string `json:"canteen"`
-	Minutes  string `json:"timestamp"`
+	Minutes  string `json:"minutes"`
 }
-type EnterQueueResponse struct {
-	Status string `json:"status"`
-}
-
-type LeaveQueueRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Canteen  string `json:"canteen"`
-	Minutes  string `json:"timestamp"`
-}
-type LeaveQueueResponse struct {
+type QueueResponse struct {
 	Status string `json:"status"`
 }
 
@@ -293,7 +283,8 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	users[userRequest.Username] = &User{Password: userRequest.Password,
 		Level:    userRequest.Level,
 		Dietary:  userRequest.Dietary,
-		LoggedIn: false}
+		LoggedIn: false,
+		InQueue:  Position{}}
 	//FIXME: This is probably not needed
 	response := RegisterResponse{
 		Status: "OK"}
@@ -580,12 +571,9 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func enterQueueHandler(w http.ResponseWriter, r *http.Request) {
-	var userRequest EnterQueueRequest
+func queueHandler(w http.ResponseWriter, r *http.Request) {
+	var userRequest QueueRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
-
-	log.Println("New request to enter queue Received")
-	log.Println(userRequest)
 
 	//test if the user already exists
 	user, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
@@ -601,27 +589,41 @@ func enterQueueHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, stmt, status)
 		return
 	}
-	minutes, err := strconv.Atoi(userRequest.Minutes)
-	if err != nil {
-		log.Println("[ERROR] Couldnt convert string to int")
-		http.Error(w, "Couldnt convert string to int", http.StatusBadRequest)
-		return
-	}
-	user.InQueue = Position{Minutes: minutes, Number: len(canteen.Queue)}
-	canteen.Queue = append(canteen.Queue, user)
 
-	response := EnterQueueResponse{
+	if user.InQueue == (Position{}) { //if it isnt in a queue add it
+
+		log.Println("New request to enter queue Received")
+		log.Println(userRequest)
+
+		minutes, err := strconv.Atoi(userRequest.Minutes)
+
+		if err != nil {
+			log.Println("[ERROR] Couldnt convert string to int")
+			http.Error(w, "Couldnt convert string to int", http.StatusBadRequest)
+			return
+		}
+
+		user.InQueue = Position{Minutes: minutes, Number: len(canteen.Queue)}
+		canteen.Queue = append(canteen.Queue, user)
+
+	} else {
+
+		log.Println("New request to leave queue Received")
+		log.Println(userRequest)
+
+		for i, n := range canteen.Queue {
+			if user == n { //will only happen once
+				canteen.Queue = append(canteen.Queue[:i], canteen.Queue[i+1:]...)
+				user.InQueue = Position{} //empty position
+			}
+		}
+	}
+
+	response := QueueResponse{
 		Status: "OK"}
 
 	json.NewEncoder(w).Encode(response)
 }
-
-/*
-	Name    string  `json:"name"`
-	Price   float64 `json:"price"`
-	Dietary  []bool  `json:"dietary"`
-	Ratings float64 `json:"ratings"`
-*/
 
 // INITIALIZATION FUNCTIONS
 
@@ -674,8 +676,7 @@ func main() {
 	muxhttp.HandleFunc("/getCanteens", getCanteensHandler)
 	muxhttp.HandleFunc("/getMenus", getMenusHandler)
 	muxhttp.HandleFunc("/getImages", getImagesHandler)
-	muxhttp.HandleFunc("/enterQueue", enterQueueHandler)
-	//muxhttp.HandleFunc("/leaveQueue", leaveQueueHandler)
+	muxhttp.HandleFunc("/queue", queueHandler)
 
 	go func() {
 		log.Println("Serving HTTP")
