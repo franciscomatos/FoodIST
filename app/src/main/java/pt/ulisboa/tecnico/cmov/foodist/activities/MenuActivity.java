@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.cmov.foodist.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -27,7 +26,7 @@ import pt.ulisboa.tecnico.cmov.foodist.PopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
-import pt.ulisboa.tecnico.cmov.foodist.fetchMenu;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchMenu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.uploadDish;
 

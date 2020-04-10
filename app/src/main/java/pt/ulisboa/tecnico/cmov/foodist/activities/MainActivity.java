@@ -1,50 +1,34 @@
 package pt.ulisboa.tecnico.cmov.foodist.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
+
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Messenger;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
-import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
-import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
-import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.foodist.R;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.toggleQueue;
 import pt.ulisboa.tecnico.cmov.foodist.receivers.WifiBroadcastReceiver;
-import pt.ulisboa.tecnico.cmov.foodist.services.WifiIntentService;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class MainActivity extends Activity implements SimWifiP2pManager.PeerListListener {
@@ -56,10 +40,6 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
     private SimWifiP2pManager.Channel mChannel = null;
     private Messenger mService = null;
     private boolean mBound = false;
-/*    private SimWifiP2pSocketServer mSrvSocket = null;
-    private SimWifiP2pSocket mCliSocket = null;
-    private TextView mTextInput;
-    private TextView mTextOutput;*/
     private WifiBroadcastReceiver mReceiver;
 
     private Handler handler = new Handler();
@@ -84,6 +64,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
     };
 
 
+
     private class ToastRunnable implements Runnable {
         String mText;
 
@@ -96,49 +77,17 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
             Toast.makeText(getApplicationContext(), mText, Toast.LENGTH_SHORT).show();
         }
     }
-    private LocationManager locationManager;
-    private LocationListener locationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         configureFoodListButton();
+
         GlobalClass global = (GlobalClass) getApplicationContext();
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
+        global.setLocationManager( (LocationManager) getSystemService(Context.LOCATION_SERVICE));
+        global.getLocation2(MainActivity.this);
 
-                global.setLatitude(location.getLatitude());
-                global.setLongitude(location.getLongitude());
-                Log.i("Location: ", "long-lat" + global.getLongitude() + "-" + global.getLatitude());
-
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        };
-        getLocation2();
-        /*
-        Intent serviceIntent = new Intent(MainActivity.this, WifiIntentService.class);
-        startService(serviceIntent);
-
-         */
-        //global.setFusedLocationClient(LocationServices.getFusedLocationProviderClient(this));
         startWifi();
     }
 
@@ -152,36 +101,17 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
         mReceiver = new WifiBroadcastReceiver(this);
         registerReceiver(mReceiver, filter);
+
+        //WIFI ON
         Intent intent = new Intent(MainActivity.this, SimWifiP2pService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         mBound = true;
         Log.i("WIFI", "wifi on");
 
-
-        //wifi on
-        /*
-        Intent intent2 = new Intent(MainActivity.this, SimWifiP2pService.class);
-        bindService(intent2, mConnection, Context.BIND_AUTO_CREATE);
-        new IncommingCommTask().executeOnExecutor(
-                AsyncTask.THREAD_POOL_EXECUTOR);
-        Log.i("WIFI", "wifi on");
-        */
     }
 
     public void makeToast(String text) {
         handler.post(new MainActivity.ToastRunnable(text));
-    }
-
-
-    private void getLocation2() {
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            requestPermissions(new String[] {
-                    Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET
-            }, 10);
-            return;
-        }
-        locationManager.requestLocationUpdates("gps", 60000, 50, locationListener);
     }
 
     @Override
@@ -189,7 +119,8 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         switch (requestCode) {
             case 10:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getLocation2();
+                    GlobalClass global = (GlobalClass) getApplicationContext();
+                    global.getLocation2(MainActivity.this);
                 }
         }
     }
@@ -206,18 +137,21 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
 
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList) {
+/*
         StringBuilder peersStr = new StringBuilder();
 
         // compile list of devices in range
         for (SimWifiP2pDevice device : simWifiP2pDeviceList.getDeviceList()) {
             String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
             peersStr.append(devstr);
+            Log.i("Devices:","" + device.deviceName + " (" + device.getVirtIp() + ")\n");
+
         }
 
         makeToast("in queue");
 
         // display list of devices in range
-        new AlertDialog.Builder(getApplicationContext())
+        new AlertDialog.Builder(MainActivity.this)
                 .setTitle("Devices in WiFi Range")
                 .setMessage(peersStr.toString())
                 .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
@@ -225,56 +159,32 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
                     }
                 })
                 .show();
-    }
-
-   /* public class IncommingCommTask extends AsyncTask<Void, String, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
-
-            try {
-                mSrvSocket = new SimWifiP2pSocketServer(
-                        Integer.parseInt(getString(R.string.port)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    SimWifiP2pSocket sock = mSrvSocket.accept();
-                    try {
-                        BufferedReader sockIn = new BufferedReader(
-                                new InputStreamReader(sock.getInputStream()));
-                        String st = sockIn.readLine();
-                        publishProgress(st);
-                        sock.getOutputStream().write(("\n").getBytes());
-                    } catch (IOException e) {
-                        Log.d("Error reading socket:", e.getMessage());
-                    } finally {
-                        sock.close();
-                    }
-                } catch (IOException e) {
-                    Log.d("Error socket:", e.getMessage());
-                    break;
-                    //e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            mTextOutput.append(values[0] + "\n");
-        }
-    }
 */
+        GlobalClass global = (GlobalClass) getApplicationContext();
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        unregisterReceiver(mReceiver);
+        DateFormat presDateFormat = new SimpleDateFormat("HH:mm");
+        Date current = new Date();   // given date
+
+
+        String currentTime = presDateFormat.format(current);
+        Log.i("Time", currentTime);
+        boolean inAQueue = false;
+        for (SimWifiP2pDevice device : simWifiP2pDeviceList.getDeviceList()) {
+            Log.i("Devices:", device.deviceName);
+            if(global.isFoodService(device.deviceName)) {
+                Log.i("Devices:", device.deviceName + " is a food service.");
+                toggleQueue toggle = new toggleQueue(global, device.deviceName, currentTime);
+                global.setCurrentFoodService(device.deviceName);
+                inAQueue = true;
+            }
+        }
+        if (!inAQueue) { //left queue
+            toggleQueue toggle = new toggleQueue(global, global.getCurrentFoodService().getName(), currentTime);
+            global.setCurrentFoodService("");
+        }
+
     }
+
 
     @Override
     public void onDestroy() {
@@ -284,6 +194,9 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         super.onDestroy();
     }
 
-
+    public void logQueue () {
+        Log.i ("Peers:", "got here");
+        mManager.requestPeers(mChannel, MainActivity.this);
+    }
 
 }

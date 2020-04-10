@@ -1,14 +1,27 @@
 package pt.ulisboa.tecnico.cmov.foodist.states;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
+import pt.ulisboa.tecnico.cmov.foodist.activities.MainActivity;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 
@@ -18,6 +31,36 @@ public class GlobalClass extends Application {
     private double LATITUDE;
     private double LONGITUDE;
     private String URL = "http://192.168.1.70:8000";
+    private FoodService currentFoodService;
+
+
+    private LocationManager locationManager;
+    private LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+
+            setLatitude(location.getLatitude());
+            setLongitude(location.getLongitude());
+            Log.i("Location: ", "long-lat" + getLongitude() + "-" + getLatitude());
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+        }
+    };
 
     private double[] AlamedaLatitude = new double[]{38.735740, 38.739740 };
     private double[] AlamedaLongitude = new double[]{38.735740, 38.739740 };
@@ -35,6 +78,18 @@ public class GlobalClass extends Application {
     //FIXME:should be defined by the user
     private String username = "pedro";
     private String password = "123";
+
+
+    public void getLocation2(Activity activity){
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(activity, new String[] {
+                    Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET
+            }, 10);
+            return;
+        }
+        locationManager.requestLocationUpdates("gps", 60000, 50, locationListener);
+    }
 
 
     public ArrayList<FoodService> getCampusFoodServices(String campus) {
@@ -62,6 +117,10 @@ public class GlobalClass extends Application {
         } else {
             this.OTHERCAMPUS = "Alameda";
         }
+    }
+
+    public void setLocationManager(LocationManager locationManager) {
+        this.locationManager = locationManager;
     }
 
     public String getOtherCampus() {
@@ -143,5 +202,26 @@ public class GlobalClass extends Application {
 
     public String getURL() {
         return this.URL;
+    }
+
+    public Boolean isFoodService(String foodServiceName) {
+        return foodServices.containsKey(foodServiceName);
+    }
+
+    public void setCurrentFoodService(String foodServiceName) {
+        if (isFoodService(foodServiceName)) {
+            this.currentFoodService = foodServices.get(foodServiceName);
+        }
+        else if (foodServiceName == "") { // left queue
+            currentFoodService = null;
+        }
+        else {
+            Log.e("GlobalError:", "food service "+ foodServiceName + " not found." );
+
+        }
+    }
+
+    public FoodService getCurrentFoodService() {
+        return this.currentFoodService;
     }
 }

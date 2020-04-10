@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.foodist;
+package pt.ulisboa.tecnico.cmov.foodist.adapters;
 
 import android.graphics.Color;
 import android.util.Log;
@@ -22,9 +22,10 @@ import java.time.temporal.TemporalAccessor;
 import  java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
+import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapter.MyViewHolder> {
     private ArrayList<FoodService> mDataset;
     private JSONArray durations;
     private View.OnClickListener mOnItemClickListener;
@@ -50,21 +51,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             v.setOnClickListener(mOnItemClickListener);
         }
     }
-    public MyAdapter(ArrayList<FoodService> listFoodServices, String data) {
+    public FoodServicesAdapter(ArrayList<FoodService> listFoodServices) {
         mDataset = listFoodServices;
-        try {
-            JSONObject json = new JSONObject(data);
-            durations = json.getJSONArray("durations").getJSONArray(0);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
+    public FoodServicesAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
+                                                               int viewType) {
         // create a new view
         View v =  LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.food_service, parent, false);
@@ -78,46 +72,46 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
         holder.name.setText(mDataset.get(position).getName());
+
         if (mDataset.get(position).getType() == "RESTAURANT") {
             holder.icon.setImageResource(R.drawable.ic_restaurant);
         } else {
             holder.icon.setImageResource(R.drawable.coffee4);
         }
+
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
         DateFormat presDateFormat = new SimpleDateFormat("HH:mm");
         Date current = new Date();   // given date
 
+        TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(mDataset.get(position).getOpeningHour());
+        Instant i = Instant.from(ta);
+        Date open = Date.from(i);
 
-            TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(mDataset.get(position).getOpeningHour());
-            Instant i = Instant.from(ta);
-            Date open = Date.from(i);
+        ta = DateTimeFormatter.ISO_INSTANT.parse(mDataset.get(position).getClosingHour());
+        i = Instant.from(ta);
+        Date close = Date.from(i);
 
-            ta = DateTimeFormatter.ISO_INSTANT.parse(mDataset.get(position).getClosingHour());
-            i = Instant.from(ta);
-            Date close = Date.from(i);
+        holder.openingHour.setText(String.format("%s - %s", presDateFormat.format(open), presDateFormat.format(close)));
 
-            holder.openingHour.setText(String.format("%s - %s", presDateFormat.format(open), presDateFormat.format(close)));
-
+        if (durations != null) {
             try {
                 holder.ETA.setText(getTime((int) durations.getDouble(position)));
             } catch (JSONException e) {
                 Log.e("MYLOGS", "could not correctly parse duration json");
                 e.printStackTrace();
             }
+        }
 
-            Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
-            Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
+        Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
+        Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
 
-            if (current.compareTo(close) < 0) {
-                holder.status.setText(R.string.Open);
-                holder.status.setTextColor(0xFF00AA00);
-            } else {
-                holder.status.setText(R.string.Closed);
-                holder.status.setTextColor(Color.RED);
-            }
-
-
-
+        if (current.compareTo(close) < 0) {
+            holder.status.setText(R.string.Open);
+            holder.status.setTextColor(0xFF00AA00);
+        } else {
+            holder.status.setText(R.string.Closed);
+            holder.status.setTextColor(Color.RED);
+        }
     }
 
     private String getTime(int duration) {
@@ -135,4 +129,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         mOnItemClickListener = itemClickListener;
     }
 
+    public void setDuration(String data) {
+        try {
+            JSONObject json = new JSONObject(data);
+            durations = json.getJSONArray("durations").getJSONArray(0);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }
