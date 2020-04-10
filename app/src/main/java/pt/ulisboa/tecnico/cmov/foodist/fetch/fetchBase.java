@@ -54,7 +54,7 @@ public class fetchBase extends AsyncTask<Void, Void, Void> {
     protected void requestProperties(HttpURLConnection conn) {
         return;
     }
-
+    // NEEDS TO BE IMPLEMENTED BY SUBCLASS
     protected void parse(String data) {
         return;
     }

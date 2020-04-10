@@ -30,7 +30,7 @@ public class GlobalClass extends Application {
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
-    private String URL = "http://192.168.1.70:8000";
+    private String URL = "http://localhost:8000";
     private FoodService currentFoodService;
 
 

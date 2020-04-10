@@ -9,15 +9,16 @@ public class toggleQueue extends fetchBase {
     private String currentTime;
 
     public toggleQueue(GlobalClass global,  String foodServiceName, String currentTime) {
-        super(global, global.getURL());
+        super(global, global.getURL() + "/queue");
         this.foodService = foodServiceName;
         this.currentTime = currentTime;
     }
 
     @Override
     protected String buildBody() {
-        return "{\"username\":\"" + getGlobal().getUsername() + "\"," +
-                "\"password\":\"" + getGlobal().getPassword() +"\"," +
-                "\"canteen\":\""+foodService+"\"}";
+        return "{\"canteen\":\"" + foodService + "\"," +
+                "\"username\":\"" + getGlobal().getUsername() + "\"," +
+                "\"password\":\"" + getGlobal().getPassword() + "\"," +
+                "\"minutes\":\"" + currentTime +"\" }";
     }
 }

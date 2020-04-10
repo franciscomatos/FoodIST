@@ -27,6 +27,7 @@ import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
 import pt.ulisboa.tecnico.cmov.foodist.R;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.registerUser;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.toggleQueue;
 import pt.ulisboa.tecnico.cmov.foodist.receivers.WifiBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
@@ -89,6 +90,12 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         global.getLocation2(MainActivity.this);
 
         startWifi();
+        //registerUser(global);
+    }
+
+    private void registerUser(GlobalClass global) {
+        registerUser registry = new registerUser(global);
+        registry.execute();
     }
 
     private void startWifi() {
@@ -175,13 +182,18 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
             if(global.isFoodService(device.deviceName) && global.getCurrentFoodService() == null ) {
                 Log.i("Devices:", device.deviceName + " is a food service.");
                 toggleQueue toggle = new toggleQueue(global, device.deviceName, currentTime);
+                toggle.execute();
                 global.setCurrentFoodService(device.deviceName);
                 inAQueue = true;
             }
         }
         if (!inAQueue) { //left queue
-            toggleQueue toggle = new toggleQueue(global, global.getCurrentFoodService().getName(), currentTime);
-            global.setCurrentFoodService("");
+            if (global.getCurrentFoodService() != null) {
+                toggleQueue toggle = new toggleQueue(global, global.getCurrentFoodService().getName(), currentTime);
+                toggle.execute();
+                global.setCurrentFoodService("");
+            }
+
         }
 
     }
@@ -190,7 +202,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
     @Override
     public void onDestroy() {
         unregisterReceiver(mReceiver);
-       // unbindService(mConnection);
+        unbindService(mConnection);
         Log.i("WIFI", "destroyed");
         super.onDestroy();
     }
