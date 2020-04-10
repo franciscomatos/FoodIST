@@ -3,9 +3,9 @@ package pt.ulisboa.tecnico.cmov.foodist.activities;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +19,9 @@ public class DishActivity extends FragmentActivity {
 
     private CarouselView carouselView;
     private int[] sampleImages = {R.drawable.food1, R.drawable.food2, R.drawable.food3};
+    private String dishName;
+    private String category;
+    private String price;
     private ImageListener imageListener = new ImageListener() {
         @Override
         public void setImageForPosition(int position, ImageView imageView) {
@@ -35,23 +38,32 @@ public class DishActivity extends FragmentActivity {
         AnimationDrawable animationDrawable = (AnimationDrawable) iv_background.getDrawable();
         animationDrawable.start();*/
 
+        // MISSING: GET IMAGES FROM SERVER AND CACHE THEM
         carouselView = findViewById(R.id.carouselView);
         carouselView.setPageCount(sampleImages.length);
         carouselView.setImageListener(imageListener);
 
         Intent intent = getIntent();
-        String name = intent.getStringExtra("name");
-        String category = intent.getStringExtra("category");
-        String price = intent.getStringExtra("price");
+        dishName = intent.getStringExtra("name");
+        category = intent.getStringExtra("category");
+        price = intent.getStringExtra("price");
 
         TextView nameView = findViewById(R.id.dishName);
-        nameView.setText(name);
+        nameView.setText(dishName);
 
         TextView categoryView = findViewById(R.id.dishCategory);
         categoryView.setText(category);
 
         TextView priceView = findViewById(R.id.dishPrice);
         priceView.setText(price);
+    }
+
+    public void goToAddPictureActivity(View v) {
+        Intent intent =  new Intent(DishActivity.this, AddPictureActivity.class);
+        intent.putExtra("name", dishName);
+        intent.putExtra("category", category);
+        intent.putExtra("price", price);
+        startActivity(intent);
     }
 
 
