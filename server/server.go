@@ -147,6 +147,26 @@ type GetImagesResponse struct {
 	Status string  `json:"status"`
 }
 
+type EnterQueueRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Canteen  string `json:"canteen"`
+	Minutes  string `json:"timestamp"`
+}
+type EnterQueueResponse struct {
+	Status string `json:"status"`
+}
+
+type LeaveQueueRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Canteen  string `json:"canteen"`
+	Minutes  string `json:"timestamp"`
+}
+type LeaveQueueResponse struct {
+	Status string `json:"status"`
+}
+
 //Business Logic structs
 type Coordinates struct {
 	Lat float64 `json:"lat"`
@@ -158,11 +178,16 @@ type TimeInterval struct {
 	Close time.Time `json:"close"`
 }
 
+type Position struct {
+	Minutes int
+	Number  int
+}
+
 type Canteen struct {
 	Menus     map[string]*Menu
 	Location  Coordinates
 	OpenHours map[string]TimeInterval
-	Queue     []User
+	Queue     []*User
 	Campus    string
 	Type      string
 }
@@ -178,17 +203,13 @@ type Image struct {
 	Name  string `json:"name"`
 	Image string `json:"image"`
 }
-type Position struct {
-	TimeStamp TimeInterval
-	Number    int
-}
 
 type User struct {
 	Password string
 	Level    string
 	Dietary  []string
 	LoggedIn bool
-	InQueue  Position //either null or with a position
+	InQueue  Position
 }
 
 //Global Variables
@@ -559,7 +580,6 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-<<<<<<< HEAD
 func enterQueueHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest EnterQueueRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
@@ -581,7 +601,13 @@ func enterQueueHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, stmt, status)
 		return
 	}
-
+	minutes, err := strconv.Atoi(userRequest.Minutes)
+	if err != nil {
+		log.Println("[ERROR] Couldnt convert string to int")
+		http.Error(w, "Couldnt convert string to int", http.StatusBadRequest)
+		return
+	}
+	user.InQueue = Position{Minutes: minutes, Number: len(canteen.Queue)}
 	canteen.Queue = append(canteen.Queue, user)
 
 	response := EnterQueueResponse{
@@ -589,14 +615,13 @@ func enterQueueHandler(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(response)
 }
-=======
+
 /*
 	Name    string  `json:"name"`
 	Price   float64 `json:"price"`
 	Dietary  []bool  `json:"dietary"`
 	Ratings float64 `json:"ratings"`
 */
->>>>>>> cedc3a2f99c0c276f8f3e065f93004d589221a30
 
 // INITIALIZATION FUNCTIONS
 
@@ -650,7 +675,7 @@ func main() {
 	muxhttp.HandleFunc("/getMenus", getMenusHandler)
 	muxhttp.HandleFunc("/getImages", getImagesHandler)
 	muxhttp.HandleFunc("/enterQueue", enterQueueHandler)
-	muxhttp.HandleFunc("/leaveQueue", leaveQueueHandler)
+	//muxhttp.HandleFunc("/leaveQueue", leaveQueueHandler)
 
 	go func() {
 		log.Println("Serving HTTP")
