@@ -162,16 +162,17 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
 */
         GlobalClass global = (GlobalClass) getApplicationContext();
 
-        DateFormat presDateFormat = new SimpleDateFormat("HH:mm");
+        //DateFormat presDateFormat = new SimpleDateFormat("HH:mm");
         Date current = new Date();   // given date
 
+        String currentTime = String.valueOf(current.getTime()/6000);
 
-        String currentTime = presDateFormat.format(current);
+        //String currentTime = presDateFormat.format(current);
         Log.i("Time", currentTime);
         boolean inAQueue = false;
         for (SimWifiP2pDevice device : simWifiP2pDeviceList.getDeviceList()) {
             Log.i("Devices:", device.deviceName);
-            if(global.isFoodService(device.deviceName)) {
+            if(global.isFoodService(device.deviceName) && global.getCurrentFoodService() == null ) {
                 Log.i("Devices:", device.deviceName + " is a food service.");
                 toggleQueue toggle = new toggleQueue(global, device.deviceName, currentTime);
                 global.setCurrentFoodService(device.deviceName);
