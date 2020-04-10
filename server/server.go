@@ -147,6 +147,26 @@ type GetImagesResponse struct {
 	Status string  `json:"status"`
 }
 
+type EnterQueueRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Canteen  string `json:"canteen"`
+	Minutes  string `json:"timestamp"`
+}
+type EnterQueueResponse struct {
+	Status string `json:"status"`
+}
+
+type LeaveQueueRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Canteen  string `json:"canteen"`
+	Minutes  string `json:"timestamp"`
+}
+type LeaveQueueResponse struct {
+	Status string `json:"status"`
+}
+
 //Business Logic structs
 type Coordinates struct {
 	Lat float64 `json:"lat"`
@@ -158,11 +178,16 @@ type TimeInterval struct {
 	Close time.Time `json:"close"`
 }
 
+type Position struct {
+	Minutes int
+	Number  int
+}
+
 type Canteen struct {
 	Menus     map[string]*Menu
 	Location  Coordinates
 	OpenHours map[string]TimeInterval
-	Queue     []User
+	Queue     []*User
 	Campus    string
 	Type      string
 }
@@ -184,6 +209,7 @@ type User struct {
 	Level    string
 	Dietary  []string
 	LoggedIn bool
+	InQueue  Position
 }
 
 //Global Variables
@@ -554,6 +580,42 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func enterQueueHandler(w http.ResponseWriter, r *http.Request) {
+	var userRequest EnterQueueRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("New request to enter queue Received")
+	log.Println(userRequest)
+
+	//test if the user already exists
+	user, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	canteen, stmt, status := validadeCanteen(userRequest.Canteen)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+	minutes, err := strconv.Atoi(userRequest.Minutes)
+	if err != nil {
+		log.Println("[ERROR] Couldnt convert string to int")
+		http.Error(w, "Couldnt convert string to int", http.StatusBadRequest)
+		return
+	}
+	user.InQueue = Position{Minutes: minutes, Number: len(canteen.Queue)}
+	canteen.Queue = append(canteen.Queue, user)
+
+	response := EnterQueueResponse{
+		Status: "OK"}
+
+	json.NewEncoder(w).Encode(response)
+}
+
 /*
 	Name    string  `json:"name"`
 	Price   float64 `json:"price"`
@@ -612,6 +674,8 @@ func main() {
 	muxhttp.HandleFunc("/getCanteens", getCanteensHandler)
 	muxhttp.HandleFunc("/getMenus", getMenusHandler)
 	muxhttp.HandleFunc("/getImages", getImagesHandler)
+	muxhttp.HandleFunc("/enterQueue", enterQueueHandler)
+	//muxhttp.HandleFunc("/leaveQueue", leaveQueueHandler)
 
 	go func() {
 		log.Println("Serving HTTP")
