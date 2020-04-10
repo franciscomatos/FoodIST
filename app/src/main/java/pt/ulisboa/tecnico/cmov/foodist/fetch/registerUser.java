@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
+import android.util.Log;
+
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class registerUser extends fetchBase {
@@ -7,7 +9,7 @@ public class registerUser extends fetchBase {
     private String currentTime;
 
     public registerUser(GlobalClass global) {
-        super(global, global.getURL() + "/queue");
+        super(global, global.getURL() + "/register");
     }
 
     @Override
@@ -15,6 +17,15 @@ public class registerUser extends fetchBase {
         return "{\"username\":\"" + getGlobal().getUsername() + "\"," +
                 "\"password\":\"" + getGlobal().getPassword() + "\"," +
                 "\"level\":\"" + "1" + "\"," +
-                "\"minutes\":\"" +  "[\"Fish\",\"Meat\",\"Vegetarian\",\"Vegan\"]" +"\" }";
+                "\"dietary\":[\"Fish\",\"Meat\",\"Vegetarian\",\"Vegan\"] }";
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        Log.i("RESPONSE:", getData());
+        Log.i("ACTION", "going to login");
+        login login = new login (getGlobal());
+        login.execute();
     }
 }

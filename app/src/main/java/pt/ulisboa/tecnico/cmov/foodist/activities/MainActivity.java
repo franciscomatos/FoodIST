@@ -90,7 +90,8 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         global.getLocation2(MainActivity.this);
 
         startWifi();
-        //registerUser(global);
+
+        registerUser(global);
     }
 
     private void registerUser(GlobalClass global) {

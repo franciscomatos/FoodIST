@@ -35,11 +35,7 @@ public class fetchBase extends AsyncTask<Void, Void, Void> {
 
     private String URL;
     private String data = "";
-    private HashMap<String, String> params = new HashMap<String, String>();
-    private StringBuilder sbParams;
-    private String destinations;
     private GlobalClass global;
-    private String whereToIndex;
 
     public fetchBase(GlobalClass global, String URL) {
         this.global = global;
@@ -62,6 +58,7 @@ public class fetchBase extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... voids){
         try{
+            Log.i("URL:", this.URL);
             URL url  = new URL(this.URL);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setDoOutput(true);
@@ -73,11 +70,10 @@ public class fetchBase extends AsyncTask<Void, Void, Void> {
             httpURLConnection.setRequestProperty("Accept", "application/json");
             httpURLConnection.setDoOutput(true);
 
-            String paramsString = sbParams.toString();
-
             OutputStream out = httpURLConnection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
             writer.write(buildBody());
+            Log.i("BODY", buildBody());
             writer.flush();
             writer.close();
 
@@ -104,8 +100,10 @@ public class fetchBase extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
+    @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
+        Log.i("RESPONSE:", data);
     }
 
 
@@ -115,5 +113,9 @@ public class fetchBase extends AsyncTask<Void, Void, Void> {
 
     public String getData() {
         return data;
+    }
+
+    public String getURL(){
+        return URL;
     }
 }
