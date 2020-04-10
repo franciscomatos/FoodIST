@@ -176,12 +176,17 @@ type Image struct {
 	Name  string `json:"name"`
 	Image string `json:"image"`
 }
+type Position struct {
+	TimeStamp TimeInterval
+	Number    int
+}
 
 type User struct {
 	Password string
 	Level    string
 	Dietry   []bool
 	LoggedIn bool
+	InQueue  Position //either null or with a position
 }
 
 //Global Variables
@@ -551,12 +556,35 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-/*
-	Name    string  `json:"name"`
-	Price   float64 `json:"price"`
-	Dietry  []bool  `json:"dietry"`
-	Ratings float64 `json:"ratings"`
-*/
+func enterQueueHandler(w http.ResponseWriter, r *http.Request) {
+	var userRequest EnterQueueRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("New request to enter queue Received")
+	log.Println(userRequest)
+
+	//test if the user already exists
+	user, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	canteen, stmt, status := validadeCanteen(userRequest.Canteen)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	canteen.Queue = append(canteen.Queue, user)
+
+	response := EnterQueueResponse{
+		Status: "OK"}
+
+	json.NewEncoder(w).Encode(response)
+}
 
 // INITIALIZATION FUNCTIONS
 
@@ -596,6 +624,8 @@ func main() {
 	muxhttp.HandleFunc("/getCanteens", getCanteensHandler)
 	muxhttp.HandleFunc("/getMenus", getMenusHandler)
 	muxhttp.HandleFunc("/getImages", getImagesHandler)
+	muxhttp.HandleFunc("/enterQueue", enterQueueHandler)
+	muxhttp.HandleFunc("/leaveQueue", leaveQueueHandler)
 
 	go func() {
 		log.Println("Serving HTTP")
