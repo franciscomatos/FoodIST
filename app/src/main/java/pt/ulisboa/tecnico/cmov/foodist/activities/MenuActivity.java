@@ -28,7 +28,7 @@ import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchMenu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
-import pt.ulisboa.tecnico.cmov.foodist.uploadDish;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.uploadDish;
 
 public class MenuActivity extends AppCompatActivity {
 

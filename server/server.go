@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"github.com/sajari/regression"
 )
 
 /*
@@ -29,6 +30,7 @@ const ( //0,1,...
 )
 
 var SIZE = 10
+
 
 //Rest API structs
 type RegisterRequest struct {
@@ -174,12 +176,13 @@ type Position struct {
 }
 
 type Canteen struct {
-	Menus     map[string]*Menu
-	Location  Coordinates
-	OpenHours map[string]TimeInterval
-	Queue     []*User
-	Campus    string
-	Type      string
+	Menus      map[string]*Menu
+	Location   Coordinates
+	OpenHours  map[string]TimeInterval
+	Queue      []*User
+	Campus     string
+	Type       string
+	Regression var
 }
 
 type Menu struct {
@@ -613,6 +616,8 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 
 		for i, n := range canteen.Queue {
 			if user == n { //will only happen once
+			    // 	r.Train(regression.DataPoint(user.InQueue.Position, user.InQueue.Number))
+			    //  r.Run()
 				canteen.Queue = append(canteen.Queue[:i], canteen.Queue[i+1:]...)
 				user.InQueue = Position{} //empty position
 			}
@@ -632,7 +637,8 @@ func addPlace(name string, typ string, coord Coordinates, times map[string]TimeI
 		Type:      typ,
 		Location:  coord,
 		OpenHours: times,
-		Campus:    campus}
+		Campus:    campus,
+		Regression: regression.Regression}
 }
 
 func initPlaces() { // initiate more if needed

@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
-import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class toggleQueue extends fetchBase {

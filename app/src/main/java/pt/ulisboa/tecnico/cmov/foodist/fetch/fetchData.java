@@ -1,33 +1,13 @@
 package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import pt.ulisboa.tecnico.cmov.foodist.activities.ListFoodServicesActivity;
-import pt.ulisboa.tecnico.cmov.foodist.activities.MenuActivity;
-import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
-import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 
