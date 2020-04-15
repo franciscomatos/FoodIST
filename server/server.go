@@ -130,11 +130,8 @@ type GetCanteensResponse struct {
 }
 
 type CanteenInterface struct {
-	Coord     Coordinates  `json:"coords"`
-	Name      string       `json:"name"`
-	Type      string       `json:"type"`
-	OpenHours TimeInterval `json:"openhours"`
-	Queue     int          `json:"queue"`
+	Name      		string       `json:"name"`
+	Prediction      int          `json:"prediction"`
 }
 
 type GetImagesRequest struct {
@@ -467,13 +464,12 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 	var canteens []CanteenInterface
 
 	for key, value := range places {
+		prediction := value.Regression.Predict(len(value.Queue))
+
 		if value.Campus == userRequest.Campus {
 			canteens = append(canteens, CanteenInterface{
-				Coord:     value.Location,
-				Name:      key,
-				Type:      value.Type,
-				OpenHours: value.OpenHours[user.Level],
-				Queue:     len(value.Queue)})
+				Name:      	key,
+				Prediction:	prediction})
 		}
 	}
 	response := GetCanteensResponse{
@@ -616,8 +612,9 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 
 		for i, n := range canteen.Queue {
 			if user == n { //will only happen once
-			    // 	r.Train(regression.DataPoint(user.InQueue.Position, user.InQueue.Number))
-			    //  r.Run()
+				canteen.Regression.Train(regression.DataPoint(user.InQueue.Position, user.InQueue.Minutes))
+				canteen.Regression.Run()
+				
 				canteen.Queue = append(canteen.Queue[:i], canteen.Queue[i+1:]...)
 				user.InQueue = Position{} //empty position
 			}
@@ -679,7 +676,7 @@ func main() {
 	muxhttp.HandleFunc("/addImage", addImageHandler)
 	muxhttp.HandleFunc("/addMenu", addMenuHandler)
 	muxhttp.HandleFunc("/rateMenu", rateMenuHandler)
-	muxhttp.HandleFunc("/getCanteens", getCanteensHandler)
+	muxhttp.HandleFunc("/predict", getCanteensHandler)
 	muxhttp.HandleFunc("/getMenus", getMenusHandler)
 	muxhttp.HandleFunc("/getImages", getImagesHandler)
 	muxhttp.HandleFunc("/queue", queueHandler)
