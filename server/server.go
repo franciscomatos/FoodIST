@@ -182,7 +182,7 @@ type Canteen struct {
 	Queue      []*User
 	Campus     string
 	Type       string
-	Regression var
+	Regression *regression.Regression
 }
 
 type Menu struct {
@@ -209,6 +209,7 @@ type User struct {
 var users = make(map[string]*User) //Key is user and Value is password
 
 var places = make(map[string]*Canteen) // Key is the place name and Value is its contents
+
 
 //Aux Functions
 func validadeUser(username, password string) (*User, string, int) {
@@ -616,8 +617,8 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 
 		for i, n := range canteen.Queue {
 			if user == n { //will only happen once
-			    // 	r.Train(regression.DataPoint(user.InQueue.Position, user.InQueue.Number))
-			    //  r.Run()
+			    r.Train(regression.DataPoint(user.InQueue.Minutes, user.InQueue.Position))
+			    r.Run()
 				canteen.Queue = append(canteen.Queue[:i], canteen.Queue[i+1:]...)
 				user.InQueue = Position{} //empty position
 			}
@@ -638,7 +639,7 @@ func addPlace(name string, typ string, coord Coordinates, times map[string]TimeI
 		Location:  coord,
 		OpenHours: times,
 		Campus:    campus,
-		Regression: regression.Regression}
+		Regression: new(regression.Regression)}
 }
 
 func initPlaces() { // initiate more if needed
@@ -671,6 +672,22 @@ func initPlaces() { // initiate more if needed
 func main() {
 	initPlaces()
 	finish := make(chan bool)
+
+	r := new(regression.Regression)
+
+	r.Train(regression.DataPoint(1,[]float64{2}))
+	r.Train(regression.DataPoint(1,[]float64{2}))
+	r.Train(regression.DataPoint(1,[]float64{2}))
+	r.Train(regression.DataPoint(1,[]float64{2}))
+
+	//r.Train(regression.DataPoint(2,[]float64{4}))
+	//r.Train(regression.DataPoint(6,[]float64{120}))
+	r.Run()
+	log.Println("Regression formula:\n%v\n", r.Formula)
+	log.Println("Regression:\n%s\n", r)
+	prediction, _ := r.Predict([]float64{2})
+	log.Println("Predict:\n%s\n", prediction)
+
 
 	muxhttp := http.NewServeMux()
 	muxhttp.HandleFunc("/register", registerHandler)
