@@ -613,14 +613,9 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 
 		for i, n := range canteen.Queue {
 			if user == n { //will only happen once
-<<<<<<< HEAD
 				canteen.Regression.Train(regression.DataPoint(user.InQueue.Position, user.InQueue.Minutes))
 				canteen.Regression.Run()
 				
-=======
-			    r.Train(regression.DataPoint(user.InQueue.Minutes, user.InQueue.Position))
-			    r.Run()
->>>>>>> aecf09f488d96e95f31d044d0db88f6364d67c61
 				canteen.Queue = append(canteen.Queue[:i], canteen.Queue[i+1:]...)
 				user.InQueue = Position{} //empty position
 			}
