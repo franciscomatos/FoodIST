@@ -96,14 +96,11 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.action_recents:
+                    case R.id.action_explore:
                         Toast.makeText(MainActivity.this, "Recents", Toast.LENGTH_SHORT).show();
                         break;
-                    case R.id.action_favorites:
+                    case R.id.action_profile:
                         Toast.makeText(MainActivity.this, "Favorites", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.action_nearby:
-                        Toast.makeText(MainActivity.this, "Nearby", Toast.LENGTH_SHORT).show();
                         break;
                 }
                 return true;

@@ -1,15 +1,18 @@
 package pt.ulisboa.tecnico.cmov.foodist.activities;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
@@ -56,6 +59,23 @@ public class DishActivity extends FragmentActivity {
 
         TextView priceView = findViewById(R.id.dishPrice);
         priceView.setText(price);
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_explore:
+                        Intent intent =  new Intent(DishActivity.this, ListFoodServicesActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.action_profile:
+                        // go to profile activity yet to be created
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     public void goToAddPictureActivity(View v) {
