@@ -83,7 +83,8 @@ public class ListFoodServicesActivity extends AppCompatActivity {
                     case R.id.action_explore:
                         break;
                     case R.id.action_profile:
-                        // go to profile activity yet to be created
+                        Intent intent =  new Intent(ListFoodServicesActivity.this, ProfileActivity.class);
+                        startActivity(intent);
                         break;
                 }
                 return true;

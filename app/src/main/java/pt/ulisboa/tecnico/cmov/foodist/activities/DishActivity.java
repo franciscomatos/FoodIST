@@ -17,6 +17,7 @@ import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
+import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 
 public class DishActivity extends FragmentActivity {
 
@@ -70,7 +71,8 @@ public class DishActivity extends FragmentActivity {
                         startActivity(intent);
                         break;
                     case R.id.action_profile:
-                        // go to profile activity yet to be created
+                        Intent profileIntent =  new Intent(DishActivity.this, ProfileActivity.class);
+                        startActivity(profileIntent);
                         break;
                 }
                 return true;

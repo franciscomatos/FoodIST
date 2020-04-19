@@ -50,5 +50,6 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation project(path: ':Termite-WifiP2P-API')
     implementation 'com.google.android.material:material:1.0.0'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 
 }

@@ -82,7 +82,8 @@ public class MenuActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;
                     case R.id.action_profile:
-                        // go to profile activity yet to be created
+                        Intent profileIntent =  new Intent(MenuActivity.this, ProfileActivity.class);
+                        startActivity(profileIntent);
                         break;
                 }
                 return true;

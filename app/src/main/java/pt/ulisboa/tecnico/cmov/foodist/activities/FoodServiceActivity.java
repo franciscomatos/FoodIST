@@ -78,7 +78,8 @@ public class FoodServiceActivity extends AppCompatActivity implements OnMapReady
                         startActivity(intent);
                         break;
                     case R.id.action_profile:
-                        // go to profile activity yet to be created
+                        Intent profileIntent =  new Intent(FoodServiceActivity.this, ProfileActivity.class);
+                        startActivity(profileIntent);
                         break;
                 }
                 return true;
