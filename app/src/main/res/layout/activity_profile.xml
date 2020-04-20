@@ -119,32 +119,36 @@
             android:layout_weight="1">
 
             <CheckBox
-                android:id="@+id/checkBox1"
+                android:id="@+id/fishCheckbox"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Meat" />
+                android:onClick="onCheckboxClicked"
+                android:text="@string/fish_category" />
 
             <CheckBox
-                android:id="@+id/checkBox2"
+                android:id="@+id/meatCheckbox"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Fish" />
+                android:onClick="onCheckboxClicked"
+                android:text="@string/meat_category" />
 
             <CheckBox
-                android:id="@+id/checkBox3"
+                android:id="@+id/vegetarianCheckbox"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Vegetarian" />
+                android:onClick="onCheckboxClicked"
+                android:text="@string/vegetarian_category" />
 
             <CheckBox
-                android:id="@+id/checkBox4"
+                android:id="@+id/veganCheckbox"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Vegan" />
+                android:onClick="onCheckboxClicked"
+                android:text="@string/vegan_category" />
 
         </LinearLayout>
 

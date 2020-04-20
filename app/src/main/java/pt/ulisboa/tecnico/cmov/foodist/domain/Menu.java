@@ -15,6 +15,10 @@ public class Menu {
         this.constraints.add(Dish.DishCategory.VEGETARIAN);
         this.constraints.add(Dish.DishCategory.VEGAN);
     }
+
+    public Menu(List<Dish.DishCategory> constraints) {
+        this.constraints = constraints;
+    }
     /* getters */
 
     public List<Dish> getDishList() {
@@ -47,6 +51,10 @@ public class Menu {
         updateConstraintDishes();
     }
 
+    public List<Dish.DishCategory> getConstraints() {
+        return this.constraints;
+    }
+
     public void addConstraint(Dish.DishCategory category) {
         this.constraints.add(category);
     }
@@ -55,6 +63,7 @@ public class Menu {
         this.constraints.remove(category);
     }
 
+    public void updateConstraints(List<Dish.DishCategory> categories) { this.constraints = categories; }
 
     public void updateConstraintDishes() {
         constraintDishList.clear();

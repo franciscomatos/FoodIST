@@ -39,7 +39,7 @@ public class MenuActivity extends AppCompatActivity {
     private TableLayout tableLayout;
     private Menu menuState;
     private String foodServiceName;
-    private List<Boolean> checkedBoxes = Arrays.asList(true, true, true, true);
+    private List<Boolean> checkedBoxes = Arrays.asList(false, false, false, false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +52,11 @@ public class MenuActivity extends AppCompatActivity {
         foodServiceName = getIntent().getStringExtra("foodService");
         Log.i("MYLOGS", foodServiceName);
         menuState = global.getFoodService(foodServiceName).getMenu();
+
+        if(menuState.containsConstraint(Dish.DishCategory.FISH)) checkedBoxes.set(0, true);
+        if(menuState.containsConstraint(Dish.DishCategory.MEAT)) checkedBoxes.set(1, true);
+        if(menuState.containsConstraint(Dish.DishCategory.VEGETARIAN)) checkedBoxes.set(2, true);
+        if(menuState.containsConstraint(Dish.DishCategory.VEGAN)) checkedBoxes.set(3, true);
 
         Log.i("MenuActivity", "got Context");
 /*
