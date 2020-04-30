@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
 	"github.com/sajari/regression"
 )
 
@@ -30,7 +31,6 @@ const ( //0,1,...
 )
 
 var SIZE = 10
-
 
 //Rest API structs
 type RegisterRequest struct {
@@ -130,8 +130,8 @@ type GetCanteensResponse struct {
 }
 
 type CanteenInterface struct {
-	Name      		string       `json:"name"`
-	Prediction      int          `json:"prediction"`
+	Name       string `json:"name"`
+	Prediction int    `json:"prediction"`
 }
 
 type GetImagesRequest struct {
@@ -206,7 +206,6 @@ type User struct {
 var users = make(map[string]*User) //Key is user and Value is password
 
 var places = make(map[string]*Canteen) // Key is the place name and Value is its contents
-
 
 //Aux Functions
 func validadeUser(username, password string) (*User, string, int) {
@@ -455,7 +454,7 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("New request for canteens Received")
 	log.Println(userRequest)
 	//test if the user already exists
-	user, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
 	if status != http.StatusOK {
 		log.Println("[ERROR] ", stmt)
 		http.Error(w, stmt, status)
@@ -465,12 +464,12 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 	var canteens []CanteenInterface
 
 	for key, value := range places {
-		prediction := value.Regression.Predict(len(value.Queue))
+		prediction, _ := value.Regression.Predict([]float64{float64(len(value.Queue))})
 
 		if value.Campus == userRequest.Campus {
 			canteens = append(canteens, CanteenInterface{
-				Name:      	key,
-				Prediction:	prediction})
+				Name:       key,
+				Prediction: int(prediction)})
 		}
 	}
 	response := GetCanteensResponse{
@@ -613,9 +612,9 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 
 		for i, n := range canteen.Queue {
 			if user == n { //will only happen once
-				canteen.Regression.Train(regression.DataPoint(user.InQueue.Position, user.InQueue.Minutes))
+				canteen.Regression.Train(regression.DataPoint(float64(user.InQueue.Number), []float64{float64(user.InQueue.Minutes)}))
 				canteen.Regression.Run()
-				
+
 				canteen.Queue = append(canteen.Queue[:i], canteen.Queue[i+1:]...)
 				user.InQueue = Position{} //empty position
 			}
@@ -632,10 +631,10 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 
 func addPlace(name string, typ string, coord Coordinates, times map[string]TimeInterval, campus string) {
 	places[name] = &Canteen{Menus: make(map[string]*Menu),
-		Type:      typ,
-		Location:  coord,
-		OpenHours: times,
-		Campus:    campus,
+		Type:       typ,
+		Location:   coord,
+		OpenHours:  times,
+		Campus:     campus,
 		Regression: new(regression.Regression)}
 }
 
@@ -672,10 +671,10 @@ func main() {
 
 	r := new(regression.Regression)
 
-	r.Train(regression.DataPoint(1,[]float64{2}))
-	r.Train(regression.DataPoint(1,[]float64{2}))
-	r.Train(regression.DataPoint(1,[]float64{2}))
-	r.Train(regression.DataPoint(1,[]float64{2}))
+	r.Train(regression.DataPoint(1, []float64{2}))
+	r.Train(regression.DataPoint(1, []float64{2}))
+	r.Train(regression.DataPoint(1, []float64{2}))
+	r.Train(regression.DataPoint(1, []float64{2}))
 
 	//r.Train(regression.DataPoint(2,[]float64{4}))
 	//r.Train(regression.DataPoint(6,[]float64{120}))
@@ -684,7 +683,6 @@ func main() {
 	log.Println("Regression:\n%s\n", r)
 	prediction, _ := r.Predict([]float64{2})
 	log.Println("Predict:\n%s\n", prediction)
-
 
 	muxhttp := http.NewServeMux()
 	muxhttp.HandleFunc("/register", registerHandler)

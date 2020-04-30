@@ -22,6 +22,7 @@ public class DishActivity extends FragmentActivity {
     private String dishName;
     private String category;
     private String price;
+    private String foodService;
     private ImageListener imageListener = new ImageListener() {
         @Override
         public void setImageForPosition(int position, ImageView imageView) {
@@ -47,6 +48,7 @@ public class DishActivity extends FragmentActivity {
         dishName = intent.getStringExtra("name");
         category = intent.getStringExtra("category");
         price = intent.getStringExtra("price");
+        foodService = intent.getStringExtra("foodService");
 
         TextView nameView = findViewById(R.id.dishName);
         nameView.setText(dishName);
@@ -63,6 +65,7 @@ public class DishActivity extends FragmentActivity {
         intent.putExtra("name", dishName);
         intent.putExtra("category", category);
         intent.putExtra("price", price);
+        intent.putExtra("foodService", foodService);
         startActivity(intent);
     }
 

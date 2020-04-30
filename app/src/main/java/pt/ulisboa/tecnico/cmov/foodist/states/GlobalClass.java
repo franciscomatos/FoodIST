@@ -13,7 +13,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-
+import android.util.LruCache;
 import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
@@ -24,15 +24,23 @@ import java.util.Map;
 import pt.ulisboa.tecnico.cmov.foodist.activities.MainActivity;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 
 public class GlobalClass extends Application {
     private String CAMPUS = "Select a campus";
+    private int CACHESIZE = 100000; //100 MB
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
-    private String URL = "http://192.168.1.95:8000";
+    private String URL = "http://192.168.1.70:8000";
     private FoodService currentFoodService;
 
+    private LruCache<String,AppImage> imageMemCache = new LruCache<String,AppImage>(CACHESIZE){
+        @Override
+        protected int sizeOf(String key, AppImage image){
+            return image.getImage().getByteCount() / 1024;
+        }
+    };
 
     private LocationManager locationManager;
     private LocationListener locationListener = new LocationListener() {
@@ -223,5 +231,15 @@ public class GlobalClass extends Application {
 
     public FoodService getCurrentFoodService() {
         return this.currentFoodService;
+    }
+
+    public void addImageToCache(String key, AppImage image) {
+        if (getImageFromCache(key) == null) {
+            imageMemCache.put(key, image);
+        }
+    }
+
+    public AppImage getImageFromCache(String key) {
+        return imageMemCache.get(key);
     }
 }

@@ -119,6 +119,7 @@ public class MenuActivity extends AppCompatActivity {
                         intent.putExtra("name", dish.getName());
                         intent.putExtra("category", dish.getCategory().getCategory());
                         intent.putExtra("price", dish.getPrice().toString());
+                        intent.putExtra("foodService", foodServiceName);
                         startActivity(intent);
                     }
                 });
