@@ -35,9 +35,9 @@ public class uploadImage extends fetchBase {
 		return "{\"username\":\"" + getGlobal().getUsername() + "\"," +
 				"\"password\":\"" + getGlobal().getPassword() +"\"," +
 				"\"namemenu\":\"" + image.getDish() +"\"," +
-				"\"nameimage\":\"" + image.toString() +"\"," +
-				"\"image\":\"" + encoded +"\"," +
-				"\"namecanteen\":\""+image.getFoodService()+"\"}";
+                "\"nameimage\":\"" + image.toString() +"\"," +
+                "\"namecanteen\":\"" + image.getFoodService() +"\"," +
+				"\"image\":\""+encoded+"\"}";
 	}
 	@Override
 	protected void parse(String data) {
@@ -52,7 +52,6 @@ public class uploadImage extends fetchBase {
 			e.printStackTrace();
 		}catch (Exception e) {
 			Log.e("ERROR", data);
-			Log.e("ERROR", Dish.DishCategory.MEAT.getCategory());
 			e.printStackTrace();
 		}
 	}

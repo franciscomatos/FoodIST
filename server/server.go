@@ -141,6 +141,7 @@ type GetImagesRequest struct {
 	Menu     string `json:"menu"`
 	Page     int    `json:"page,string"`
 }
+
 type GetImagesResponse struct {
 	Images []Image `json:"images"`
 	Status string  `json:"status"`
@@ -383,8 +384,9 @@ func addImageHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest AddImageRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
+	log.Println("New version\n\n\n")
 	log.Println("New Image Received")
-	log.Println(userRequest)
+	//log.Println(userRequest)
 
 	//test if the user already exists
 	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
@@ -504,7 +506,6 @@ func getMenusHandler(w http.ResponseWriter, r *http.Request) {
 	var menus []MenusInterface
 
 	for key, value := range canteen.Menus {
-		log.Println("[DEBUG] ", value)
 		sum := 0
 		count := 0
 		for _, rating := range value.Ratings {

@@ -111,7 +111,6 @@ public class MenuActivity extends AppCompatActivity {
                 LinearLayout rightLayout = tr.findViewById(R.id.menuRightDish);
 
                 rightLayout.setTag(menuState.getConstraintDish(i + 1));
-
                 rightLayout.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         Dish dish = menuState.getConstraintDish(index+1);
@@ -137,6 +136,7 @@ public class MenuActivity extends AppCompatActivity {
                     intent.putExtra("name", dish.getName());
                     intent.putExtra("category", dish.getCategory().getCategory());
                     intent.putExtra("price", dish.getPrice().toString());
+                    intent.putExtra("foodService", foodServiceName);
                     startActivity(intent);
                 }
             });

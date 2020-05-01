@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
@@ -26,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import android.database.Cursor;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
@@ -146,12 +148,12 @@ public class AddPictureActivity extends AppCompatActivity {
 	*
 	* */
 	private void savePicture(ImageView iv,Uri uri) {
-		//create the file
-		File photoFile = null;
-		BitmapDrawable drawable = (BitmapDrawable) iv.getDrawable();
-		Bitmap bitmap = drawable.getBitmap();
+			//create the file
+			File photoFile = null;
+			BitmapDrawable drawable = (BitmapDrawable) iv.getDrawable();
+			Bitmap bitmap = drawable.getBitmap();
 
-		try {
+			try {
 			photoFile = createImageFile("JPEG_");
 		} catch (IOException ex) {
 			// Error occurred while creating the File
@@ -161,92 +163,63 @@ public class AddPictureActivity extends AppCompatActivity {
 		thread.start();
 	}
 
+	public void sendImage(GlobalClass global,Bitmap imageBitmap){
+		AppImage img, tbn;
+		Uri uri;
+		uploadImage process, processTbn;
+		img = new AppImage(foodService, dishName, new Date(), global.getUsername(), imageBitmap, false);
 
-	/*
-	@Override
-protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
+		//TODO: change width and height of the thumbnail
+		tbn = new AppImage(foodService, dishName, new Date(), global.getUsername(), Bitmap.createScaledBitmap(imageBitmap, 500, 500, false), true);
 
-    // Here we need to check if the activity that was triggers was the Image Gallery.
-    // If it is the requestCode will match the LOAD_IMAGE_RESULTS value.
-    // If the resultCode is RESULT_OK and there is some data we know that an image was picked.
-    if (requestCode == LOAD_IMAGE_RESULTS && resultCode == RESULT_OK && data != null) {
-        // Let's read picked image data - its URI
-        Uri pickedImage = data.getData();
-        // Let's read picked image path using content resolver
-        String[] filePath = { MediaStore.Images.Media.DATA };
-        Cursor cursor = getContentResolver().query(pickedImage, filePath, null, null, null);
-        cursor.moveToFirst();
-        String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
+		global.addImageToCache(img.toString(), img);
+		global.addImageToCache(tbn.toString(), tbn);
 
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+		process = new uploadImage(global, img);
+		processTbn = new uploadImage(global, tbn);
+		process.execute();
+		processTbn.execute();
 
-         // Do something with the bitmap
+	}
 
 
-        // At the end remember to close the cursor or you will end with the RuntimeException!
-        cursor.close();
-    }
-}
-	SOLUTION FROM STACK OVERFLOW TO TEST
-	*/
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data){
 		if(resultCode == Activity.RESULT_OK) {
             GlobalClass global = (GlobalClass) getApplicationContext();
-			Bundle extras;
-			Bitmap imageBitmap;
-			AppImage img, tbn;
-			Uri uri;
-			uploadImage process, processTbn;
+			Bitmap imageBitmap = null;
 			switch (requestCode) {
-				case REQUEST_GET_PHOTO:
-
-					//savePicture(imageView, uri);
-                    //get the image
-                     extras = data.getExtras();
-                     imageBitmap = (Bitmap) extras.get("data");
-
-					 img = new AppImage(foodService, dishName, new Date(), global.getUsername(), imageBitmap,false);
-
-					//TODO: change width and height of the thumbnail
-					 tbn = new AppImage(foodService, dishName, new Date(), global.getUsername(), Bitmap.createScaledBitmap(imageBitmap, 500, 500, false),true);
-
-					global.addImageToCache(img.toString(),img);
-					global.addImageToCache(tbn.toString(),tbn);
-
-					 process = new uploadImage(global, img);
-					 processTbn = new uploadImage(global, tbn);
-					process.execute();
-					processTbn.execute();
-
-					uri = data.getData();
-					imageView.setImageURI(uri);
-
-					break;
 				case REQUEST_TAKE_PHOTO:
-
-					extras = data.getExtras();
-					imageBitmap = (Bitmap) extras.get("data");
-
-					img = new AppImage(foodService, dishName, new Date(), global.getUsername(), imageBitmap,false);
-
-					//TODO: change width and height of the thumbnail
-					tbn = new AppImage(foodService, dishName, new Date(), global.getUsername(), Bitmap.createScaledBitmap(imageBitmap, 500, 500, false),true);
-
-					global.addImageToCache(img.toString(),img);
-					global.addImageToCache(tbn.toString(),tbn);
-
-					process = new uploadImage(global, img);
-					processTbn = new uploadImage(global, tbn);
-					process.execute();
-					processTbn.execute();
-
+					//we need to create a temp file to get the image full size, which is in currentPhotoPath
 					imageView.setImageURI(Uri.parse(currentPhotoPath));
-					//TODO: save the images in server (use some kind of AsyncTask)
+					//Get bitmap from camera by putting into an imageView and then retrieving it
+					BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+					imageBitmap = drawable.getBitmap();
+
+					if(imageBitmap != null) {
+						sendImage(global, imageBitmap);
+					}
 					break;
+
+				case REQUEST_GET_PHOTO :
+
+					try{
+						imageBitmap = MediaStore.Images.Media.getBitmap(
+								this.getContentResolver(), data.getData());
+					}catch(FileNotFoundException fnf){
+						Log.e("ERROR", ": Couldnt load image");
+						fnf.printStackTrace();
+					}catch(IOException io){
+						Log.e("ERROR", ": Something to due with the IO?");
+						io.printStackTrace();
+					}
+
+					if(imageBitmap != null) {
+						imageView.setImageBitmap(imageBitmap);
+						sendImage(global, imageBitmap);
+					}
+					break;
+
 				default:
 					Log.d("onActivityResult", "not a valid request code");
 			}
