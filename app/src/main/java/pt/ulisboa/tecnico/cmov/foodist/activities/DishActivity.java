@@ -6,10 +6,14 @@ import androidx.fragment.app.FragmentActivity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -18,6 +22,8 @@ import com.synnapps.carouselview.ImageListener;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
+import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class DishActivity extends FragmentActivity {
 
@@ -26,6 +32,10 @@ public class DishActivity extends FragmentActivity {
     private String dishName;
     private String category;
     private String price;
+    private String foodServiceName;
+    private Integer dishIndex;
+    private Dish dish;
+
     private ImageListener imageListener = new ImageListener() {
         @Override
         public void setImageForPosition(int position, ImageView imageView) {
@@ -51,6 +61,14 @@ public class DishActivity extends FragmentActivity {
         dishName = intent.getStringExtra("name");
         category = intent.getStringExtra("category");
         price = intent.getStringExtra("price");
+        foodServiceName = intent.getStringExtra("foodService");
+        Integer m = intent.getIntExtra("dishIndex",10);
+        Log.i("MYLOGS", "MMMMMMM" + m);
+        dishIndex = m;
+
+        GlobalClass global = (GlobalClass) getApplicationContext();
+        Menu menu = global.getFoodService(foodServiceName).getMenu();
+        dish = menu.getDish(dishIndex);
 
         TextView nameView = findViewById(R.id.dishName);
         nameView.setText(dishName);
@@ -60,6 +78,19 @@ public class DishActivity extends FragmentActivity {
 
         TextView priceView = findViewById(R.id.dishPrice);
         priceView.setText(price);
+
+        // initiate rating bar and a button
+        final RatingBar ratingBar = findViewById(R.id.ratingBar);
+        Button submitRatingButton = findViewById(R.id.submitRattingButton);
+        // perform click event on button
+        submitRatingButton.setOnClickListener(v -> {
+            // get values and then displayed in a toast
+            String totalStars = "Total Stars:: " + ratingBar.getNumStars();
+            String rating = "Rating :: " + ratingBar.getRating();
+            DishActivity.this.dish.addRating((int) ratingBar.getRating());
+            String average = "Average:: " + DishActivity.this.dish.computeRatingAverage();
+            Toast.makeText(getApplicationContext(), rating + "\n" + average, Toast.LENGTH_LONG).show();
+        });
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {

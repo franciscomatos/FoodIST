@@ -73,7 +73,7 @@ public class MenuActivity extends AppCompatActivity {
         this.tableLayout = findViewById(R.id.menuTable);
 
         Log.i("MenuActivity", "found Table");
-        menuState.clear();
+        //menuState.clear();
         fetchMenu process = new fetchMenu(this, menuState, foodServiceName,global);
         process.execute();
 
@@ -125,6 +125,7 @@ public class MenuActivity extends AppCompatActivity {
             leftLayout.setTag(menuState.getConstraintDish(i));
 
             final int index = i;
+            final String foodService = this.foodServiceName;
             // right dish
             if(index+1 < menuState.getConstrainedCounter()) {
                 TextView dishNameRightView = tr.findViewById(R.id.menuDishNameRight);
@@ -146,6 +147,8 @@ public class MenuActivity extends AppCompatActivity {
                         intent.putExtra("name", dish.getName());
                         intent.putExtra("category", dish.getCategory().getCategory());
                         intent.putExtra("price", dish.getPrice().toString());
+                        intent.putExtra("foodService", foodService);
+                        intent.putExtra("dishIndex", index+1);
                         startActivity(intent);
                     }
                 });
@@ -163,6 +166,8 @@ public class MenuActivity extends AppCompatActivity {
                     intent.putExtra("name", dish.getName());
                     intent.putExtra("category", dish.getCategory().getCategory());
                     intent.putExtra("price", dish.getPrice().toString());
+                    intent.putExtra("foodService", foodService);
+                    intent.putExtra("dishIndex", index);
                     startActivity(intent);
                 }
             });

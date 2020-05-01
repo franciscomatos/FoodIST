@@ -1,5 +1,8 @@
 package pt.ulisboa.tecnico.cmov.foodist.domain;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Dish {
 
     public enum DishCategory
@@ -29,11 +32,16 @@ public class Dish {
     private String name;
     private Double price;
     private DishCategory category;
+    private Map<Integer, Integer> ratings = new HashMap<>();
 
     public Dish(String name, Double price, DishCategory category) {
         this.name = name;
         this.price = price;
         this.category = category;
+
+        // ratings initialization
+        for(int i = 1; i <= 5; i++)
+            this.ratings.put(i,0);
     }
 
     /* getters */
@@ -67,5 +75,21 @@ public class Dish {
 
     public void setCategory(DishCategory category) {
         this.category = category;
+    }
+
+    /* others */
+    public void addRating(Integer classification) {
+        Integer current = this.ratings.get(classification);
+        this.ratings.put(classification, current+1);
+    }
+
+    public Double computeRatingAverage() {
+        Double total = 0.0;
+        Integer counter = 0;
+        for(Map.Entry<Integer, Integer> classification: ratings.entrySet()) {
+            total += (classification.getValue() * classification.getKey());
+            counter += classification.getValue();
+        }
+        return total / counter;
     }
 }
