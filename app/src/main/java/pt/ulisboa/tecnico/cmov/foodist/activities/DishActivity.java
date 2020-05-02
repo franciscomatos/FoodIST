@@ -9,11 +9,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
+import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchImages;
 
 public class DishActivity extends FragmentActivity {
 
@@ -34,6 +35,7 @@ public class DishActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish);
+        GlobalClass global = (GlobalClass) getApplicationContext();
 
         /*ImageView iv_background =findViewById(R.id.iv_background);
         AnimationDrawable animationDrawable = (AnimationDrawable) iv_background.getDrawable();
@@ -58,6 +60,11 @@ public class DishActivity extends FragmentActivity {
 
         TextView priceView = findViewById(R.id.dishPrice);
         priceView.setText(price);
+
+        fetchImages process = new fetchImages(global, carouselView, foodService, dishName, 0);
+        process.execute();
+
+
     }
 
     public void goToAddPictureActivity(View v) {

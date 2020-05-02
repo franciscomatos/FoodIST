@@ -41,6 +41,7 @@ public class uploadImage extends fetchBase {
 	}
 	@Override
 	protected void parse(String data) {
+		Log.i("UPLOADIMAGE", "Image Name:"+ image.toString());
 		Log.i("UPLOADIMAGE", getData());
 		try {
 			JSONObject response = new JSONObject(data);

@@ -63,6 +63,7 @@ public class AppImage {
 
     @Override
     public String toString() { //"T_CIVIL_TOSTA_0800_pedro timestamp is diferent tho"
-        return  this.thumbnail ? "T_" : "F_" + this.foodService + "_" + this.dish + "_" + String.valueOf(timestamp.getTime()) + "_" + this.username; //where timestamp is the number of miliseconds
+        String prefix = this.thumbnail ? "T_" : "F_";
+        return prefix + this.foodService + "_" + this.dish  + "_" + this.username+ "_" + String.valueOf(timestamp.getTime()); //where timestamp is the number of miliseconds
     }
 }

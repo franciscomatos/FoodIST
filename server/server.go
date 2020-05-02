@@ -556,18 +556,32 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	begin := SIZE * userRequest.Page
 	end := SIZE*userRequest.Page + SIZE
+	var matches []Image
 
 	var response GetImagesResponse
+	log.Println("Sending images...")
 
-	if end >= len(canteen.Menus[userRequest.Menu].Gallery) {
-		response = GetImagesResponse{
-			Status: "OK",
-			Images: canteen.Menus[userRequest.Menu].Gallery[begin:]}
-	} else {
-		response = GetImagesResponse{
-			Status: "OK",
-			Images: canteen.Menus[userRequest.Menu].Gallery[begin:end]}
+	for i:= 0; i<len(canteen.Menus[userRequest.Menu].Gallery); i++ {
+		log.Println(canteen.Menus[userRequest.Menu].Gallery[i].Name)
 	}
+
+	for i := begin; i < end && i < len(canteen.Menus[userRequest.Menu].Gallery); i++ {
+		if canteen.Menus[userRequest.Menu].Gallery[i].Name[0] == 'T' {
+			matches = append(matches, canteen.Menus[userRequest.Menu].Gallery[i])
+		}
+	}
+	response = GetImagesResponse{
+		Status: "OK",
+		Images: matches}
+	// if end >= len(canteen.Menus[userRequest.Menu].Gallery) {
+	// 	response = GetImagesResponse{
+	// 		Status: "OK",
+	// 		Images: canteen.Menus[userRequest.Menu].Gallery[begin:]}
+	// } else {
+	// 	response = GetImagesResponse{
+	// 		Status: "OK",
+	// 		Images: canteen.Menus[userRequest.Menu].Gallery[begin:end]}
+	// }
 	json.NewEncoder(w).Encode(response)
 }
 

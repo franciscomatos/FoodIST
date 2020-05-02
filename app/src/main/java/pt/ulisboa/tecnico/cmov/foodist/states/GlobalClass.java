@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.foodist.activities.MainActivity;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
@@ -239,7 +240,18 @@ public class GlobalClass extends Application {
         }
     }
 
-    public AppImage getImageFromCache(String key) {
-        return imageMemCache.get(key);
-    }
+        public AppImage getImageFromCache(String key) {
+            return imageMemCache.get(key);
+        }
+
+        public List<AppImage> getThumbnailsByFoodServiceDish(String foodService, String dish){
+            List<AppImage> matches = new ArrayList<AppImage>();
+            Map<String, AppImage> cachemap = imageMemCache.snapshot();
+            //iterate through the map and find images from same foodService and Dish
+            cachemap.forEach((k,v) -> {
+                if(v.getFoodService().equals(foodService) && v.getDish().equals(dish) && v.isThumbnail())
+                    matches.add(v);
+            });
+            return matches;
+        }
 }

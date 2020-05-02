@@ -167,10 +167,11 @@ public class AddPictureActivity extends AppCompatActivity {
 		AppImage img, tbn;
 		Uri uri;
 		uploadImage process, processTbn;
-		img = new AppImage(foodService, dishName, new Date(), global.getUsername(), imageBitmap, false);
+		Date current = new Date();
+		img = new AppImage(foodService, dishName, current, global.getUsername(), imageBitmap, false);
 
 		//TODO: change width and height of the thumbnail
-		tbn = new AppImage(foodService, dishName, new Date(), global.getUsername(), Bitmap.createScaledBitmap(imageBitmap, 500, 500, false), true);
+		tbn = new AppImage(foodService, dishName, current, global.getUsername(), Bitmap.createScaledBitmap(imageBitmap, 500, 500, false), true);
 
 		global.addImageToCache(img.toString(), img);
 		global.addImageToCache(tbn.toString(), tbn);
