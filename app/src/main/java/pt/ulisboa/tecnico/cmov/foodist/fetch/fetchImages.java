@@ -96,14 +96,16 @@ public class fetchImages extends fetchBase {
 	protected void onPostExecute(Void aVoid) {
 		//will update the activity
 		if(!matches.isEmpty()) {
-			imageListener = new ImageListener() {
-				@Override
-				public void setImageForPosition(int position, ImageView imageView) {
-					imageView.setImageBitmap(matches.get(position).getImage());
+			Log.i("FETCHIMAGES", "found matches!");
+
+			carouselView.setImageListener(new ImageListener() {
+					@Override
+					public void setImageForPosition(int position, ImageView imageView) {
+						imageView.setImageBitmap(matches.get(position).getImage());
+					}
 				}
-			};
+			);
 			carouselView.setPageCount(matches.size());
-			carouselView.setImageListener(imageListener);
 		}
 		Log.i("FETCHIMAGES", "finished fetching");
 	}

@@ -43,8 +43,8 @@ public class DishActivity extends FragmentActivity {
 
         // MISSING: GET IMAGES FROM SERVER AND CACHE THEM
         carouselView = findViewById(R.id.carouselView);
-        carouselView.setPageCount(sampleImages.length);
-        carouselView.setImageListener(imageListener);
+        //carouselView.setPageCount(sampleImages.length);
+        //carouselView.setImageListener(imageListener);
 
         Intent intent = getIntent();
         dishName = intent.getStringExtra("name");
