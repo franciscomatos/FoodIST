@@ -63,6 +63,10 @@ public class Dish {
         return this.category.getCategory();
     }
 
+    public Map<Integer, Integer> getRatings() {
+        return this.ratings;
+    }
+
     /* setters*/
 
     public void setName(String name) {
@@ -90,6 +94,15 @@ public class Dish {
             total += (classification.getValue() * classification.getKey());
             counter += classification.getValue();
         }
+        if(total == 0.0 && counter == 0) return 0.0;
         return total / counter;
+    }
+
+    public Integer computeNumberOfRatings() {
+        Integer counter = 0;
+        for(Map.Entry<Integer, Integer> classification: ratings.entrySet()) {
+            counter += classification.getValue();
+        }
+        return counter;
     }
 }
