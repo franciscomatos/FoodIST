@@ -134,7 +134,8 @@ type CanteenInterface struct {
 	Prediction int    `json:"prediction"`
 }
 
-type GetImagesRequest struct {
+// will only return the names of the images
+type GetImageNamesRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Canteen  string `json:"canteen"`
@@ -142,7 +143,26 @@ type GetImagesRequest struct {
 	Page     int    `json:"page,string"`
 }
 
-type GetImagesResponse struct {
+type GetImageNamesResponse struct {
+	Images []string `json:"images"`
+	Status string   `json:"status"`
+}
+
+type GetBulkImagesRequest struct {
+	Username string   `json:"username"`
+	Password string   `json:"password"`
+	Canteen  string   `json:"canteen"`
+	Menu     string   `json:"menu"`
+	Images   []string `json:"images"`
+}
+type GetTestRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Canteen  string `json:"canteen"`
+	Menu     string `json:"menu"`
+}
+
+type GetBulkImagesResponse struct {
 	Images []Image `json:"images"`
 	Status string  `json:"status"`
 }
@@ -384,8 +404,7 @@ func addImageHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest AddImageRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
-	log.Println("New version\n\n\n")
-	log.Println("New Image Received")
+	log.Println("Receiving image ...")
 	//log.Println(userRequest)
 
 	//test if the user already exists
@@ -403,7 +422,8 @@ func addImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	canteen.Menus[userRequest.NameMenu].Gallery = append(canteen.Menus[userRequest.NameMenu].Gallery, Image{Name: userRequest.NameImage, Image: userRequest.Image})
+	//canteen.Menus[userRequest.NameMenu].Gallery = append(canteen.Menus[userRequest.NameMenu].Gallery, Image{Name: userRequest.NameImage, Image: userRequest.Image})
+	canteen.Menus[userRequest.NameMenu].Gallery = append([]Image{Image{Name: userRequest.NameImage, Image: userRequest.Image}}, canteen.Menus[userRequest.NameMenu].Gallery...)
 
 	response := AddImageResponse{
 		Status: "OK"}
@@ -534,10 +554,55 @@ func getMenusHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getImagesHandler(w http.ResponseWriter, r *http.Request) {
-	var userRequest GetImagesRequest
+	var userRequest GetBulkImagesRequest
+	//var userRequest GetTestRequest
+
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
 	log.Println("New request for images Received")
+	log.Println(userRequest)
+
+	//test if the user already exists
+	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	canteen, stmt, status := validadeCanteen(userRequest.Canteen)
+	//_, stmt, status = validadeCanteen(userRequest.Canteen)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+	var matches []Image
+	var response GetBulkImagesResponse
+	log.Println("Sending images...")
+
+	//FIXME: no need to iterate through the entire slice if page is provided
+	for _, imageName := range userRequest.Images {
+		for _, n := range canteen.Menus[userRequest.Menu].Gallery {
+			if imageName == n.Name {
+				matches = append(matches, n)
+			}
+		}
+	}
+
+	response = GetBulkImagesResponse{
+		Status: "OK",
+		Images: matches}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+//will
+func getImagesNameHandler(w http.ResponseWriter, r *http.Request) {
+	var userRequest GetImageNamesRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("New request for imageNames Received")
 	log.Println(userRequest)
 
 	//test if the user already exists
@@ -556,32 +621,22 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	begin := SIZE * userRequest.Page
 	end := SIZE*userRequest.Page + SIZE
-	var matches []Image
+	var matches []string
 
-	var response GetImagesResponse
+	var response GetImageNamesResponse
 	log.Println("Sending images...")
-
-	for i:= 0; i<len(canteen.Menus[userRequest.Menu].Gallery); i++ {
-		log.Println(canteen.Menus[userRequest.Menu].Gallery[i].Name)
-	}
 
 	for i := begin; i < end && i < len(canteen.Menus[userRequest.Menu].Gallery); i++ {
 		if canteen.Menus[userRequest.Menu].Gallery[i].Name[0] == 'T' {
-			matches = append(matches, canteen.Menus[userRequest.Menu].Gallery[i])
+			matches = append(matches, canteen.Menus[userRequest.Menu].Gallery[i].Name)
+			log.Print("MATCH: ")
 		}
+		log.Println(canteen.Menus[userRequest.Menu].Gallery[i].Name)
 	}
-	response = GetImagesResponse{
+	response = GetImageNamesResponse{
 		Status: "OK",
 		Images: matches}
-	// if end >= len(canteen.Menus[userRequest.Menu].Gallery) {
-	// 	response = GetImagesResponse{
-	// 		Status: "OK",
-	// 		Images: canteen.Menus[userRequest.Menu].Gallery[begin:]}
-	// } else {
-	// 	response = GetImagesResponse{
-	// 		Status: "OK",
-	// 		Images: canteen.Menus[userRequest.Menu].Gallery[begin:end]}
-	// }
+
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -709,6 +764,7 @@ func main() {
 	muxhttp.HandleFunc("/predict", getCanteensHandler)
 	muxhttp.HandleFunc("/getMenus", getMenusHandler)
 	muxhttp.HandleFunc("/getImages", getImagesHandler)
+	muxhttp.HandleFunc("/checkImageNames", getImagesNameHandler)
 	muxhttp.HandleFunc("/queue", queueHandler)
 
 	go func() {
