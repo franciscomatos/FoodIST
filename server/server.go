@@ -167,6 +167,18 @@ type GetBulkImagesResponse struct {
 	Status string  `json:"status"`
 }
 
+type GetPreFetchImagesMenuRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Canteen  string `json:"canteen"`
+	Menu     string `json:"menu"`
+}
+
+type GetPreFetchImagesMenuResponse struct {
+	Images []string `json:"images"`
+	Status string   `json:"status"`
+}
+
 type QueueRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -597,7 +609,6 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-//will
 func getImagesNameHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest GetImageNamesRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
@@ -634,6 +645,46 @@ func getImagesNameHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(canteen.Menus[userRequest.Menu].Gallery[i].Name)
 	}
 	response = GetImageNamesResponse{
+		Status: "OK",
+		Images: matches}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func prefetchMenuImages(w http.ResponseWriter, r *http.Request) {
+	var userRequest GetPreFetchImagesMenuRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("New request to prefetch menu Received")
+	log.Println(userRequest)
+
+	//test if the user already exists
+	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	canteen, stmt, status := validadeCanteen(userRequest.Canteen)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+	var matches []string
+
+	var response GetPreFetchImagesMenuResponse
+	log.Println("Sending images...")
+
+	for i := 0; i < SIZE && i < len(canteen.Menus[userRequest.Menu].Gallery); i++ {
+		if canteen.Menus[userRequest.Menu].Gallery[i].Name[0] == 'T' {
+			matches = append(matches, canteen.Menus[userRequest.Menu].Gallery[i].Name)
+			log.Print("MATCH: ")
+		}
+		log.Println(canteen.Menus[userRequest.Menu].Gallery[i].Name)
+	}
+	response = GetPreFetchImagesMenuResponse{
 		Status: "OK",
 		Images: matches}
 
@@ -766,6 +817,7 @@ func main() {
 	muxhttp.HandleFunc("/getImages", getImagesHandler)
 	muxhttp.HandleFunc("/checkImageNames", getImagesNameHandler)
 	muxhttp.HandleFunc("/queue", queueHandler)
+	muxhttp.HandleFunc("/prefetch", prefetchMenuImages)
 
 	go func() {
 		log.Println("Serving HTTP")
