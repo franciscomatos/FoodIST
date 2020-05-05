@@ -86,7 +86,7 @@ public class AddPictureActivity extends AppCompatActivity {
 		// Sets the type as image/*. This ensures only components of type image are selected
 		intent.setType("image/*");
 		//We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
-		String[] mimeTypes = {"image/jpeg", "image/png"};
+		String[] mimeTypes = {"image/jpeg"};
 		intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
 		// Launching the Intent
 		startActivityForResult(intent,REQUEST_GET_PHOTO);

@@ -9,37 +9,35 @@ import com.synnapps.carouselview.ImageListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Base64;
 
 import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 
-public class prefetchMenu extends fetchBase {
+public class prefetch extends fetchBase {
 
-	private String foodService;
-	private String dish;
-
-	public prefetchMenu(GlobalClass global, String foodService, String dish) {
+	public prefetch(GlobalClass global) {
 		super(global, global.getURL() + "/prefetch");
-		this.foodService = foodService;
-		this.dish = dish;
 	}
 
 	protected String buildBody() {
+		//find total nr of images it needs
 		return "{\"username\":\"" + getGlobal().getUsername() + "\"," +
-				"\"password\":\"" + getGlobal().getPassword() +"\"," +
-                "\"menu\":\"" + dish +"\"," +
-				"\"canteen\":\""+foodService+"\"}";
+				"\"nrimages\":\""+getGlobal().getNrThumbnailsLeft()+"\"," +
+				"\"password\":\"" + getGlobal().getPassword() +"\"}" ;
 	}
 
 	@Override
 	protected void parse(String data) {
-		Log.i("PREFETCH", "parsing names ...");
-		cached = getGlobal().getThumbnailsByFoodServiceDish(foodService,dish);
+
+		Log.i("PREFETCH", "parsing response ...");
+
 		try {
 			JSONObject response = new JSONObject(data);
 			if(!response.getString("status").equals("OK"))
@@ -51,10 +49,13 @@ public class prefetchMenu extends fetchBase {
 
 				JSONObject obj = images.getJSONObject(i);
 
-				String img_name =  	obj.getString("name");
+                String img_name =  	obj.getString("name");
+                String foodService =  	obj.getString("foodservice");
+                String dish =  	obj.getString("dish");
 
 				byte[] decodedString = Base64.getDecoder().decode(obj.getString("image")) ;
 				Bitmap img_dec = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
 				//HACK: this could have been avoided with a bit of thinking...
 				String[] tmp = img_name.split("_");
 
@@ -63,6 +64,7 @@ public class prefetchMenu extends fetchBase {
 				//it will only return thumbnails
 				AppImage img = new AppImage(foodService, dish, new Date(time), getGlobal().getUsername(),img_dec, true);
 				getGlobal().addImageToCache(img.toString(), img);
+			}
 
 		} catch (JSONException e) {
 			Log.e("ERROR", ": Failed to parse the json");
@@ -72,6 +74,7 @@ public class prefetchMenu extends fetchBase {
 			e.printStackTrace();
 		}
 	}
+
 
 	protected void onPostExecute(Void aVoid) {
 		Log.i("PREFETCH", "finished prefetching!");

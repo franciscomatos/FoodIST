@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
+import android.net.wifi.WifiManager;
 
 public class WifiBroadcastReceiver extends BroadcastReceiver {
 
@@ -65,7 +66,7 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
         }else if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
             if (intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
                 activity.makeToast("Connected to WiFi");
-                //here iterate through
+                activity.prefetch(); //do it all the time? or only once?
             } else {
                 activity.makeToast("WiFi lost");
             }

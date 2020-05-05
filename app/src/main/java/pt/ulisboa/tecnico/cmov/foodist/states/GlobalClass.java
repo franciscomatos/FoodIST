@@ -29,7 +29,7 @@ import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 
 public class GlobalClass extends Application {
     private String CAMPUS = "Select a campus";
-    private int CACHESIZE = 100000; //100 MB
+    private int CACHESIZE = 100*1024*1024; //100 MB
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
@@ -39,7 +39,7 @@ public class GlobalClass extends Application {
     private LruCache<String,AppImage> imageMemCache = new LruCache<String,AppImage>(CACHESIZE){
         @Override
         protected int sizeOf(String key, AppImage image){
-            return image.getImage().getByteCount() / 1024;
+            return image.getImage().getAllocationByteCount() / (1024*1024); //to get the size in MB
         }
     };
 
@@ -253,5 +253,13 @@ public class GlobalClass extends Application {
                     matches.add(v);
             });
             return matches;
+        }
+        /*
+        * Uses the max size of a Thumbnail possible:
+        * JPEG with 500x500 size and bit depth of 48bit
+        *
+        * */
+        public int getNrThumbnailsLeft(){
+            return  (CACHESIZE - imageMemCache.size())/(int) 1.5;
         }
 }

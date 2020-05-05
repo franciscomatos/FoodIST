@@ -112,13 +112,6 @@ type GetMenusResponse struct {
 	Status string           `json:"status"`
 }
 
-type MenusInterface struct {
-	Name    string  `json:"name"`
-	Price   float64 `json:"price"`
-	Dietary string  `json:"dietary"`
-	Ratings float64 `json:"ratings"`
-}
-
 type GetCanteensRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -127,11 +120,6 @@ type GetCanteensRequest struct {
 type GetCanteensResponse struct {
 	Canteens []CanteenInterface `json:"canteens"`
 	Status   string             `json:"status"`
-}
-
-type CanteenInterface struct {
-	Name       string `json:"name"`
-	Prediction int    `json:"prediction"`
 }
 
 // will only return the names of the images
@@ -155,12 +143,6 @@ type GetBulkImagesRequest struct {
 	Menu     string   `json:"menu"`
 	Images   []string `json:"images"`
 }
-type GetTestRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Canteen  string `json:"canteen"`
-	Menu     string `json:"menu"`
-}
 
 type GetBulkImagesResponse struct {
 	Images []Image `json:"images"`
@@ -170,13 +152,12 @@ type GetBulkImagesResponse struct {
 type GetPreFetchImagesMenuRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Canteen  string `json:"canteen"`
-	Menu     string `json:"menu"`
+	NrImages int    `json:"nrimages"`
 }
 
 type GetPreFetchImagesMenuResponse struct {
-	Images []string `json:"images"`
-	Status string   `json:"status"`
+	Images []ImageMet `json:"images"`
+	Status string     `json:"status"`
 }
 
 type QueueRequest struct {
@@ -187,6 +168,24 @@ type QueueRequest struct {
 }
 type QueueResponse struct {
 	Status string `json:"status"`
+}
+
+type MenusInterface struct {
+	Name    string  `json:"name"`
+	Price   float64 `json:"price"`
+	Dietary string  `json:"dietary"`
+	Ratings float64 `json:"ratings"`
+}
+
+type CanteenInterface struct {
+	Name       string `json:"name"`
+	Prediction int    `json:"prediction"`
+}
+
+type ImageMet struct {
+	Image   Image  `json:"image"`
+	Canteen string `json:"canteen"`
+	Menu    string `json:"menu"`
 }
 
 //Business Logic structs
@@ -666,27 +665,42 @@ func prefetchMenuImages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	canteen, stmt, status := validadeCanteen(userRequest.Canteen)
-	if status != http.StatusOK {
-		log.Println("[ERROR] ", stmt)
-		http.Error(w, stmt, status)
-		return
+	var images []ImageMet
+
+	type Names struct {
+		Canteen string
+		Menus   []string
 	}
-	var matches []string
-
-	var response GetPreFetchImagesMenuResponse
-	log.Println("Sending images...")
-
-	for i := 0; i < SIZE && i < len(canteen.Menus[userRequest.Menu].Gallery); i++ {
-		if canteen.Menus[userRequest.Menu].Gallery[i].Name[0] == 'T' {
-			matches = append(matches, canteen.Menus[userRequest.Menu].Gallery[i].Name)
-			log.Print("MATCH: ")
+	var tmp []Names
+	var menunames []string
+	var total int
+	//create tmp struct to view the data differently
+	//now its possible to jump around the canteens
+	for canteenname, canteen := range places {
+		for menuname, menu := range canteen.Menus {
+			menunames = append(menunames, menuname)
+			total += len(menu.Gallery)
 		}
-		log.Println(canteen.Menus[userRequest.Menu].Gallery[i].Name)
+		tmp = append(tmp, Names{Canteen: canteenname, Menus: menunames})
 	}
-	response = GetPreFetchImagesMenuResponse{
+
+	for i, menuctr := 0, 0; i < userRequest.NrImages && i < total; i++ {
+
+		canteen := places[tmp[i%len(places)].Canteen]            //picks the canteen
+		menu := canteen.Menus[tmp[i%len(places)].Menus[menuctr]] //picks the menu
+
+		if menuctr < len(menu.Gallery) { // still has images
+			images = append(images, ImageMet{Image: menu.Gallery[menuctr], Canteen: tmp[i%len(places)].Canteen, Menu: tmp[i%len(places)].Menus[menuctr]})
+		}
+
+		if i%len(places) == 0 && i != 0 { //means that it is back at the beginning
+			menuctr++
+		}
+	}
+
+	response := GetPreFetchImagesMenuResponse{
 		Status: "OK",
-		Images: matches}
+		Images: images}
 
 	json.NewEncoder(w).Encode(response)
 }
