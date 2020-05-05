@@ -86,7 +86,8 @@ public class fetchCacheImages extends fetchBase {
 
 	protected void onPostExecute(Void aVoid) {
 		Log.i("FETCHCACHEIMAGES", "writing carousel!");
-
+		//write what already has in cache for when the connection is slow,
+		//this way there is at least something to show
 		carouselView.setImageListener(new ImageListener() {
 				@Override
 				public void setImageForPosition(int position, ImageView imageView) {

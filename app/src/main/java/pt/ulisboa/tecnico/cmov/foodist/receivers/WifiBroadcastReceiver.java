@@ -62,6 +62,13 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
             ginfo.print();
             activity.makeToast("Group owner changed");
 
+        }else if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
+            if (intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
+                activity.makeToast("Connected to WiFi");
+                //here iterate through
+            } else {
+                activity.makeToast("WiFi lost");
+            }
         }
     }
 }

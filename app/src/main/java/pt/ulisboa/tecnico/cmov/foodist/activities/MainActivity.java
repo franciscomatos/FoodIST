@@ -28,6 +28,7 @@ import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.registerUser;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.prefetchMenu;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.toggleQueue;
 import pt.ulisboa.tecnico.cmov.foodist.receivers.WifiBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
@@ -42,6 +43,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
     private Messenger mService = null;
     private boolean mBound = false;
     private WifiBroadcastReceiver mReceiver;
+    private GlobalClass global;
 
     private Handler handler = new Handler();
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -99,6 +101,12 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         registry.execute();
     }
 
+    private void prefetch() {
+
+        prefetchMenu process = new prefetchMenu(this.global, foodService, dish);
+        process.execute();
+    }
+
     private void startWifi() {
         makeToast("Service started");
         //SimWifiP2pSocketManager.Init(getApplicationContext());
@@ -107,6 +115,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
         mReceiver = new WifiBroadcastReceiver(this);
         registerReceiver(mReceiver, filter);
 
