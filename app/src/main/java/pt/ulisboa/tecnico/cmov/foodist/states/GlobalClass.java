@@ -35,6 +35,7 @@ public class GlobalClass extends Application {
     private double LONGITUDE;
     private String URL = "http://192.168.1.70:8000";
     private FoodService currentFoodService;
+    private boolean connected  = false;
 
     private LruCache<String,AppImage> imageMemCache = new LruCache<String,AppImage>(CACHESIZE){
         @Override
@@ -260,6 +261,15 @@ public class GlobalClass extends Application {
         *
         * */
         public int getNrThumbnailsLeft(){
-            return  (CACHESIZE - imageMemCache.size())/(int) 1.5;
+            return  ((CACHESIZE/(1024*1024)) - imageMemCache.size())/(int) 1.5;
+
+        }
+
+        public boolean isConnected(){
+            return this.connected;
+        }
+
+        public void setConnected(boolean val){
+            this.connected = val;
         }
 }

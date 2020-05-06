@@ -49,11 +49,12 @@ public class prefetch extends fetchBase {
 
 				JSONObject obj = images.getJSONObject(i);
 
-                String img_name =  	obj.getString("name");
-                String foodService =  	obj.getString("foodservice");
-                String dish =  	obj.getString("dish");
+				JSONObject imgJson =  	obj.getJSONObject("image");
+                String img_name = imgJson.getString("name");
+                String foodService =  	obj.getString("canteen");
+                String dish =  	obj.getString("menu");
 
-				byte[] decodedString = Base64.getDecoder().decode(obj.getString("image")) ;
+				byte[] decodedString = Base64.getDecoder().decode(imgJson.getString("image")) ;
 				Bitmap img_dec = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
 				//HACK: this could have been avoided with a bit of thinking...

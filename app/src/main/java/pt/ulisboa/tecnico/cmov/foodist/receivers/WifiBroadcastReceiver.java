@@ -66,9 +66,11 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
         }else if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
             if (intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
                 activity.makeToast("Connected to WiFi");
-                activity.prefetch(); //do it all the time? or only once?
+                activity.setConnected(true);
+                activity.prefetch(); // do it all the time?
             } else {
                 activity.makeToast("WiFi lost");
+                activity.setConnected(false);
             }
         }
     }

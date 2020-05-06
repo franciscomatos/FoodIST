@@ -87,14 +87,14 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         setContentView(R.layout.activity_main);
         configureFoodListButton();
 
-        GlobalClass global = (GlobalClass) getApplicationContext();
+        this.global = (GlobalClass) getApplicationContext();
         global.setLocationManager( (LocationManager) getSystemService(Context.LOCATION_SERVICE));
         global.getLocation2(MainActivity.this);
 
         startWifi();
 
         registerUser(global);
-        prefetch();
+        global.setConnected(isOnline());
     }
 
     private void registerUser(GlobalClass global) {
@@ -108,12 +108,13 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI);
     }
+    public void setConnected(boolean val){
+        global.setConnected(val);
+    }
 
     public void prefetch() {
-        if(isOnline()) {
-            prefetch process = new prefetch(this.global);
+            prefetch process = new prefetch(global);
             process.execute();
-        }
     }
 
     private void startWifi() {
@@ -186,7 +187,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
                 })
                 .show();
 */
-        GlobalClass global = (GlobalClass) getApplicationContext();
+        //GlobalClass global = (GlobalClass) getApplicationContext();
 
         //DateFormat presDateFormat = new SimpleDateFormat("HH:mm");
         Date current = new Date();   // given date

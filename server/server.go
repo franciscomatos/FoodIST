@@ -152,7 +152,7 @@ type GetBulkImagesResponse struct {
 type GetPreFetchImagesMenuRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	NrImages int    `json:"nrimages"`
+	NrImages int    `json:"nrimages,string"`
 }
 
 type GetPreFetchImagesMenuResponse struct {
@@ -686,10 +686,12 @@ func prefetchMenuImages(w http.ResponseWriter, r *http.Request) {
 
 	for i, menuctr := 0, 0; i < userRequest.NrImages && i < total; i++ {
 
-		canteen := places[tmp[i%len(places)].Canteen]            //picks the canteen
-		menu := canteen.Menus[tmp[i%len(places)].Menus[menuctr]] //picks the menu
+		canteen := places[tmp[i%len(places)].Canteen] //picks the canteen
 
-		if menuctr < len(menu.Gallery) { // still has images
+		if menuctr < len(canteen.Menus) { // still has images
+
+			menu := canteen.Menus[tmp[i%len(places)].Menus[menuctr]] //picks the menu
+			log.Println(tmp[i%len(places)].Menus[menuctr])
 			images = append(images, ImageMet{Image: menu.Gallery[menuctr], Canteen: tmp[i%len(places)].Canteen, Menu: tmp[i%len(places)].Menus[menuctr]})
 		}
 
