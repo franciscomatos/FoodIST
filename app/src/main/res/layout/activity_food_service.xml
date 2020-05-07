@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/background"
     android:layout_height="match_parent"
-    tools:context=".activities.FoodServiceActivity">
+    tools:context=".activities.FoodServiceActivity"
+    android:foreground="@drawable/shape_window_dim">
 
-    <LinearLayout
+
+<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="100dp"
@@ -16,6 +19,10 @@
         android:paddingTop="10dp"><![CDATA[
 
         android:text="Info" />
+
+
+
+
 
 
 
@@ -41,7 +48,7 @@
                 android:src="@drawable/ic_restaurant" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="211dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="5dp">
@@ -81,32 +88,72 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:orientation="horizontal"
+                    android:paddingTop="5dp">
+
+
+                    <ImageView
+                        android:id="@+id/walk"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        app:srcCompat="@drawable/walk_white" />
+
+                    <TextView
+                        android:id="@+id/ETA"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:text="@string/distance"
+                        android:textColor="#ffffff"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp">
+
+                <ImageView
+                    android:id="@+id/clock"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    app:srcCompat="@drawable/clock" />
+
                 <TextView
-                    android:id="@+id/ETA"
+                    android:id="@+id/queue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:text="@string/distance"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#ffffff"
                     android:textSize="18sp" />
+                </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout><![CDATA[
+        </LinearLayout>
+<!--        <![CDATA[-->
 
-        android:text="Map" />
+<!--        android:text="Map" />-->
 
 
 
-        ]]>
+<!--        ]]>-->
 
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:onClick="showPopUp"
-            android:layout_height="260dp" />
+<!--        <com.google.android.gms.maps.MapView-->
+<!--            android:id="@+id/map"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="260dp" />-->
 
 
         <Button
@@ -117,11 +164,20 @@
             android:background="@color/colorPrimary"
             android:text="View Menu"
             android:textColor="#FFFFFF"
-            android:onClick="showMenu"/><![CDATA[
+            android:onClick="showMenu"/>
 
-        android:text="Menu" />
+            <![CDATA[
 
-    ]]>
-    </LinearLayout>
+                    android:text="Map" />
 
-</RelativeLayout>
+
+                    ]]>
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:onClick="showPopUp"
+                android:layout_height="230dp" />
+
+</LinearLayout>
+
+</FrameLayout>

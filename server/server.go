@@ -154,6 +154,7 @@ type QueueRequest struct {
 }
 type QueueResponse struct {
 	Status string `json:"status"`
+	Queue int `json:"queue"`
 }
 
 //Business Logic structs
@@ -468,6 +469,8 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 		prediction, err := value.Regression.Predict([]float64{float64(len(value.Queue))})
 		if err != nil {
 			prediction2 := int(prediction)
+			log.Println(value.Campus)
+
 			if value.Campus == userRequest.Campus {
 				canteens = append(canteens, CanteenInterface{
 					Name:      	key,
@@ -616,9 +619,10 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 
 		for i, n := range canteen.Queue {
 			if user == n { //will only happen once
+		
 				canteen.Regression.Train(regression.DataPoint(float64(user.InQueue.Number), []float64{float64(user.InQueue.Minutes)}))
 				canteen.Regression.Run()
-				
+
 				canteen.Queue = append(canteen.Queue[:i], canteen.Queue[i+1:]...)
 				user.InQueue = Position{} //empty position
 			}
@@ -626,7 +630,9 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := QueueResponse{
-		Status: "OK"}
+		Status: "OK",
+		Queue: user.InQueue.Number,
+	}
 
 	json.NewEncoder(w).Encode(response)
 }

@@ -46,6 +46,8 @@ public class ListFoodServicesActivity extends AppCompatActivity {
             intent.putExtra("foodService", foodService.getName());
             TextView ETA = view.findViewById(R.id.ETA);
             intent.putExtra("duration", ETA.getText());
+            TextView queue = view.findViewById(R.id.queue);
+            intent.putExtra("duration", queue.getText());
             startActivity(intent);
         }
     };
