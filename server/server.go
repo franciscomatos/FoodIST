@@ -455,7 +455,7 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("New request for canteens Received")
 	log.Println(userRequest)
 	//test if the user already exists
-	user, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
 	if status != http.StatusOK {
 		log.Println("[ERROR] ", stmt)
 		http.Error(w, stmt, status)
@@ -465,13 +465,16 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 	var canteens []CanteenInterface
 
 	for key, value := range places {
-		prediction := value.Regression.Predict(len(value.Queue))
-
-		if value.Campus == userRequest.Campus {
-			canteens = append(canteens, CanteenInterface{
-				Name:      	key,
-				Prediction:	prediction})
+		prediction, err := value.Regression.Predict([]float64{float64(len(value.Queue))})
+		if err != nil {
+			prediction2 := int(prediction)
+			if value.Campus == userRequest.Campus {
+				canteens = append(canteens, CanteenInterface{
+					Name:      	key,
+					Prediction:	prediction2})
+			}
 		}
+	
 	}
 	response := GetCanteensResponse{
 		Status:   "OK",
@@ -613,7 +616,7 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 
 		for i, n := range canteen.Queue {
 			if user == n { //will only happen once
-				canteen.Regression.Train(regression.DataPoint(user.InQueue.Position, user.InQueue.Minutes))
+				canteen.Regression.Train(regression.DataPoint(float64(user.InQueue.Number), []float64{float64(user.InQueue.Minutes)}))
 				canteen.Regression.Run()
 				
 				canteen.Queue = append(canteen.Queue[:i], canteen.Queue[i+1:]...)

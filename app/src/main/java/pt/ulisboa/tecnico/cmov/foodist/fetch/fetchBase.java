@@ -57,6 +57,7 @@ public class fetchBase extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids){
+        Log.i("PRE-RESPONSE", "start");
         try{
             Log.i("URL:", this.URL);
             URL url  = new URL(this.URL);

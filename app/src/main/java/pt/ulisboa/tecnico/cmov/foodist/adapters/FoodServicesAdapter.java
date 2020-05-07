@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -101,11 +102,22 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
                 e.printStackTrace();
             }
         }
-
+        else {
+            holder.ETA.setText("");
+        }
         Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
         Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
+        Log.i("time", current.toString());
+        Log.i("time", close.toString());
+        try {
+            open = presDateFormat.parse(presDateFormat.format(open));
+            close = presDateFormat.parse(presDateFormat.format(close));
+            current = presDateFormat.parse(presDateFormat.format(current));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-        if (current.compareTo(close) < 0) {
+        if (current.compareTo(close) < 0 && current.compareTo(open) > 0) {
             holder.status.setText(R.string.Open);
             holder.status.setTextColor(0xFF00AA00);
         } else {
@@ -130,6 +142,9 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
     }
 
     public void setDuration(String data) {
+        if (data == "") {
+            durations = null;
+        }
         try {
             JSONObject json = new JSONObject(data);
             durations = json.getJSONArray("durations").getJSONArray(0);

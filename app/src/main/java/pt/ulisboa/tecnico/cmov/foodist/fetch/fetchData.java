@@ -62,6 +62,4 @@ public class fetchData extends fetchBase {
         Log.i("RESPONSE",  getData());
         this.listFoodServices.setViewPostFetch(getData());
     }
-
-
 }

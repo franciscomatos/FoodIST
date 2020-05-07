@@ -68,12 +68,12 @@ public class ListFoodServicesActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+        getCampus();
 
         setViewPrefetch();
 
         global.getLocation2(ListFoodServicesActivity.this);
 
-        getCampus();
 
         if (global.getCampus() != "Select a campus") {
             fetchData process = new fetchData(this, global);
@@ -89,6 +89,7 @@ public class ListFoodServicesActivity extends AppCompatActivity {
                 if (global.getCampus() != newCampus ) {
                     global.setCampus(newCampus);
                     global.getLocation2(ListFoodServicesActivity.this);
+                    //setViewPostFetch("");
                     fetchData process = new fetchData(listFoodServicesActivity, global);
                     process.execute();
                     updateSpinner(global.getCampus(), dropdown);
@@ -163,9 +164,9 @@ public class ListFoodServicesActivity extends AppCompatActivity {
         listFoodServices = global.getCampusFoodServices(global.getCampus());
         adapter = new FoodServicesAdapter(listFoodServices);
         adapter.setOnItemClickListener(onItemClickListener);
-        recyclerView.setAdapter(adapter);
         adapter.setDuration(data);
-        recyclerView.setAdapter(adapter);
+        Log.i("Changed", "changed");
+        recyclerView.swapAdapter(adapter, false);
     }
 
     public void setItemClickListener(View.OnClickListener clickListener) {
