@@ -21,8 +21,8 @@ import android.widget.TextView;
 import java.util.Arrays;
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.foodist.FilterPopUpClass;
-import pt.ulisboa.tecnico.cmov.foodist.PopUpClass;
+import pt.ulisboa.tecnico.cmov.foodist.popups.FilterPopUpClass;
+import pt.ulisboa.tecnico.cmov.foodist.popups.PopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
@@ -149,7 +149,7 @@ public class MenuActivity extends AppCompatActivity {
     public void showPopUp(View v) {
         // Create a button handler and call the dialog box display method in it
         final PopUpClass popUpClass = new PopUpClass();
-        final View popupView = popUpClass.showPopupWindow(v);
+        final View popupView = popUpClass.showPopupWindow(v, R.layout.pop_up_window_create_dish);
         Button okButton = popupView.findViewById(R.id.okButton);
 
         final FrameLayout background = findViewById(R.id.background);

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -41,6 +42,7 @@ import java.util.GregorianCalendar;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+import pt.ulisboa.tecnico.cmov.foodist.popups.PopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class FoodServiceActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -133,6 +135,22 @@ public class FoodServiceActivity extends AppCompatActivity implements OnMapReady
         lineOptions.geodesic(true);
         map.addPolyline(lineOptions);
         map.addMarker(new MarkerOptions().position(target));
+    }
+
+
+    public void showPopUp(View v) {
+        // Create a button handler and call the dialog box display method in it
+        final PopUpClass popUpClass = new PopUpClass();
+        final View popupView = popUpClass.showPopupWindow(v, R.layout.pop_up_window_route);
+
+//        popupView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                background.getForeground().setAlpha(0);
+//                popUpClass.onTouch();
+//                return true;
+//            }
+//        });
     }
 
     public void showMenu(View view) {

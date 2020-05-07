@@ -98,12 +98,16 @@
 
         android:text="Map" />
 
+
+
         ]]>
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
+            android:onClick="showPopUp"
             android:layout_height="260dp" />
+
 
         <Button
             android:id="@+id/button"

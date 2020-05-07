@@ -1,23 +1,33 @@
-package pt.ulisboa.tecnico.cmov.foodist;
+package pt.ulisboa.tecnico.cmov.foodist.popups;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class FilterPopUpClass {
+import pt.ulisboa.tecnico.cmov.foodist.R;
+
+public class PopUpClass {
 
     private PopupWindow popupWindow;
 
     //PopupWindow display method
 
-    public View showPopupWindow(final View view) {
+    public View showPopupWindow(final View view, int layoutResource) {
 
 
         //Create a View object yourself through inflater
         LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.pop_up_window_filter_dishes, null);
+        View popupView = inflater.inflate(R.layout.pop_up_window_create_dish, null);
 
         //Specify the length and width through constants
         int width = LinearLayout.LayoutParams.MATCH_PARENT;
