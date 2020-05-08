@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -13,15 +11,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 
-public class fetchCacheImages extends fetchBase {
+public class fetchCacheImagesCustom extends fetchBaseCustom {
 
 	private String foodService;
 	private String dish;
@@ -33,7 +29,7 @@ public class fetchCacheImages extends fetchBase {
 	private List<AppImage> hits;
 	private List<String> misses;
 
-	public fetchCacheImages(GlobalClass global, CarouselView carouselView, String foodService, String dish, int page) {
+	public fetchCacheImagesCustom(GlobalClass global, CarouselView carouselView, String foodService, String dish, int page) {
 		super(global, global.getURL() + "/checkImageNames");
 		this.foodService = foodService;
 		this.page = page;
@@ -99,7 +95,7 @@ public class fetchCacheImages extends fetchBase {
 
 		if(!misses.isEmpty()) {
 			Log.i("FETCHCACHEIMAGES", "there are misses, accessing server again");
-			fetchImages process = new fetchImages(getGlobal(), carouselView, foodService, dish, hits, misses);
+			fetchImagesCustom process = new fetchImagesCustom(getGlobal(), carouselView, foodService, dish, hits, misses);
 			process.execute();
 		}
 		Log.i("FETCHCACHEIMAGES", "finished cache access");

@@ -2,12 +2,9 @@ package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import pt.ulisboa.tecnico.cmov.foodist.activities.MenuActivity;
-import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
-import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+
 import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import java.io.ByteArrayOutputStream;
@@ -15,7 +12,7 @@ import java.util.Base64;
 import android.graphics.Bitmap;
 
 
-public class uploadImage extends fetchBase {
+public class uploadImage extends fetchBaseCustom {
 
 	private AppImage image;
 

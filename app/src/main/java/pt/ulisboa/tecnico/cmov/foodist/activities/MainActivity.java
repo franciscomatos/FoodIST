@@ -17,6 +17,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import android.net.wifi.WifiManager;
+
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.Date;
 import 	android.net.NetworkInfo;
 import android.net.ConnectivityManager;
@@ -88,6 +91,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         configureFoodListButton();
 
         this.global = (GlobalClass) getApplicationContext();
+        global.setContext(this);
         global.setLocationManager( (LocationManager) getSystemService(Context.LOCATION_SERVICE));
         global.getLocation2(MainActivity.this);
 
@@ -231,5 +235,44 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         Log.i ("Peers:", "got here");
         mManager.requestPeers(mChannel, MainActivity.this);
     }
+
+
+   /* public class Connection extends AsyncTask<Void, Void, Void> {
+
+        private String URL;
+        private String data = "";
+        private GlobalClass global;
+
+        @Override
+        protected Void doInBackground(Void... voids){
+           connect()
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Log.i("RESPONSE:", "BOOOOOM!");
+        }
+
+
+        private void connect(){
+            CertificateFactory cf = null;
+            try{
+                cf = CertificateFactory.getInstance("X.509");
+            }catch(CertificateException e){
+                e.printStackTrace();
+            }
+
+            try{
+                httpsURLConnection
+            }
+
+
+        }
+    }*/
+
+
 
 }

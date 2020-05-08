@@ -7,11 +7,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
+
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
@@ -22,7 +21,7 @@ import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 
-public class fetchImages extends fetchBase {
+public class fetchImagesCustom extends fetchBaseCustom {
 
 	private String foodService;
 	private String dish;
@@ -33,7 +32,7 @@ public class fetchImages extends fetchBase {
 	private List<String> misses ;
 	private List<AppImage> hits ;
 
-    public fetchImages(GlobalClass global, CarouselView carouselView, String foodService, String dish, List<AppImage> hits, List<String> misses) {
+    public fetchImagesCustom(GlobalClass global, CarouselView carouselView, String foodService, String dish, List<AppImage> hits, List<String> misses) {
 		super(global, global.getURL() + "/getImages");
 		this.foodService = foodService;
 		this.page = page;

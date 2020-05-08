@@ -1,26 +1,21 @@
 package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
 import android.util.Log;
-import android.widget.ImageView;
-
-import com.synnapps.carouselview.CarouselView;
-import com.synnapps.carouselview.ImageListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import java.util.ArrayList;
+
 import java.util.Date;
-import java.util.List;
 import java.util.Base64;
 
 import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 
-public class prefetch extends fetchBase {
+public class prefetch extends fetchBaseCustom {
 
 	public prefetch(GlobalClass global) {
 		super(global, global.getURL() + "/prefetch");

@@ -26,7 +26,7 @@ import pt.ulisboa.tecnico.cmov.foodist.PopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
-import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchMenu;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchMenuCustom;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.uploadDish;
 
@@ -65,7 +65,7 @@ public class MenuActivity extends AppCompatActivity {
 
         Log.i("MenuActivity", "found Table");
         menuState.clear();
-        fetchMenu process = new fetchMenu(this, menuState, foodServiceName,global);
+        fetchMenuCustom process = new fetchMenuCustom(this, menuState, foodServiceName,global);
         process.execute();
 
     }

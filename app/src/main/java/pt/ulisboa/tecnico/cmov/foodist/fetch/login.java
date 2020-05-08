@@ -3,7 +3,7 @@ package pt.ulisboa.tecnico.cmov.foodist.fetch;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import android.util.Log;
 
-public class login extends fetchBase {
+public class login extends fetchBaseCustom {
     private String foodService ;
     private String currentTime;
 
