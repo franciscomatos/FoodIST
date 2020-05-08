@@ -47,7 +47,7 @@ public class ListFoodServicesActivity extends AppCompatActivity {
             TextView ETA = view.findViewById(R.id.ETA);
             intent.putExtra("duration", ETA.getText());
             TextView queue = view.findViewById(R.id.queue);
-            intent.putExtra("duration", queue.getText());
+            intent.putExtra("queue", queue.getText());
             startActivity(intent);
         }
     };
@@ -65,12 +65,13 @@ public class ListFoodServicesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_food_services);
+
         global = (GlobalClass) getApplicationContext();
+        getCampus();
         recyclerView = (RecyclerView) findViewById(R.id.FoodServices);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        getCampus();
 
         setViewPrefetch();
 
@@ -111,17 +112,20 @@ public class ListFoodServicesActivity extends AppCompatActivity {
     public void getCampus() { //TODO change numbers to a class with min/max coordinates
         GlobalClass global = (GlobalClass) getApplicationContext();
         double latitude = global.getLatitude();
-        double longitude = global.getLatitude();
+        double longitude = global.getLongitude();
         if (global.getAlamedaLatitude()[0] < latitude && latitude < global.getAlamedaLatitude()[1]) {
             if (global.getAlamedaLongitude()[0] < longitude && longitude < global.getAlamedaLongitude()[1]) {
                 global.setCampus("Alameda");
-                Log.i("CAMPUS", global.getCampus());
 
             }
         } else if (global.getTagusLatitude()[0] < latitude && latitude < global.getTagusLatitude()[1]) {
             if (global.getTagusLongitude()[0] < longitude && longitude < global.getTagusLongitude()[1]) {
                 global.setCampus("Taguspark");
 
+            }
+        } else if (global.getCTNLatitude()[0] < latitude && latitude < global.getCTNLatitude()[1]) {
+            if (global.getCTNLongitude()[0] < longitude && longitude < global.getCTNLongitude()[1]) {
+                global.setCampus("CTN");
             }
         } else { // keep the original
             return;
@@ -146,9 +150,9 @@ public class ListFoodServicesActivity extends AppCompatActivity {
     private void updateSpinner(String campus, Spinner dropdown) {
         String[] items;
         if (campus == "Select a campus") {
-            items = new String[]{campus, "Alameda", "Taguspark"};
+            items = new String[]{campus, "Alameda", "Taguspark", "CTN"};
         } else {
-            items = new String[]{campus, global.getOtherCampus()};
+            items = new String[]{campus, global.getOtherCampus1(), global.getOtherCampus2()};
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         dropdown.setAdapter(adapter);
@@ -167,8 +171,7 @@ public class ListFoodServicesActivity extends AppCompatActivity {
         adapter = new FoodServicesAdapter(listFoodServices);
         adapter.setOnItemClickListener(onItemClickListener);
         adapter.setDuration(data);
-        Log.i("Changed", "changed");
-        recyclerView.swapAdapter(adapter, false);
+        recyclerView.swapAdapter(adapter, true);
     }
 
     public void setItemClickListener(View.OnClickListener clickListener) {

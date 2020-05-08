@@ -104,19 +104,19 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
         if (durations != null) {
             try {
                 holder.ETA.setText(getTime((int) durations.getDouble(position)));
-                holder.clock.setVisibility(View.VISIBLE);
+                holder.walk.setVisibility(View.VISIBLE);
 
             } catch (JSONException e) {
                 Log.e("MYLOGS", "could not correctly parse duration json");
                 e.printStackTrace();
-                holder.ETA.setText("");
-                holder.walk.setVisibility(View.INVISIBLE);
+                holder.ETA.setText("--:--");
+                holder.walk.setVisibility(View.VISIBLE);
 
             }
         }
         else {
-            holder.ETA.setText("");
-            holder.walk.setVisibility(View.INVISIBLE);
+            holder.ETA.setText("--:--");
+            holder.walk.setVisibility(View.VISIBLE);
         }
 
         if (queues != null) {
@@ -127,19 +127,16 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
             } catch (JSONException e) {
                 Log.e("MYLOGS", "could not correctly parse queues json");
                 e.printStackTrace();
-                holder.queue.setText("");
-                holder.clock.setVisibility(View.INVISIBLE);
+                holder.queue.setText("--:--");
+                holder.clock.setVisibility(View.VISIBLE);
 
             }
         }
         else {
-            holder.queue.setText("");
-            holder.clock.setVisibility(View.INVISIBLE);
+            holder.queue.setText("--:--");
+            holder.clock.setVisibility(View.VISIBLE);
         }
-        Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
-        Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
-        Log.i("time", current.toString());
-        Log.i("time", close.toString());
+
         try {
             open = presDateFormat.parse(presDateFormat.format(open));
             close = presDateFormat.parse(presDateFormat.format(close));
@@ -158,7 +155,6 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
     }
 
     private String getTime(int duration) {
-        Log.i("MYLOGS", duration +"");
         return duration/60 + " mins";
     }
 

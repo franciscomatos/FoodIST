@@ -28,8 +28,6 @@ public class fetchData extends fetchBase {
 
     private void createDestinations() {
         ArrayList<FoodService> FoodServiceList = getGlobal().getCampusFoodServices( getGlobal().getCampus());
-        Log.i("Location",  getGlobal().getLongitude()+","+ getGlobal().getLatitude());
-
         destinations = "[" + "["+ getGlobal().getLongitude()+","+ getGlobal().getLatitude()+"]";
         whereToIndex = "[";
         for (int i = 0; i<FoodServiceList.size(); i++) {
@@ -40,7 +38,6 @@ public class fetchData extends fetchBase {
         }
         whereToIndex = whereToIndex.substring(0, whereToIndex.length()-1) + "]";
         destinations += "]";
-        Log.i("Location", destinations);
     }
 
     @Override

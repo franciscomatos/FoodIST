@@ -88,7 +88,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         GlobalClass global = (GlobalClass) getApplicationContext();
         global.setLocationManager( (LocationManager) getSystemService(Context.LOCATION_SERVICE));
         global.getLocation2(MainActivity.this);
-
+        global.setStatus("STUDENT"); //FIXME change this to user preference
         startWifi();
 
         registerUser(global);
@@ -145,37 +145,13 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
 
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList) {
-/*
-        StringBuilder peersStr = new StringBuilder();
 
-        // compile list of devices in range
-        for (SimWifiP2pDevice device : simWifiP2pDeviceList.getDeviceList()) {
-            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
-            peersStr.append(devstr);
-            Log.i("Devices:","" + device.deviceName + " (" + device.getVirtIp() + ")\n");
-
-        }
-
-        makeToast("in queue");
-
-        // display list of devices in range
-        new AlertDialog.Builder(MainActivity.this)
-                .setTitle("Devices in WiFi Range")
-                .setMessage(peersStr.toString())
-                .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .show();
-*/
         GlobalClass global = (GlobalClass) getApplicationContext();
 
-        //DateFormat presDateFormat = new SimpleDateFormat("HH:mm");
         Date current = new Date();   // given date
 
         String currentTime = String.valueOf(current.getTime()/6000);
 
-        //String currentTime = presDateFormat.format(current);
         Log.i("Time", currentTime);
         boolean inAQueue = false;
         for (SimWifiP2pDevice device : simWifiP2pDeviceList.getDeviceList()) {
@@ -194,12 +170,8 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
                 toggle.execute();
                 global.setCurrentFoodService("");
             }
-
         }
-
     }
-
-
     @Override
     public void onDestroy() {
         unregisterReceiver(mReceiver);

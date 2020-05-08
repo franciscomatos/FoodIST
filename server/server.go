@@ -466,18 +466,25 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 	var canteens []CanteenInterface
 
 	for key, value := range places {
+		log.Println([]float64{float64(len(value.Queue))})
 		prediction, err := value.Regression.Predict([]float64{float64(len(value.Queue))})
-		if err != nil {
+
+		if err == nil {
 			prediction2 := int(prediction)
 			log.Println(value.Campus)
+			log.Println(prediction2)
 
 			if value.Campus == userRequest.Campus {
 				canteens = append(canteens, CanteenInterface{
 					Name:      	key,
 					Prediction:	prediction2})
 			}
+			
+		} else {
+			log.Println(err)
 		}
 	
+		
 	}
 	response := GetCanteensResponse{
 		Status:   "OK",
@@ -596,12 +603,12 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	minutes, err := strconv.Atoi(userRequest.Minutes)
 	if user.InQueue == (Position{}) { //if it isnt in a queue add it
 
 		log.Println("New request to enter queue Received")
 		log.Println(userRequest)
 
-		minutes, err := strconv.Atoi(userRequest.Minutes)
 
 		if err != nil {
 			log.Println("[ERROR] Couldnt convert string to int")
@@ -620,7 +627,7 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 		for i, n := range canteen.Queue {
 			if user == n { //will only happen once
 		
-				canteen.Regression.Train(regression.DataPoint(float64(user.InQueue.Number), []float64{float64(user.InQueue.Minutes)}))
+				canteen.Regression.Train(regression.DataPoint(float64(minutes-user.InQueue.Minutes), []float64{float64(user.InQueue.Number)}))
 				canteen.Regression.Run()
 
 				canteen.Queue = append(canteen.Queue[:i], canteen.Queue[i+1:]...)
@@ -650,48 +657,148 @@ func addPlace(name string, typ string, coord Coordinates, times map[string]TimeI
 
 func initPlaces() { // initiate more if needed
 	timeLayout := "15:04:05"
-	MonicaOpenHours, _ := time.Parse(timeLayout, "08:00:00")
-	MonicaCloseHours, _ := time.Parse(timeLayout, "17:00:00")
-	AbilioOpenHours, _ := time.Parse(timeLayout, "10:00:00")
-	AbilioCloseHours, _ := time.Parse(timeLayout, "20:00:00")
+//	MonicaOpenHours, _ := time.Parse(timeLayout, "08:00:00")
+//	MonicaCloseHours, _ := time.Parse(timeLayout, "17:00:00")
+//	AbilioOpenHours, _ := time.Parse(timeLayout, "10:00:00")
+//	AbilioCloseHours, _ := time.Parse(timeLayout, "20:00:00")
 
-	openingHours := map[string]TimeInterval{
-		GeneralPublic: TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
-		Student:       TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
-		Professor:     TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
-		Researcher:    TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
-		Staff:         TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours}}
+	seven_am,_ := time.Parse(timeLayout, "07:00:00")
+	eight_am,_ := time.Parse(timeLayout, "08:00:00")
+	eight_half_am,_ := time.Parse(timeLayout, "08:30:00")
+	nine_am,_ := time.Parse(timeLayout, "09:00:00")
+	twelve_am,_ := time.Parse(timeLayout, "12:00:00")
+	one_half_pm,_ := time.Parse(timeLayout, "13:30:00")
+	two_pm,_ := time.Parse(timeLayout, "14:00:00")
+	three_pm,_ := time.Parse(timeLayout, "15:00:00")
+	three_half_pm,_ := time.Parse(timeLayout, "15:30:00")
+	four_half_pm,_ := time.Parse(timeLayout, "15:30:00")
+	five_pm,_ := time.Parse(timeLayout, "17:00:00")
+	seven_pm,_ := time.Parse(timeLayout, "19:00:00")
+	nine_pm,_ := time.Parse(timeLayout, "21:00:00")
+	ten_pm,_ := time.Parse(timeLayout, "22:00:00")
 
-	openingHoursnd := map[string]TimeInterval{
-		GeneralPublic: TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
-		Student:       TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
-		Professor:     TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
-		Researcher:    TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
-		Staff:         TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours}}
+	nine_to_five := map[string]TimeInterval{
+		GeneralPublic: TimeInterval{Open: nine_am, Close: five_pm},
+		Student:       TimeInterval{Open: nine_am, Close: five_pm},
+		Professor:     TimeInterval{Open: nine_am, Close: five_pm},
+		Researcher:    TimeInterval{Open: nine_am, Close: five_pm},
+		Staff:         TimeInterval{Open: nine_am, Close: five_pm}}
 
-	addPlace("CIVIL", "BAR", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHours, "Alamenda")
-	addPlace("AE", "RESTAURANT", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHoursnd, "Alamenda")
-	addPlace("GreenBar Tagus", "BAR", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHours, "Taguspark")
-	addPlace("Cafetaria", "RESTAURANT", Coordinates{Lat: 38.737389, Lng: -9.137358}, openingHoursnd, "Taguspark")
+	civil_cafeteria := map[string]TimeInterval{
+		GeneralPublic: TimeInterval{Open: twelve_am, Close: three_pm},
+		Student:       TimeInterval{Open: twelve_am, Close: three_pm},
+		Professor:     TimeInterval{Open: twelve_am, Close: three_pm},
+		Researcher:    TimeInterval{Open: twelve_am, Close: three_pm},
+		Staff:         TimeInterval{Open: twelve_am, Close: three_pm}}
+	
+	sena := map[string]TimeInterval{
+		GeneralPublic: TimeInterval{Open: eight_am, Close: seven_pm},
+		Student:       TimeInterval{Open: eight_am, Close: seven_pm},
+		Professor:     TimeInterval{Open: eight_am, Close: seven_pm},
+		Researcher:    TimeInterval{Open: eight_am, Close: seven_pm},
+		Staff:         TimeInterval{Open: eight_am, Close: seven_pm}}	
+	
+	SAS := map[string]TimeInterval{
+		GeneralPublic: TimeInterval{Open: nine_am, Close: nine_pm},
+		Student:       TimeInterval{Open: nine_am, Close: nine_pm},
+		Professor:     TimeInterval{Open: nine_am, Close: nine_pm},
+		Researcher:    TimeInterval{Open: nine_am, Close: nine_pm},
+		Staff:         TimeInterval{Open: nine_am, Close: nine_pm}}		
+		
+	Math := map[string]TimeInterval{
+		GeneralPublic: TimeInterval{Open: one_half_pm, Close: three_pm},
+		Student:       TimeInterval{Open: one_half_pm, Close: three_pm},
+		Professor:     TimeInterval{Open: twelve_am, Close: three_pm},
+		Researcher:    TimeInterval{Open: twelve_am, Close: three_pm},
+		Staff:         TimeInterval{Open: twelve_am, Close: three_pm}}		
+
+	Red := map[string]TimeInterval{
+		GeneralPublic: TimeInterval{Open: eight_am, Close: ten_pm},
+		Student:       TimeInterval{Open: eight_am, Close: ten_pm},
+		Professor:     TimeInterval{Open: eight_am, Close: ten_pm},
+		Researcher:    TimeInterval{Open: eight_am, Close: ten_pm},
+		Staff:         TimeInterval{Open: eight_am, Close: ten_pm}}
+		
+	Green := map[string]TimeInterval{
+		GeneralPublic: TimeInterval{Open: seven_am, Close: seven_pm},
+		Student:       TimeInterval{Open: seven_am, Close: seven_pm},
+		Professor:     TimeInterval{Open: seven_am, Close: seven_pm},
+		Researcher:    TimeInterval{Open: seven_am, Close: seven_pm},
+		Staff:         TimeInterval{Open: seven_am, Close: seven_pm}}
+
+	CTN_cafeteria := map[string]TimeInterval{
+		GeneralPublic: TimeInterval{Open: twelve_am, Close: two_pm},
+		Student:       TimeInterval{Open: twelve_am, Close: two_pm},
+		Professor:     TimeInterval{Open: twelve_am, Close: two_pm},
+		Researcher:    TimeInterval{Open: twelve_am, Close: two_pm},
+		Staff:         TimeInterval{Open: twelve_am, Close: two_pm}}
+
+	CTN_bar := map[string]TimeInterval{
+		GeneralPublic: TimeInterval{Open: eight_half_am, Close: four_half_pm},
+		Student:       TimeInterval{Open: eight_half_am, Close: four_half_pm},
+		Professor:     TimeInterval{Open: eight_half_am, Close: four_half_pm},
+		Researcher:    TimeInterval{Open: eight_half_am, Close: four_half_pm},
+		Staff:         TimeInterval{Open: eight_half_am, Close: four_half_pm}}
+//	openingHours := map[string]TimeInterval{
+//		GeneralPublic: TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+//		Student:       TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+//		Professor:     TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+//		Researcher:    TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+//		Staff:         TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours}}
+
+//	openingHoursnd := map[string]TimeInterval{
+//		GeneralPublic: TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
+//		Student:       TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
+//		Professor:     TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
+//		Researcher:    TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
+//		Staff:         TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours}}
+
+	addPlace("Central Bar", "BAR", Coordinates{Lat: 38.736606, Lng: -9.139532}, nine_to_five, "Alameda")
+	addPlace("Civil Bar", "BAR", Coordinates{Lat: 38.736988, Lng: -9.139955}, nine_to_five, "Alameda")
+	addPlace("Civil Cafeteria", "RESTAURANT", Coordinates{Lat: 38.737650, Lng: -9.140384}, civil_cafeteria, "Alameda")
+	addPlace("Sena Pastry Shop", "RESTAURANT", Coordinates{Lat: 38.737677, Lng: -9.138672}, Sena, "Alameda")
+	addPlace("Mechy Bar", "BAR", Coordinates{Lat: 38.737247, Lng: -9.137434}, nine_to_five, "Alameda")
+	addPlace("AEIST Bar", "BAR", Coordinates{Lat: 38.736542, Lng: -9.137226}, nine_to_five, "Alameda")
+	addPlace("AEIST Esplanade", "BAR", Coordinates{Lat: 38.736318, Lng:  -9.137820}, nine_to_five, "Alameda")
+	addPlace("Chemy Bar", "BAR", Coordinates{Lat: 38.736240, Lng:  -9.138302}, nine_to_five, "Alameda")
+	addPlace("SAS Cafeteria", "RESTAURANT", Coordinates{Lat: 38.736571, Lng: -9.137036}, SAS, "Alameda")
+	addPlace("Math Cafeteria", "RESTAURANT", Coordinates{Lat: 38.735508, Lng: -9.139645}, Math, "Alameda")
+	addPlace("Complex Bar", "BAR", Coordinates{Lat: 38.736050, Lng: -9.140156}, nine_to_five, "Alameda")
+
+	addPlace("Tagus Cafeteria", "RESTAURANT", Coordinates{Lat: 38.737802, Lng: -9.303223}, civil_cafeteria, "Taguspark")
+	addPlace("Red Bar", "BAR", Coordinates{Lat: 38.736546, Lng:  -9.302207}, Red, "Taguspark")
+	addPlace("Green Bar", "BAR", Coordinates{Lat: 38.738004, Lng:  -9.303058}, Green, "Taguspark")
+
+	addPlace("CTN Cafeteria", "RESTAURANT", Coordinates{Lat: 38.812522, Lng:  -9.093773}, CTN_cafeteria, "CTN")
+	addPlace("CTN Bar", "BAR", Coordinates{Lat: 38.812522, Lng:  -9.093773}, CTN_bar, "CTN")
 }
 
 func main() {
 	initPlaces()
 	finish := make(chan bool)
 
-	r := new(regression.Regression)
+	// r := new(regression.Regression)
 
-	r.Train(regression.DataPoint(1,[]float64{2}))
-	r.Train(regression.DataPoint(1,[]float64{2}))
-	r.Train(regression.DataPoint(1,[]float64{2}))
-	r.Train(regression.DataPoint(1,[]float64{2}))
+	// r.Train(regression.DataPoint(1,[]float64{2}))
+	// r.Train(regression.DataPoint(1,[]float64{2}))
+	// r.Train(regression.DataPoint(1,[]float64{2}))
+	// r.Train(regression.DataPoint(1,[]float64{2}))
 
+	places["CIVIL"].Regression.Train(regression.DataPoint(2,[]float64{1}),
+									 regression.DataPoint(2,[]float64{1}),
+									 regression.DataPoint(1,[]float64{0}),	
+									 regression.DataPoint(1,[]float64{0}),	
+									 regression.DataPoint(3,[]float64{2}),	
+									 regression.DataPoint(3,[]float64{2}),	
+	)
 	//r.Train(regression.DataPoint(2,[]float64{4}))
 	//r.Train(regression.DataPoint(6,[]float64{120}))
-	r.Run()
-	log.Println("Regression formula:\n%v\n", r.Formula)
-	log.Println("Regression:\n%s\n", r)
-	prediction, _ := r.Predict([]float64{2})
+	places["CIVIL"].Regression.Run()
+
+	
+	log.Println("Regression formula:\n%v\n", places["CIVIL"].Regression.Formula)
+	log.Println("Regression:\n%s\n", places["CIVIL"].Regression)
+	prediction, _ := places["CIVIL"].Regression.Predict([]float64{2})
 	log.Println("Predict:\n%s\n", prediction)
 
 

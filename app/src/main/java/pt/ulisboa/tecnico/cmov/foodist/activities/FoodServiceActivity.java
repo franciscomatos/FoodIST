@@ -74,7 +74,6 @@ public class FoodServiceActivity extends AppCompatActivity {
         String duration = getIntent().getExtras().getString("duration");
         String queue = getIntent().getExtras().getString("queue");
         fillInfo(duration, queue);
-        Log.i("Duration", getIntent().getExtras().getString("duration"));
 
     }
 
@@ -113,10 +112,11 @@ public class FoodServiceActivity extends AppCompatActivity {
 
         openingHour.setText(presDateFormat.format(open) + " - " + presDateFormat.format(close));
         distance.setText(duration);
+
         queueTime.setText(queue);
 
-        Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
-        Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
+        Log.i("MYLOGS", queue);
+        Log.i("MYLOGS", duration);
 
         if (current.compareTo(close) < 0) {
             is_open.setText("Open");
