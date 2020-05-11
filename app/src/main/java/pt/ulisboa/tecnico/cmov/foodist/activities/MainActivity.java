@@ -33,6 +33,7 @@ import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
 import pt.ulisboa.tecnico.cmov.foodist.R;
+import pt.ulisboa.tecnico.cmov.foodist.activities.LoginActivity;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.registerUser;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.toggleQueue;
 import pt.ulisboa.tecnico.cmov.foodist.receivers.WifiBroadcastReceiver;
@@ -99,8 +100,10 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
                     case R.id.action_explore:
                         break;
                     case R.id.action_profile:
-                        Intent intent =  new Intent(MainActivity.this, ProfileActivity.class);
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
+                        //Intent intent =  new Intent(MainActivity.this, ProfileActivity.class);
+                        //startActivity(intent);
                         break;
                 }
                 return true;
