@@ -10,9 +10,19 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import com.anychart.AnyChart;
+import com.anychart.AnyChartView;
+import com.anychart.chart.common.dataentry.DataEntry;
+import com.anychart.chart.common.dataentry.ValueDataEntry;
+import com.anychart.charts.Cartesian;
+import com.anychart.core.cartesian.series.Column;
+import com.anychart.enums.Anchor;
+import com.anychart.enums.Position;
+import com.anychart.enums.TooltipPositionMode;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -40,6 +50,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
@@ -67,6 +79,45 @@ public class FoodServiceActivity extends AppCompatActivity implements OnMapReady
         mapView.getMapAsync(this);
         fillInfo(getIntent().getExtras().getString("duration"));
         Log.i("Duration", getIntent().getExtras().getString("duration"));
+
+        TextView averageBigView = findViewById(R.id.averageBig);
+        averageBigView.setText(menuState.computeRatingAverage().toString());
+
+        RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
+        averageRatingBar.setRating(menuState.computeRatingAverage().floatValue());
+
+        TextView ratingsCounter = findViewById(R.id.numberOfRatings);
+        ratingsCounter.setText(menuState.computeNumberOfRatings().toString());
+
+        AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
+
+        Cartesian cartesian = AnyChart.column();
+
+        List<DataEntry> data = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> classification: menuState.getRatings().entrySet()) {
+            data.add(new ValueDataEntry(classification.getKey(), classification.getValue()));
+        }
+
+        Column column = cartesian.column(data);
+
+        column.tooltip()
+                .titleFormat("{%X}")
+                .position(Position.CENTER_BOTTOM)
+                .anchor(Anchor.CENTER_BOTTOM)
+                .offsetX(0d)
+                .offsetY(5d)
+                .format("${%Value}{groupsSeparator: }");
+
+        //cartesian.animation(true);
+        cartesian.yScale().minimum(0d);
+
+        //cartesian.yAxis(0).labels().format("${%Value}{groupsSeparator: }");
+
+        cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
+        //cartesian.interactivity().hoverMode(HoverMode.BY_X);
+
+
+        ratingChartView.setChart(cartesian);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {

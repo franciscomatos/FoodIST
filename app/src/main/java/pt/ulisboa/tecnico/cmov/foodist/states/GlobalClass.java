@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pt.ulisboa.tecnico.cmov.foodist.activities.MainActivity;
+import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.domain.User;
@@ -239,5 +240,9 @@ public class GlobalClass extends Application {
             foodServices.get(key).getMenu().updateConstraints(user.getDietaryConstraints());
             foodServices.get(key).getMenu().updateConstraintDishes();
         }
+    }
+
+    public void addDish(String foodServiceName, Dish dish) {
+        foodServices.get(foodServiceName).getMenu().addDish(dish);
     }
 }

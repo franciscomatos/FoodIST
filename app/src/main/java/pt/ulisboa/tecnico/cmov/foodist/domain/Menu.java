@@ -1,23 +1,34 @@
 package pt.ulisboa.tecnico.cmov.foodist.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Menu {
 
     private List<Dish> dishList = new ArrayList<>();
     private List<Dish> constraintDishList = new ArrayList<>();
     private List<Dish.DishCategory> constraints = new ArrayList<>();
+    private Map<Integer, Integer> overallRatings = new HashMap<>();
+
 
     public Menu() {
         this.constraints.add(Dish.DishCategory.FISH);
         this.constraints.add(Dish.DishCategory.MEAT);
         this.constraints.add(Dish.DishCategory.VEGETARIAN);
         this.constraints.add(Dish.DishCategory.VEGAN);
+
+        // ratings initialization
+        for(int i = 1; i <= 5; i++)
+            this.overallRatings.put(i,0);
     }
 
     public Menu(List<Dish.DishCategory> constraints) {
         this.constraints = constraints;
+        // ratings initialization
+        for(int i = 1; i <= 5; i++)
+            this.overallRatings.put(i,0);
     }
     /* getters */
 
@@ -43,6 +54,10 @@ public class Menu {
     }
 
     public int getConstrainedCounter() { return this.constraintDishList.size(); }
+
+    public Map<Integer, Integer> getRatings() {
+        return this.overallRatings;
+    }
 
     /* setters */
 
@@ -76,5 +91,30 @@ public class Menu {
 
     public boolean containsConstraint(Dish.DishCategory category) {
         return this.constraints.contains(category);
+    }
+
+    /* others */
+    public void addRating(Integer classification) {
+        Integer current = this.overallRatings.get(classification);
+        this.overallRatings.put(classification, current+1);
+    }
+
+    public Double computeRatingAverage() {
+        Double total = 0.0;
+        Integer counter = 0;
+        for(Map.Entry<Integer, Integer> classification: overallRatings.entrySet()) {
+            total += (classification.getValue() * classification.getKey());
+            counter += classification.getValue();
+        }
+        if(total == 0.0 && counter == 0) return 0.0;
+        return total / counter;
+    }
+
+    public Integer computeNumberOfRatings() {
+        Integer counter = 0;
+        for(Map.Entry<Integer, Integer> classification: overallRatings.entrySet()) {
+            counter += classification.getValue();
+        }
+        return counter;
     }
 }

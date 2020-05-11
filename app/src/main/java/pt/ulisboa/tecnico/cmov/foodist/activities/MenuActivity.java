@@ -40,6 +40,7 @@ public class MenuActivity extends AppCompatActivity {
     private Menu menuState;
     private String foodServiceName;
     private List<Boolean> checkedBoxes = Arrays.asList(false, false, false, false);
+    private GlobalClass global;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,7 @@ public class MenuActivity extends AppCompatActivity {
 
         FrameLayout background = findViewById(R.id.background);
         background.getForeground().setAlpha(0); // restore
-        GlobalClass global = (GlobalClass) getApplicationContext();
+        global = (GlobalClass) getApplicationContext();
         foodServiceName = getIntent().getStringExtra("foodService");
         Log.i("MYLOGS", foodServiceName);
         menuState = global.getFoodService(foodServiceName).getMenu();
@@ -74,8 +75,9 @@ public class MenuActivity extends AppCompatActivity {
 
         Log.i("MenuActivity", "found Table");
         //menuState.clear();
-        fetchMenu process = new fetchMenu(this, menuState, foodServiceName,global);
-        process.execute();
+        //fetchMenu process = new fetchMenu(this, menuState, foodServiceName,global);
+        //process.execute();
+        MenuActivity.this.updateDishes();
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -219,6 +221,7 @@ public class MenuActivity extends AppCompatActivity {
                 uploadDish process = new uploadDish(dishPrice,dishName, dishCategory, foodServiceName, (GlobalClass) getApplicationContext());
                 process.execute();
 
+                MenuActivity.this.global.addDish(MenuActivity.this.foodServiceName, new Dish(dishName, dishPrice, category));
                 MenuActivity.this.menuState.addDish(new Dish(dishName, dishPrice, category));
                 MenuActivity.this.updateDishes();
 

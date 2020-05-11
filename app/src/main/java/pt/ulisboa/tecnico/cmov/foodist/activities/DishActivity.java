@@ -50,6 +50,7 @@ public class DishActivity extends FragmentActivity {
     private String foodServiceName;
     private Integer dishIndex;
     private Dish dish;
+    private Menu menu;
 
     private ImageListener imageListener = new ImageListener() {
         @Override
@@ -82,7 +83,7 @@ public class DishActivity extends FragmentActivity {
         dishIndex = m;
 
         GlobalClass global = (GlobalClass) getApplicationContext();
-        Menu menu = global.getFoodService(foodServiceName).getMenu();
+        menu = global.getFoodService(foodServiceName).getMenu();
         dish = menu.getDish(dishIndex);
 
         TextView nameView = findViewById(R.id.dishName);
@@ -113,6 +114,8 @@ public class DishActivity extends FragmentActivity {
             String totalStars = "Total Stars:: " + ratingBar.getNumStars();
             String rating = "Rating :: " + ratingBar.getRating();
             DishActivity.this.dish.addRating((int) ratingBar.getRating());
+            DishActivity.this.menu.addRating((int) ratingBar.getRating());
+
             String average = "Average:: " + DishActivity.this.dish.computeRatingAverage();
             Toast.makeText(getApplicationContext(), rating + "\n" + average, Toast.LENGTH_LONG).show();
         });
