@@ -91,15 +91,32 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
         DateFormat presDateFormat = new SimpleDateFormat("HH:mm");
         Date current = new Date();   // given date
 
-        TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(mDataset.get(position).getOpeningHour());
-        Instant i = Instant.from(ta);
-        Date open = Date.from(i);
+//        TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(mDataset.get(position).getOpeningHour());
+//        Instant i = Instant.from(ta);
+//        Date open = Date.from(i);
+//
+//        ta = DateTimeFormatter.ISO_INSTANT.parse(mDataset.get(position).getClosingHour());
+//        i = Instant.from(ta);
+//        Date close = null;
+        try {
+            String openString = mDataset.get(position).getOpeningHour();
+            String closeString = mDataset.get(position).getClosingHour();
+            Date open = presDateFormat.parse(openString);
+            Date close = presDateFormat.parse(closeString);
+            current = presDateFormat.parse(presDateFormat.format(current));
+            holder.openingHour.setText(openString + " - " + closeString);
+            if (current.compareTo(close) < 0 && current.compareTo(open) > 0) {
+                holder.status.setText(R.string.Open);
+                holder.status.setTextColor(0xFF00AA00);
+            } else {
+                holder.status.setText(R.string.Closed);
+                holder.status.setTextColor(Color.RED);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-        ta = DateTimeFormatter.ISO_INSTANT.parse(mDataset.get(position).getClosingHour());
-        i = Instant.from(ta);
-        Date close = Date.from(i);
 
-        holder.openingHour.setText(String.format("%s - %s", presDateFormat.format(open), presDateFormat.format(close)));
 
         if (durations != null) {
             try {
@@ -137,21 +154,8 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
             holder.clock.setVisibility(View.VISIBLE);
         }
 
-        try {
-            open = presDateFormat.parse(presDateFormat.format(open));
-            close = presDateFormat.parse(presDateFormat.format(close));
-            current = presDateFormat.parse(presDateFormat.format(current));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
-        if (current.compareTo(close) < 0 && current.compareTo(open) > 0) {
-            holder.status.setText(R.string.Open);
-            holder.status.setTextColor(0xFF00AA00);
-        } else {
-            holder.status.setText(R.string.Closed);
-            holder.status.setTextColor(Color.RED);
-        }
+
     }
 
     private String getTime(int duration) {

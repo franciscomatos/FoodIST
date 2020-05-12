@@ -81,8 +81,11 @@ public class ListFoodServicesActivity extends AppCompatActivity {
 
 
         if (global.getCampus() != "Select a campus") {
-            fetchData process = new fetchData(this, global);
-            process.execute();
+            if (global.getLatitude() != 0) {
+                fetchData process = new fetchData(this, global);
+                process.execute();
+            }
+
         }
 
         ListFoodServicesActivity listFoodServicesActivity = this;
@@ -95,8 +98,13 @@ public class ListFoodServicesActivity extends AppCompatActivity {
                     global.setCampus(newCampus);
                     global.getLocation2(ListFoodServicesActivity.this);
                     //setViewPostFetch("");
-                    fetchData process = new fetchData(listFoodServicesActivity, global);
-                    process.execute();
+                    if (global.getLatitude() != 0) {
+                        fetchData process = new fetchData(listFoodServicesActivity, global);
+                        process.execute();
+                    }
+                    else {
+                        setViewPrefetch();
+                    }
                     updateSpinner(global.getCampus(), dropdown);
                     //Log.i("LOL", "Campus set to " + global.getCampus());
                 }

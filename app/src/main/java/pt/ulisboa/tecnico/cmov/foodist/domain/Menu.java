@@ -68,4 +68,13 @@ public class Menu {
     public boolean containsConstraint(Dish.DishCategory category) {
         return this.constraints.contains(category);
     }
+
+    @Override
+    public String toString() {
+        String dishes = "";
+        for (Dish d : dishList) {
+            dishes += d.toString();
+        }
+        return dishes;
+    }
 }

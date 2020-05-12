@@ -1,5 +1,9 @@
 package pt.ulisboa.tecnico.cmov.foodist.domain;
 
+import java.text.DecimalFormat;
+
+import static java.lang.Math.round;
+
 public class Dish {
 
     public enum DishCategory
@@ -47,7 +51,7 @@ public class Dish {
     }
 
     public long getPriceLong() {
-        return Math.round(getPrice() * SCALE);
+        return round(getPrice() * SCALE);
     }
 
     public DishCategory getCategory() { return this.category; }
@@ -67,5 +71,13 @@ public class Dish {
 
     public void setCategory(DishCategory category) {
         this.category = category;
+    }
+
+    @Override
+    public String toString() {
+        String printPrice =  new DecimalFormat("#.##").format(price);
+        return  name + " - " +
+                category + " - " +
+                printPrice + "€\n";
     }
 }

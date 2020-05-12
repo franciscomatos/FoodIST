@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -55,7 +57,7 @@ public class FoodServiceActivity extends AppCompatActivity {
     private MapView mapView;
     private MapView mapView2;
     private Bundle sis;
-
+    private ImageButton shareButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,13 +78,27 @@ public class FoodServiceActivity extends AppCompatActivity {
         String queue = getIntent().getExtras().getString("queue");
         fillInfo(duration, queue);
 
+        shareButton = (ImageButton) findViewById(R.id.share);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(Intent.ACTION_SEND);
+                myIntent.setType("text/plain");
+                String shareBody = foodService.toString();
+                String shareSub = "Eat in IST";
+                myIntent.putExtra(Intent.EXTRA_SUBJECT, shareBody);
+                myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(myIntent, "Share using"));
+            }
+        });
+
     }
 
     private void fillInfo(String duration, String queue) {
 
         TextView name = (TextView) findViewById(R.id.name);
         TextView openingHour = (TextView) findViewById(R.id.openingHour);
-        TextView is_open = (TextView) findViewById(R.id.is_open);
+        TextView status = (TextView) findViewById(R.id.is_open);
         TextView distance = (TextView) findViewById(R.id.ETA);
         TextView queueTime = (TextView) findViewById(R.id.queue);
         ImageView photo = (ImageView) findViewById(R.id.service_photo);
@@ -98,34 +114,32 @@ public class FoodServiceActivity extends AppCompatActivity {
             photo.setImageResource(R.drawable.coffee4);
         }
 
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
         DateFormat presDateFormat = new SimpleDateFormat("HH:mm");
         Date current = new Date();   // given date
 
-        TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(foodService.getOpeningHour());
-        Instant i = Instant.from(ta);
-        Date open = Date.from(i);
+        try {
+            String openString = foodService.getOpeningHour();
+            String closeString = foodService.getClosingHour();
+            Date open = presDateFormat.parse(openString);
+            Date close = presDateFormat.parse(closeString);
+            current = presDateFormat.parse(presDateFormat.format(current));
+            openingHour.setText(openString + " - " + closeString);
+            if (current.compareTo(close) < 0 && current.compareTo(open) > 0) {
+                status.setText(R.string.Open);
+                status.setTextColor(0xFF00AA00);
+            } else {
+                status.setText(R.string.Closed);
+                status.setTextColor(Color.RED);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-        ta = DateTimeFormatter.ISO_INSTANT.parse(foodService.getClosingHour());
-        i = Instant.from(ta);
-        Date close = Date.from(i);
-
-        openingHour.setText(presDateFormat.format(open) + " - " + presDateFormat.format(close));
         distance.setText(duration);
 
         queueTime.setText(queue);
 
-        Log.i("MYLOGS", queue);
-        Log.i("MYLOGS", duration);
 
-        if (current.compareTo(close) < 0) {
-            is_open.setText("Open");
-            is_open.setTextColor(0xFF00AA00);
-        } else {
-            is_open.setText("Closed");
-            is_open.setTextColor(Color.RED);
-        }
 
     }
 
