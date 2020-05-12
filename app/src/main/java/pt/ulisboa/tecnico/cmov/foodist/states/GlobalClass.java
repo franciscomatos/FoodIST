@@ -13,28 +13,45 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-
+import android.util.LruCache;
 import androidx.core.app.ActivityCompat;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.foodist.activities.MainActivity;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
+
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.domain.User;
+import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 
-public class GlobalClass extends Application {
+public class GlobalClass extends Application  {
     private String CAMPUS = "Select a campus";
+    private String OTHERCAMPUS1;
+    private String OTHERCAMPUS2;
+    private int CACHESIZE = 100*1024*1024; //100 MB
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
-    private String URL = "http://192.168.1.95:8000";
+    private String URL = "https://192.168.1.95:443";
     private FoodService currentFoodService;
     private User user = new User("User1", "ist111111", User.UserCourse.MEIC);
+    private AnnotationStatus status = new AnnotationStatus(AnnotationStatus.STUDENT);
+    private boolean connected  = false;
+    private Context context;
+
+    private LruCache<String,AppImage> imageMemCache = new LruCache<String,AppImage>(CACHESIZE){
+        @Override
+        protected int sizeOf(String key, AppImage image){
+            return image.getImage().getAllocationByteCount() / (1024*1024); //to get the size in MB
+        }
+    };
 
     private LocationManager locationManager;
     private LocationListener locationListener = new LocationListener() {
@@ -43,8 +60,6 @@ public class GlobalClass extends Application {
 
             setLatitude(location.getLatitude());
             setLongitude(location.getLongitude());
-            Log.i("Location: ", "long-lat" + getLongitude() + "-" + getLatitude());
-
         }
 
         @Override
@@ -64,10 +79,12 @@ public class GlobalClass extends Application {
         }
     };
 
-    private double[] AlamedaLatitude = new double[]{38.735740, 38.739740 };
-    private double[] AlamedaLongitude = new double[]{38.735740, 38.739740 };
-    private double[] TagusLatitude = new double[]{38.735740, 38.739740 };
-    private double[] TagusLongitude = new double[]{38.735740, 38.739740 };
+    private double[] AlamedaLatitude = new double[]{38.735090, 38.738468 };
+    private double[] AlamedaLongitude = new double[]{-9.140879, -9.136375 };
+    private double[] TagusLatitude = new double[]{38.736282, 38.738326 };
+    private double[] TagusLongitude = new double[]{-9.303761, -9.301535 };
+    private double[] CTNLatitude = new double[]{38.809919, 38.813611 };
+    private double[] CTNLongitude = new double[]{-9.097291, -9.092026 };
     private ArrayList<FoodService> listFoodServices;
     private Map<String, FoodService> foodServices = new HashMap<String, FoodService>(){{
         put("CIVIL", new FoodService("CIVIL", "RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.737069, -9.140017, new Menu(user.getDietaryConstraints())));
@@ -75,6 +92,36 @@ public class GlobalClass extends Application {
         put("AE", new FoodService("AE","RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T22:00:00Z", 38.736221, -9.137195, new Menu(user.getDietaryConstraints())));
         put("GreenBar Tagus",new FoodService("GreenBar Tagus","BAR", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.738019, -9.303139, new Menu(user.getDietaryConstraints()) ));
         put("Cafetaria", new FoodService("Cafetaria","RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.736582,  -9.302166, new Menu(user.getDietaryConstraints()) ));
+
+        //ALAMEDA
+        put("Central Bar", new FoodService("Central Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736606, -9.139532, new Menu()));
+        put("Civil Bar", new FoodService("Civil Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736988,  -9.139955, new Menu()));
+        put("Civil Cafeteria", new FoodService("Civil Cafeteria", "RESTAURANT", "0000-01-01T12:00:00Z", "0000-01-01T15:00:00Z", 38.737650,  -9.140384, new Menu()));
+        put("Sena Pastry Shop", new FoodService("Sena Pastry Shop", "RESTAURANT", "0000-01-01T08:00:00Z", "0000-01-01T19:00:00Z", 38.737677,  -9.138672, new Menu()));
+        put("Mechy Bar", new FoodService("Mechy Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.737247,   -9.137434, new Menu()));
+        put("AEIST Bar", new FoodService("AEIST Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736542, -9.137226, new Menu()));
+        put("AEIST Esplanade", new FoodService("AEIST Esplanade", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736318, -9.137820, new Menu()));
+        put("Chemy Bar", new FoodService("Chemy Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736240, -9.138302, new Menu()));
+        put("SAS Cafeteria", new FoodService("SAS Cafeteria", "RESTAURANT", "0000-01-01T09:00:00Z", "0000-01-01T21:00:00Z", 38.736571, -9.137036, new Menu()));
+        if (status.toString() == "STUDENT" || status.toString() == "PUBLIC" ) {
+            put("Math Cafeteria", new FoodService("Math Cafeteria", "RESTAURANT", "0000-01-01T13:30:00:00Z", "0000-01-01T15:00:00Z", 38.735508,-9.139645, new Menu()));
+        }
+        else {
+            put("Math Cafeteria", new FoodService("Math Cafeteria", "RESTAURANT", "0000-01-01T12:00:00Z", "0000-01-01T15:00:00Z", 38.735508,-9.139645, new Menu()));
+        }
+        put("Complex Bar", new FoodService("Complex Bar", "BAR", "0000-01-01T09:30:00Z", "0000-01-01T17:00:00Z", 38.736050,-9.140156, new Menu()));
+
+        //TAGUS
+        put("Tagus Cafeteria", new FoodService("Tagus Cafeteria", "RESTAURANT", "0000-01-01T12:00:00Z", "0000-01-01T15:00:00Z", 38.737802,-9.303223, new Menu()));
+        put("Red Bar", new FoodService("Red Bar", "BAR", "0000-01-01T08:00:00Z", "0000-01-01T22:00:00Z", 38.736546,-9.302207, new Menu()));
+        put("Green Bar", new FoodService("Green Bar", "BAR", "0000-01-01T07:00:00Z", "0000-01-01T19:00:00Z", 38.738004,-9.303058, new Menu()));
+
+        //CTN
+        put("CTN Cafeteria", new FoodService("CTN Cafeteria", "RESTAURANT", "0000-01-01T12:00:00Z", "0000-01-01T14:00:00Z", 38.812522,-9.093773, new Menu()));
+        put("CTN Bar", new FoodService("CTN Bar", "BAR", "0000-01-01T08:30:00Z", "0000-01-01T16:30:00Z", 38.812522,-9.093773, new Menu()));
+
+
+
     }};
 
     //FIXME:should be defined by the user
@@ -97,14 +144,24 @@ public class GlobalClass extends Application {
     public ArrayList<FoodService> getCampusFoodServices(String campus) {
         listFoodServices = new ArrayList<FoodService>();
         if (campus == "Alameda") {
-            listFoodServices.add(foodServices.get("CIVIL"));
-            listFoodServices.add(foodServices.get("ABILIO"));
-            listFoodServices.add(foodServices.get("AE"));
-
+            listFoodServices.add(foodServices.get("Central Bar"));
+            listFoodServices.add(foodServices.get("Civil Bar"));
+            listFoodServices.add(foodServices.get("Civil Cafeteria"));
+            listFoodServices.add(foodServices.get("Sena Pastry Shop"));
+            listFoodServices.add(foodServices.get("Mechy Bar"));
+            listFoodServices.add(foodServices.get("AEIST Bar"));
+            listFoodServices.add(foodServices.get("AEIST Esplanade"));
+            listFoodServices.add(foodServices.get("Chemy Bar"));
+            listFoodServices.add(foodServices.get("SAS Cafeteria"));
+            listFoodServices.add(foodServices.get("Math Cafeteria"));
+            listFoodServices.add(foodServices.get("Complex Bar"));
         } else if (campus == "Taguspark") {
-            listFoodServices.add(foodServices.get("GreenBar Tagus"));
-            listFoodServices.add(foodServices.get("Cafetaria"));
-
+            listFoodServices.add(foodServices.get("Tagus Cafeteria"));
+            listFoodServices.add(foodServices.get("Red Bar"));
+            listFoodServices.add(foodServices.get("Green Bar"));
+        } else if (campus == "CTN") {
+            listFoodServices.add(foodServices.get("CTN Cafeteria"));
+            listFoodServices.add(foodServices.get("CTN Bar"));
         }
         return listFoodServices;
     }
@@ -115,9 +172,14 @@ public class GlobalClass extends Application {
     public void setCampus(String campus) {
         this.CAMPUS = campus;
         if (campus == "Alameda") {
-            this.OTHERCAMPUS = "Taguspark";
+            this.OTHERCAMPUS1 = "Taguspark";
+            this.OTHERCAMPUS2 = "CTN";
+        } else if (campus == "Taguspark"){
+            this.OTHERCAMPUS1 = "CTN";
+            this.OTHERCAMPUS2 = "Alameda";
         } else {
-            this.OTHERCAMPUS = "Alameda";
+            this.OTHERCAMPUS1 = "Alameda";
+            this.OTHERCAMPUS2 = "Taguspark";
         }
     }
 
@@ -125,12 +187,20 @@ public class GlobalClass extends Application {
         this.locationManager = locationManager;
     }
 
-    public String getOtherCampus() {
-        return OTHERCAMPUS;
+    public String getOtherCampus1() {
+        return OTHERCAMPUS1;
     }
 
-    public void setOtherCampus(String OTHERCAMPUS) {
-        this.OTHERCAMPUS = OTHERCAMPUS;
+    public String getOtherCampus2() {
+        return OTHERCAMPUS2;
+    }
+
+    public void setOtherCampus1(String OTHERCAMPUS) {
+        this.OTHERCAMPUS1 = OTHERCAMPUS;
+    }
+
+    public void setOtherCampus2(String OTHERCAMPUS) {
+        this.OTHERCAMPUS2 = OTHERCAMPUS;
     }
 
     public double getLongitude() {
@@ -168,6 +238,14 @@ public class GlobalClass extends Application {
 
     public double[] getTagusLatitude() {
         return TagusLatitude;
+    }
+
+    public double[] getCTNLatitude() {
+        return CTNLatitude;
+    }
+
+    public double[] getCTNLongitude() {
+        return CTNLongitude;
     }
 
     public void setTagusLatitude(double[] tagusLatitude) {
@@ -244,5 +322,54 @@ public class GlobalClass extends Application {
 
     public void addDish(String foodServiceName, Dish dish) {
         foodServices.get(foodServiceName).getMenu().addDish(dish);
+    }
+
+    public void setStatus(String status) {
+        this.status = new AnnotationStatus(status);
+        Log.i("STATUS",status);
+    }
+
+    public void addImageToCache(String key, AppImage image) {
+        if (getImageFromCache(key) == null) {
+            imageMemCache.put(key, image);
+        }
+    }
+
+        public AppImage getImageFromCache(String key) {
+            return imageMemCache.get(key);
+        }
+
+        public List<AppImage> getThumbnailsByFoodServiceDish(String foodService, String dish){
+            List<AppImage> matches = new ArrayList<AppImage>();
+            Map<String, AppImage> cachemap = imageMemCache.snapshot();
+            //iterate through the map and find images from same foodService and Dish
+            cachemap.forEach((k,v) -> {
+                if(v.getFoodService().equals(foodService) && v.getDish().equals(dish) && v.isThumbnail())
+                    matches.add(v);
+            });
+            return matches;
+        }
+        /*
+        * Uses the max size of a Thumbnail possible:
+        * JPEG with 500x500 size and bit depth of 48bit
+        *
+        * */
+        public int getNrThumbnailsLeft(){
+            return  ((CACHESIZE/(1024*1024)) - imageMemCache.size())/(int) 1.5;
+
+        }
+
+        public boolean isConnected(){
+            return this.connected;
+        }
+
+        public void setConnected(boolean val){
+            this.connected = val;
+        }
+        public void setContext(Context context){
+            this.context = context;
+        }
+        public Context getContext(){
+        return this.context;
     }
 }

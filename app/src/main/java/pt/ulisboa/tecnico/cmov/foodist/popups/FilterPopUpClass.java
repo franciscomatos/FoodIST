@@ -1,10 +1,12 @@
-package pt.ulisboa.tecnico.cmov.foodist;
+package pt.ulisboa.tecnico.cmov.foodist.popups;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+
+import pt.ulisboa.tecnico.cmov.foodist.R;
 
 public class FilterPopUpClass {
 

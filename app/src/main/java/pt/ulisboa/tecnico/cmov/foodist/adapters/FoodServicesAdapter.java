@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,6 +29,7 @@ import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapter.MyViewHolder> {
     private ArrayList<FoodService> mDataset;
     private JSONArray durations;
+    private JSONArray queues;
     private View.OnClickListener mOnItemClickListener;
 
 
@@ -38,15 +40,21 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
         public TextView openingHour;
         public TextView status;
         public TextView ETA;
+        public TextView queue;
         public ImageView icon;
+        public ImageView clock;
+        public ImageView walk;
 
         public MyViewHolder(View v) {
             super(v);
             name = (TextView) v.findViewById(R.id.name);
             icon = (ImageView) v.findViewById(R.id.service_photo);
+            clock = (ImageView) v.findViewById(R.id.clock);
+            walk = (ImageView) v.findViewById(R.id.walk);
             openingHour = (TextView) v.findViewById(R.id.openingHour);
             status = (TextView) v.findViewById(R.id.is_open);
             ETA = (TextView) v.findViewById(R.id.ETA);
+            queue = (TextView) v.findViewById(R.id.queue);
             v.setTag(this);
             v.setOnClickListener(mOnItemClickListener);
         }
@@ -96,16 +104,48 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
         if (durations != null) {
             try {
                 holder.ETA.setText(getTime((int) durations.getDouble(position)));
+                holder.walk.setVisibility(View.VISIBLE);
+
             } catch (JSONException e) {
                 Log.e("MYLOGS", "could not correctly parse duration json");
                 e.printStackTrace();
+                holder.ETA.setText("--:--");
+                holder.walk.setVisibility(View.VISIBLE);
+
             }
         }
+        else {
+            holder.ETA.setText("--:--");
+            holder.walk.setVisibility(View.VISIBLE);
+        }
 
-        Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
-        Log.i("MYLOGS", presDateFormat.format(open) + " " + presDateFormat.format(close));
+        if (queues != null) {
+            try {
+                holder.queue.setText(getTime((int) queues.getDouble(position)));
+                holder.clock.setVisibility(View.VISIBLE);
 
-        if (current.compareTo(close) < 0) {
+            } catch (JSONException e) {
+                Log.e("MYLOGS", "could not correctly parse queues json");
+                e.printStackTrace();
+                holder.queue.setText("--:--");
+                holder.clock.setVisibility(View.VISIBLE);
+
+            }
+        }
+        else {
+            holder.queue.setText("--:--");
+            holder.clock.setVisibility(View.VISIBLE);
+        }
+
+        try {
+            open = presDateFormat.parse(presDateFormat.format(open));
+            close = presDateFormat.parse(presDateFormat.format(close));
+            current = presDateFormat.parse(presDateFormat.format(current));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (current.compareTo(close) < 0 && current.compareTo(open) > 0) {
             holder.status.setText(R.string.Open);
             holder.status.setTextColor(0xFF00AA00);
         } else {
@@ -115,7 +155,6 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
     }
 
     private String getTime(int duration) {
-        Log.i("MYLOGS", duration +"");
         return duration/60 + " mins";
     }
 
@@ -130,9 +169,25 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
     }
 
     public void setDuration(String data) {
+        if (data == "") {
+            durations = null;
+        }
         try {
             JSONObject json = new JSONObject(data);
             durations = json.getJSONArray("durations").getJSONArray(0);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setQueues(String data) {
+        if (data == "") {
+            durations = null;
+        }
+        try {
+            JSONObject json = new JSONObject(data);
+            queues = json.getJSONArray("durations").getJSONArray(0);
 
         } catch (JSONException e) {
             e.printStackTrace();

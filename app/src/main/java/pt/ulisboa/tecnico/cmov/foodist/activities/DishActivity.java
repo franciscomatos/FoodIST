@@ -28,6 +28,7 @@ import com.anychart.enums.TooltipPositionMode;
 //import com.anychart.sample.R;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
@@ -39,6 +40,8 @@ import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
+import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchCacheImages;
 
 public class DishActivity extends FragmentActivity {
 
@@ -63,6 +66,7 @@ public class DishActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish);
+        GlobalClass global = (GlobalClass) getApplicationContext();
 
         /*ImageView iv_background =findViewById(R.id.iv_background);
         AnimationDrawable animationDrawable = (AnimationDrawable) iv_background.getDrawable();
@@ -70,21 +74,22 @@ public class DishActivity extends FragmentActivity {
 
         // MISSING: GET IMAGES FROM SERVER AND CACHE THEM
         carouselView = findViewById(R.id.carouselView);
-        carouselView.setPageCount(sampleImages.length);
-        carouselView.setImageListener(imageListener);
+        //carouselView.setPageCount(sampleImages.length);
+        //carouselView.setImageListener(imageListener);
 
         Intent intent = getIntent();
         dishName = intent.getStringExtra("name");
         category = intent.getStringExtra("category");
         price = intent.getStringExtra("price");
+
         foodServiceName = intent.getStringExtra("foodService");
         Integer m = intent.getIntExtra("dishIndex",10);
         Log.i("MYLOGS", "MMMMMMM" + m);
         dishIndex = m;
 
-        GlobalClass global = (GlobalClass) getApplicationContext();
         menu = global.getFoodService(foodServiceName).getMenu();
         dish = menu.getDish(dishIndex);
+
 
         TextView nameView = findViewById(R.id.dishName);
         nameView.setText(dishName);
@@ -167,6 +172,10 @@ public class DishActivity extends FragmentActivity {
                 return true;
             }
         });
+        fetchCacheImages process = new fetchCacheImages(global, carouselView, foodServiceName, dishName, 0);
+        process.execute();
+
+
     }
 
     public void goToAddPictureActivity(View v) {
@@ -174,6 +183,7 @@ public class DishActivity extends FragmentActivity {
         intent.putExtra("name", dishName);
         intent.putExtra("category", category);
         intent.putExtra("price", price);
+        intent.putExtra("foodService", foodServiceName);
         startActivity(intent);
     }
 

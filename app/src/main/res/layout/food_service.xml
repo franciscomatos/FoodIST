@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,7 +10,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/Card"
-        android:layout_width="match_parent"
+        android:layout_width="411dp"
         android:layout_height="0dp"
         android:layout_weight="1">
 
@@ -30,7 +31,7 @@
                 tools:srcCompat="@drawable/ic_restaurant" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="299dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="5dp">
@@ -42,6 +43,7 @@
                     android:layout_weight="1"
                     android:padding="3dp"
                     android:text="@string/service_name"
+                    android:textColor="@android:color/secondary_text_light"
                     android:textSize="24sp" />
 
                 <LinearLayout
@@ -67,15 +69,49 @@
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/ETA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:text="@string/distance"
-                    android:textSize="18sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:orientation="horizontal"
+                    android:paddingTop="5dp">
+
+
+                    <ImageView
+                        android:id="@+id/walk"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        app:srcCompat="@drawable/walk" />
+
+                    <TextView
+                        android:id="@+id/ETA"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:text="@string/distance"
+                        android:textColor="@android:color/secondary_text_light"
+                        android:textSize="18sp" />
+
+                    <ImageView
+                        android:id="@+id/clock"
+                        android:layout_width="40dp"
+                        android:layout_height="25dp"
+                        android:paddingLeft="20dp"
+                        app:srcCompat="@drawable/clock_black" />
+
+                    <TextView
+                        android:id="@+id/queue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:text="@string/distance"
+                        android:textColor="@android:color/secondary_text_light"
+                        android:textSize="18sp" />
+                </LinearLayout>
 
             </LinearLayout>
 

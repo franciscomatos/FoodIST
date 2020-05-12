@@ -29,6 +29,8 @@ import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchData;
 
+
+
 public class ListFoodServicesActivity extends AppCompatActivity {
 
 
@@ -38,7 +40,7 @@ public class ListFoodServicesActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private FoodServicesAdapter adapter;
     private ArrayList<FoodService> listFoodServices;
-    private GlobalClass global ;;
+    private GlobalClass global ;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {
@@ -51,6 +53,8 @@ public class ListFoodServicesActivity extends AppCompatActivity {
             intent.putExtra("foodService", foodService.getName());
             TextView ETA = view.findViewById(R.id.ETA);
             intent.putExtra("duration", ETA.getText());
+            TextView queue = view.findViewById(R.id.queue);
+            intent.putExtra("queue", queue.getText());
             startActivity(intent);
         }
     };
@@ -68,7 +72,9 @@ public class ListFoodServicesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_food_services);
+
         global = (GlobalClass) getApplicationContext();
+        getCampus();
         recyclerView = (RecyclerView) findViewById(R.id.FoodServices);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
@@ -95,7 +101,6 @@ public class ListFoodServicesActivity extends AppCompatActivity {
 
         global.getLocation2(ListFoodServicesActivity.this);
 
-        getCampus();
 
         if (global.getCampus() != "Select a campus") {
             fetchData process = new fetchData(this, global);
@@ -111,6 +116,7 @@ public class ListFoodServicesActivity extends AppCompatActivity {
                 if (global.getCampus() != newCampus ) {
                     global.setCampus(newCampus);
                     global.getLocation2(ListFoodServicesActivity.this);
+                    //setViewPostFetch("");
                     fetchData process = new fetchData(listFoodServicesActivity, global);
                     process.execute();
                     updateSpinner(global.getCampus(), dropdown);
@@ -130,17 +136,20 @@ public class ListFoodServicesActivity extends AppCompatActivity {
     public void getCampus() { //TODO change numbers to a class with min/max coordinates
         GlobalClass global = (GlobalClass) getApplicationContext();
         double latitude = global.getLatitude();
-        double longitude = global.getLatitude();
+        double longitude = global.getLongitude();
         if (global.getAlamedaLatitude()[0] < latitude && latitude < global.getAlamedaLatitude()[1]) {
             if (global.getAlamedaLongitude()[0] < longitude && longitude < global.getAlamedaLongitude()[1]) {
                 global.setCampus("Alameda");
-                Log.i("CAMPUS", global.getCampus());
 
             }
         } else if (global.getTagusLatitude()[0] < latitude && latitude < global.getTagusLatitude()[1]) {
             if (global.getTagusLongitude()[0] < longitude && longitude < global.getTagusLongitude()[1]) {
                 global.setCampus("Taguspark");
 
+            }
+        } else if (global.getCTNLatitude()[0] < latitude && latitude < global.getCTNLatitude()[1]) {
+            if (global.getCTNLongitude()[0] < longitude && longitude < global.getCTNLongitude()[1]) {
+                global.setCampus("CTN");
             }
         } else { // keep the original
             return;
@@ -165,9 +174,9 @@ public class ListFoodServicesActivity extends AppCompatActivity {
     private void updateSpinner(String campus, Spinner dropdown) {
         String[] items;
         if (campus == "Select a campus") {
-            items = new String[]{campus, "Alameda", "Taguspark"};
+            items = new String[]{campus, "Alameda", "Taguspark", "CTN"};
         } else {
-            items = new String[]{campus, global.getOtherCampus()};
+            items = new String[]{campus, global.getOtherCampus1(), global.getOtherCampus2()};
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         dropdown.setAdapter(adapter);
@@ -185,9 +194,8 @@ public class ListFoodServicesActivity extends AppCompatActivity {
         listFoodServices = global.getCampusFoodServices(global.getCampus());
         adapter = new FoodServicesAdapter(listFoodServices);
         adapter.setOnItemClickListener(onItemClickListener);
-        recyclerView.setAdapter(adapter);
         adapter.setDuration(data);
-        recyclerView.setAdapter(adapter);
+        recyclerView.swapAdapter(adapter, true);
     }
 
     public void setItemClickListener(View.OnClickListener clickListener) {

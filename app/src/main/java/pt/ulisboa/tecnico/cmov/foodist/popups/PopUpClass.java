@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.foodist;
+package pt.ulisboa.tecnico.cmov.foodist.popups;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -14,18 +14,20 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import pt.ulisboa.tecnico.cmov.foodist.R;
+
 public class PopUpClass {
 
     private PopupWindow popupWindow;
 
     //PopupWindow display method
 
-    public View showPopupWindow(final View view) {
+    public View showPopupWindow(final View view, int layoutResource) {
 
 
         //Create a View object yourself through inflater
         LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.pop_up_window_create_dish, null);
+        View popupView = inflater.inflate(layoutResource, null);
 
         //Specify the length and width through constants
         int width = LinearLayout.LayoutParams.MATCH_PARENT;

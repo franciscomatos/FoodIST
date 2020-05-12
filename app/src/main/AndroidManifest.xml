@@ -4,7 +4,7 @@
     package="pt.ulisboa.tecnico.cmov.foodist">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
+         Google Maps Android APIn v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permissio.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
     <uses-feature
@@ -34,9 +34,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-        <activity
-            android:name=".activities.ui.login.LoginActivity"
-            android:label="@string/title_activity_login"></activity>
+
         <activity android:name=".activities.ProfileActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

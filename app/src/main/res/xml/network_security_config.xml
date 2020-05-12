@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <base-config cleartextTrafficPermitted="true" />
+    <!--<base-config cleartextTrafficPermitted="true" />
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">127.0.0.1</domain>
+        <trust-anchors>
+            <certificates src="@raw/ca"/>
+            <certificates src="system"/>
+        </trust-anchors>
+        <domain includeSubdomains="true">192.168.1.70</domain>
         <domain includeSubdomains="true">localhost:8000</domain>
         <domain includeSubdomains="false">https://api.openrouteservice.org/v2/directions/foot-hiking</domain>
         <domain includeSubdomains="true">https://maps.googleapis.com</domain>
-    </domain-config>
+    </domain-config>-->
 </network-security-config>

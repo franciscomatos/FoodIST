@@ -12,7 +12,7 @@ import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 
-public class fetchMenu extends fetchBase {
+public class fetchMenu extends fetchBaseCustom {
 
 	private MenuActivity menuActivity;
 
