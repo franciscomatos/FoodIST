@@ -2,7 +2,7 @@ package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
-public class toggleQueue extends fetchBase {
+public class toggleQueue extends fetchBaseCustom {
 
     private String foodService ;
     private String currentTime;

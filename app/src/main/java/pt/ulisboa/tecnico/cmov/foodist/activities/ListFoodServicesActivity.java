@@ -33,7 +33,7 @@ public class ListFoodServicesActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private FoodServicesAdapter adapter;
     private ArrayList<FoodService> listFoodServices;
-    private GlobalClass global ;;
+    private GlobalClass global ;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {

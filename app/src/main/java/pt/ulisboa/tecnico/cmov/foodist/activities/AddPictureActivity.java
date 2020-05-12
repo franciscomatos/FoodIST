@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
@@ -26,8 +27,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import android.database.Cursor;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
+import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
+import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.uploadImage;
 
 public class AddPictureActivity extends AppCompatActivity {
 	//TODO: fix rotation, (save the image views)
@@ -37,12 +42,14 @@ public class AddPictureActivity extends AppCompatActivity {
 	private ImageView imageView;
 	private String currentPhotoPath;
 	private Button postButton;
-	private String dishName, category, price;
+	private String dishName, category, price, foodService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_picture);
+
+
 		imageView = findViewById(R.id.image_view);
 		postButton = findViewById(R.id.postButton);
 		postButton.setEnabled(false);
@@ -51,6 +58,7 @@ public class AddPictureActivity extends AppCompatActivity {
 		dishName = intent.getStringExtra("name");
 		category = intent.getStringExtra("category");
 		price = intent.getStringExtra("price");
+		foodService = intent.getStringExtra("foodService");
 
 	}
 	//event handlers
@@ -78,7 +86,7 @@ public class AddPictureActivity extends AppCompatActivity {
 		// Sets the type as image/*. This ensures only components of type image are selected
 		intent.setType("image/*");
 		//We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
-		String[] mimeTypes = {"image/jpeg", "image/png"};
+		String[] mimeTypes = {"image/jpeg"};
 		intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
 		// Launching the Intent
 		startActivityForResult(intent,REQUEST_GET_PHOTO);
@@ -140,12 +148,12 @@ public class AddPictureActivity extends AppCompatActivity {
 	*
 	* */
 	private void savePicture(ImageView iv,Uri uri) {
-		//create the file
-		File photoFile = null;
-		BitmapDrawable drawable = (BitmapDrawable) iv.getDrawable();
-		Bitmap bitmap = drawable.getBitmap();
+			//create the file
+			File photoFile = null;
+			BitmapDrawable drawable = (BitmapDrawable) iv.getDrawable();
+			Bitmap bitmap = drawable.getBitmap();
 
-		try {
+			try {
 			photoFile = createImageFile("JPEG_");
 		} catch (IOException ex) {
 			// Error occurred while creating the File
@@ -155,23 +163,64 @@ public class AddPictureActivity extends AppCompatActivity {
 		thread.start();
 	}
 
+	public void sendImage(GlobalClass global,Bitmap imageBitmap){
+		AppImage img, tbn;
+		Uri uri;
+		uploadImage process, processTbn;
+		Date current = new Date();
+		img = new AppImage(foodService, dishName, current, global.getUsername(), imageBitmap, false);
+
+		//TODO: change width and height of the thumbnail
+		tbn = new AppImage(foodService, dishName, current, global.getUsername(), Bitmap.createScaledBitmap(imageBitmap, 500, 500, false), true);
+
+		global.addImageToCache(img.toString(), img);
+		global.addImageToCache(tbn.toString(), tbn);
+
+		process = new uploadImage(global, img);
+		processTbn = new uploadImage(global, tbn);
+		process.execute();
+		processTbn.execute();
+
+	}
 
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data){
 		if(resultCode == Activity.RESULT_OK) {
+            GlobalClass global = (GlobalClass) getApplicationContext();
+			Bitmap imageBitmap = null;
 			switch (requestCode) {
-				case REQUEST_GET_PHOTO:
-					Uri uri = data.getData();
-					imageView.setImageURI(uri);
-					savePicture(imageView, uri);
-
-					//TODO: save the images in server (use some kind of AsyncTask)
-					break;
 				case REQUEST_TAKE_PHOTO:
+					//we need to create a temp file to get the image full size, which is in currentPhotoPath
 					imageView.setImageURI(Uri.parse(currentPhotoPath));
-					//TODO: save the images in server (use some kind of AsyncTask)
+					//Get bitmap from camera by putting into an imageView and then retrieving it
+					BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+					imageBitmap = drawable.getBitmap();
+
+					if(imageBitmap != null) {
+						sendImage(global, imageBitmap);
+					}
 					break;
+
+				case REQUEST_GET_PHOTO :
+
+					try{
+						imageBitmap = MediaStore.Images.Media.getBitmap(
+								this.getContentResolver(), data.getData());
+					}catch(FileNotFoundException fnf){
+						Log.e("ERROR", ": Couldnt load image");
+						fnf.printStackTrace();
+					}catch(IOException io){
+						Log.e("ERROR", ": Something to due with the IO?");
+						io.printStackTrace();
+					}
+
+					if(imageBitmap != null) {
+						imageView.setImageBitmap(imageBitmap);
+						sendImage(global, imageBitmap);
+					}
+					break;
+
 				default:
 					Log.d("onActivityResult", "not a valid request code");
 			}

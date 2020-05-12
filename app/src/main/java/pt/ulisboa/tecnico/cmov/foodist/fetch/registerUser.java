@@ -4,7 +4,7 @@ import android.util.Log;
 
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
-public class registerUser extends fetchBase {
+public class registerUser extends fetchBaseCustom {
     private String foodService ;
     private String currentTime;
 
