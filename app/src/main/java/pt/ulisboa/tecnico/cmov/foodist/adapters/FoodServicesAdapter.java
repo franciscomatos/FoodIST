@@ -1,10 +1,14 @@
 package pt.ulisboa.tecnico.cmov.foodist.adapters;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,12 +29,16 @@ import java.time.format.DateTimeFormatter;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
+import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapter.MyViewHolder> {
     private ArrayList<FoodService> mDataset;
     private JSONArray durations;
     private JSONArray queues;
     private View.OnClickListener mOnItemClickListener;
+    Context context;
+    GlobalClass global;
+
 
 
     // Provide a reference to the views for each data item
@@ -44,6 +52,7 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
         public ImageView icon;
         public ImageView clock;
         public ImageView walk;
+        public ImageButton share;
 
         public MyViewHolder(View v) {
             super(v);
@@ -55,12 +64,15 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
             status = (TextView) v.findViewById(R.id.is_open);
             ETA = (TextView) v.findViewById(R.id.ETA);
             queue = (TextView) v.findViewById(R.id.queue);
+            share = (ImageButton) v.findViewById(R.id.share2);
             v.setTag(this);
             v.setOnClickListener(mOnItemClickListener);
         }
     }
-    public FoodServicesAdapter(ArrayList<FoodService> listFoodServices) {
+    public FoodServicesAdapter(ArrayList<FoodService> listFoodServices, GlobalClass global) {
         mDataset = listFoodServices;
+        this.global = global;
+
     }
 
     // Create new views (invoked by the layout manager)
@@ -70,7 +82,7 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
         // create a new view
         View v =  LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.food_service, parent, false);
-
+        context = v.getContext();
         MyViewHolder vh = new MyViewHolder(v);
         return vh;
     }
@@ -154,7 +166,18 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
             holder.clock.setVisibility(View.VISIBLE);
         }
 
-
+        holder.share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(Intent.ACTION_SEND);
+                myIntent.setType("text/plain");
+                String shareBody = global.getFoodService(mDataset.get(position).getName()).toString();
+                String shareSub = "Eat in IST";
+                myIntent.putExtra(Intent.EXTRA_SUBJECT, shareBody);
+                myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                context.startActivity(Intent.createChooser(myIntent, "Share using"));
+            }
+        });
 
     }
 

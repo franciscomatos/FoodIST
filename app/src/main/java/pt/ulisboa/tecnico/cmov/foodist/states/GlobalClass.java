@@ -105,7 +105,7 @@ public class GlobalClass extends Application  {
             }, 10);
             return;
         }
-        if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+        if ( !locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER ) ) {
             Intent gpsOptionsIntent = new Intent(
                     android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             activity.startActivity(gpsOptionsIntent);
@@ -113,7 +113,7 @@ public class GlobalClass extends Application  {
 
 
 
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 60000, 50, locationListener);
+        locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 60000, 50, locationListener);
     }
 
 

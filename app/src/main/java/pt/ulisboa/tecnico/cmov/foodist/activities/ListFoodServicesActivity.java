@@ -171,14 +171,14 @@ public class ListFoodServicesActivity extends AppCompatActivity {
 
     public void setViewPrefetch() {
         listFoodServices = global.getCampusFoodServices(global.getCampus());
-        adapter = new FoodServicesAdapter(listFoodServices);
+        adapter = new FoodServicesAdapter(listFoodServices, global);
         adapter.setOnItemClickListener(onItemClickListener);
         recyclerView.setAdapter(adapter);
     }
 
     public void setViewPostFetch(String data) {
         listFoodServices = global.getCampusFoodServices(global.getCampus());
-        adapter = new FoodServicesAdapter(listFoodServices);
+        adapter = new FoodServicesAdapter(listFoodServices, global);
         adapter.setOnItemClickListener(onItemClickListener);
         adapter.setDuration(data);
         recyclerView.swapAdapter(adapter, true);
