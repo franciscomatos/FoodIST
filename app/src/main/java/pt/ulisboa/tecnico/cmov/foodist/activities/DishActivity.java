@@ -9,11 +9,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
+import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchCacheImagesCustom;
 
 public class DishActivity extends FragmentActivity {
 
@@ -22,6 +23,7 @@ public class DishActivity extends FragmentActivity {
     private String dishName;
     private String category;
     private String price;
+    private String foodService;
     private ImageListener imageListener = new ImageListener() {
         @Override
         public void setImageForPosition(int position, ImageView imageView) {
@@ -33,6 +35,7 @@ public class DishActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish);
+        GlobalClass global = (GlobalClass) getApplicationContext();
 
         /*ImageView iv_background =findViewById(R.id.iv_background);
         AnimationDrawable animationDrawable = (AnimationDrawable) iv_background.getDrawable();
@@ -40,13 +43,14 @@ public class DishActivity extends FragmentActivity {
 
         // MISSING: GET IMAGES FROM SERVER AND CACHE THEM
         carouselView = findViewById(R.id.carouselView);
-        carouselView.setPageCount(sampleImages.length);
-        carouselView.setImageListener(imageListener);
+        //carouselView.setPageCount(sampleImages.length);
+        //carouselView.setImageListener(imageListener);
 
         Intent intent = getIntent();
         dishName = intent.getStringExtra("name");
         category = intent.getStringExtra("category");
         price = intent.getStringExtra("price");
+        foodService = intent.getStringExtra("foodService");
 
         TextView nameView = findViewById(R.id.dishName);
         nameView.setText(dishName);
@@ -56,6 +60,11 @@ public class DishActivity extends FragmentActivity {
 
         TextView priceView = findViewById(R.id.dishPrice);
         priceView.setText(price);
+
+        fetchCacheImagesCustom process = new fetchCacheImagesCustom(global, carouselView, foodService, dishName, 0);
+        process.execute();
+
+
     }
 
     public void goToAddPictureActivity(View v) {
@@ -63,6 +72,7 @@ public class DishActivity extends FragmentActivity {
         intent.putExtra("name", dishName);
         intent.putExtra("category", category);
         intent.putExtra("price", price);
+        intent.putExtra("foodService", foodService);
         startActivity(intent);
     }
 

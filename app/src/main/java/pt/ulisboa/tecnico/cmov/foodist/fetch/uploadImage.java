@@ -2,69 +2,61 @@ package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import pt.ulisboa.tecnico.cmov.foodist.activities.MenuActivity;
-import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
-import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+
+import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
+import java.io.ByteArrayOutputStream;
+import java.util.Base64;
+import android.graphics.Bitmap;
 
 
-public class uploadImage extends fetchBase {
+public class uploadImage extends fetchBaseCustom {
 
-	private MenuActivity menuActivity;
+	private AppImage image;
 
-	private String foodService ;
-	private Menu menu;
-
-	public uploadImage(MenuActivity activity, Menu m, String foodServiceName, GlobalClass global) {
-		super(global, global.getURL() + "/getMenus");
-		this.menu = m;
-		this.foodService = foodServiceName;
-		this.menuActivity =  activity;
+	public uploadImage(GlobalClass global, AppImage image) {
+		super(global, global.getURL() + "/addImage");
+		this.image = image;
 	}
-
 	@Override
 	protected String buildBody() {
+
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		image.getImage().compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+		byte[] byteArray = byteArrayOutputStream .toByteArray();
+
+		String encoded = Base64.getEncoder().encodeToString(byteArray);
+
 		return "{\"username\":\"" + getGlobal().getUsername() + "\"," +
 				"\"password\":\"" + getGlobal().getPassword() +"\"," +
-				"\"canteen\":\""+foodService+"\"}";
+				"\"namemenu\":\"" + image.getDish() +"\"," +
+                "\"nameimage\":\"" + image.toString() +"\"," +
+                "\"namecanteen\":\"" + image.getFoodService() +"\"," +
+				"\"image\":\""+encoded+"\"}";
 	}
-
 	@Override
 	protected void parse(String data) {
-		Log.i("FETCHMENU", getData());
+		Log.i("UPLOADIMAGE", "Image Name:"+ image.toString());
+		Log.i("UPLOADIMAGE", getData());
 		try {
 			JSONObject response = new JSONObject(data);
 			if(!response.getString("status").equals("OK"))
 				throw new JSONException("Json wasn't ok");
 
-			JSONArray dishes = response.getJSONArray("menus");
-
-			for(int i = 0 ; i < dishes.length() ; i++) {
-
-				JSONObject dish = dishes.getJSONObject(i);
-				this.menu.addDish(
-						new Dish(dish.getString("name"),
-								dish.getDouble("price"),
-								Dish.DishCategory.valueOf(dish.getString("dietary").toUpperCase()))
-				);
-			}
 		} catch (JSONException e) {
 			Log.e("ERROR", ": Failed to parse the json");
 			e.printStackTrace();
 		}catch (Exception e) {
 			Log.e("ERROR", data);
-			Log.e("ERROR", Dish.DishCategory.MEAT.getCategory());
 			e.printStackTrace();
 		}
 	}
 
 	protected void onPostExecute(Void aVoid) {
 		//will update the activity
-		Log.i("FETCHMENU", getData());
-		menuActivity.updateDishes();
+		Log.i("UPLOADIMAGE", getData());
 	}
 
 }

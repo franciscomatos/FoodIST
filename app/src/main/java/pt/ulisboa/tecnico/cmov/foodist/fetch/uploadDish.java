@@ -9,7 +9,7 @@ import pt.ulisboa.tecnico.cmov.foodist.activities.MenuActivity;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 
-public class uploadDish extends fetchBase {
+public class uploadDish extends fetchBaseCustom {
 
 	private MenuActivity menuActivity;
 

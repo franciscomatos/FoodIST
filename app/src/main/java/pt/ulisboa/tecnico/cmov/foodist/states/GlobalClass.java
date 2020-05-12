@@ -13,7 +13,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-
+import android.util.LruCache;
 import androidx.core.app.ActivityCompat;
 
 import java.lang.annotation.Annotation;
@@ -21,21 +21,34 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.foodist.activities.MainActivity;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 
 public class GlobalClass extends Application  {
     private String CAMPUS = "Select a campus";
     private String OTHERCAMPUS1;
     private String OTHERCAMPUS2;
+    private int CACHESIZE = 100*1024*1024; //100 MB
+    private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
-    private String URL = "http://192.168.1.95:8000";
+    private String URL = "https://192.168.1.70:443";
     private FoodService currentFoodService;
     private AnnotationStatus status = new AnnotationStatus(AnnotationStatus.STUDENT);
+    private boolean connected  = false;
+    private Context context;
+
+    private LruCache<String,AppImage> imageMemCache = new LruCache<String,AppImage>(CACHESIZE){
+        @Override
+        protected int sizeOf(String key, AppImage image){
+            return image.getImage().getAllocationByteCount() / (1024*1024); //to get the size in MB
+        }
+    };
 
     private LocationManager locationManager;
     private LocationListener locationListener = new LocationListener() {
@@ -288,4 +301,47 @@ public class GlobalClass extends Application  {
         Log.i("STATUS",status);
     }
 
+    public void addImageToCache(String key, AppImage image) {
+        if (getImageFromCache(key) == null) {
+            imageMemCache.put(key, image);
+        }
+    }
+
+        public AppImage getImageFromCache(String key) {
+            return imageMemCache.get(key);
+        }
+
+        public List<AppImage> getThumbnailsByFoodServiceDish(String foodService, String dish){
+            List<AppImage> matches = new ArrayList<AppImage>();
+            Map<String, AppImage> cachemap = imageMemCache.snapshot();
+            //iterate through the map and find images from same foodService and Dish
+            cachemap.forEach((k,v) -> {
+                if(v.getFoodService().equals(foodService) && v.getDish().equals(dish) && v.isThumbnail())
+                    matches.add(v);
+            });
+            return matches;
+        }
+        /*
+        * Uses the max size of a Thumbnail possible:
+        * JPEG with 500x500 size and bit depth of 48bit
+        *
+        * */
+        public int getNrThumbnailsLeft(){
+            return  ((CACHESIZE/(1024*1024)) - imageMemCache.size())/(int) 1.5;
+
+        }
+
+        public boolean isConnected(){
+            return this.connected;
+        }
+
+        public void setConnected(boolean val){
+            this.connected = val;
+        }
+        public void setContext(Context context){
+            this.context = context;
+        }
+        public Context getContext(){
+        return this.context;
+    }
 }

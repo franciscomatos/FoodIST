@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
+import android.net.wifi.WifiManager;
 
 public class WifiBroadcastReceiver extends BroadcastReceiver {
 
@@ -62,6 +63,15 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
             ginfo.print();
             activity.makeToast("Group owner changed");
 
+        }else if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
+            if (intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
+                activity.makeToast("Connected to WiFi");
+                activity.setConnected(true);
+                activity.prefetch(); // do it all the time?
+            } else {
+                activity.makeToast("WiFi lost");
+                activity.setConnected(false);
+            }
         }
     }
 }

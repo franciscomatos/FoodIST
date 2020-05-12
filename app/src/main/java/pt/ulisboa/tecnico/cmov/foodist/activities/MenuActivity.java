@@ -26,7 +26,7 @@ import pt.ulisboa.tecnico.cmov.foodist.popups.PopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
-import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchMenu;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchMenuCustom;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.uploadDish;
 
@@ -65,7 +65,7 @@ public class MenuActivity extends AppCompatActivity {
 
         Log.i("MenuActivity", "found Table");
         menuState.clear();
-        fetchMenu process = new fetchMenu(this, menuState, foodServiceName,global);
+        fetchMenuCustom process = new fetchMenuCustom(this, menuState, foodServiceName,global);
         process.execute();
 
     }
@@ -111,7 +111,6 @@ public class MenuActivity extends AppCompatActivity {
                 LinearLayout rightLayout = tr.findViewById(R.id.menuRightDish);
 
                 rightLayout.setTag(menuState.getConstraintDish(i + 1));
-
                 rightLayout.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         Dish dish = menuState.getConstraintDish(index+1);
@@ -119,6 +118,7 @@ public class MenuActivity extends AppCompatActivity {
                         intent.putExtra("name", dish.getName());
                         intent.putExtra("category", dish.getCategory().getCategory());
                         intent.putExtra("price", dish.getPrice().toString());
+                        intent.putExtra("foodService", foodServiceName);
                         startActivity(intent);
                     }
                 });
@@ -136,6 +136,7 @@ public class MenuActivity extends AppCompatActivity {
                     intent.putExtra("name", dish.getName());
                     intent.putExtra("category", dish.getCategory().getCategory());
                     intent.putExtra("price", dish.getPrice().toString());
+                    intent.putExtra("foodService", foodServiceName);
                     startActivity(intent);
                 }
             });

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,9 +16,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import android.net.wifi.WifiManager;
+
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.Date;
+import 	android.net.NetworkInfo;
+import android.net.ConnectivityManager;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
@@ -31,6 +34,7 @@ import pt.ulisboa.tecnico.cmov.foodist.fetch.registerUser;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.toggleQueue;
 import pt.ulisboa.tecnico.cmov.foodist.receivers.WifiBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.prefetch;
 
 public class MainActivity extends Activity implements SimWifiP2pManager.PeerListListener {
 
@@ -42,6 +46,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
     private Messenger mService = null;
     private boolean mBound = false;
     private WifiBroadcastReceiver mReceiver;
+    private GlobalClass global;
 
     private Handler handler = new Handler();
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -85,18 +90,35 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         setContentView(R.layout.activity_main);
         configureFoodListButton();
 
-        GlobalClass global = (GlobalClass) getApplicationContext();
+        this.global = (GlobalClass) getApplicationContext();
+        global.setContext(this);
         global.setLocationManager( (LocationManager) getSystemService(Context.LOCATION_SERVICE));
         global.getLocation2(MainActivity.this);
         global.setStatus("STUDENT"); //FIXME change this to user preference
         startWifi();
 
         registerUser(global);
+        global.setConnected(isOnline());
     }
 
     private void registerUser(GlobalClass global) {
         registerUser registry = new registerUser(global);
         registry.execute();
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI);
+    }
+    public void setConnected(boolean val){
+        global.setConnected(val);
+    }
+
+    public void prefetch() {
+            prefetch process = new prefetch(global);
+            process.execute();
     }
 
     private void startWifi() {
@@ -107,6 +129,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
+        filter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
         mReceiver = new WifiBroadcastReceiver(this);
         registerReceiver(mReceiver, filter);
 
@@ -146,7 +169,19 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList) {
 
-        GlobalClass global = (GlobalClass) getApplicationContext();
+        makeToast("in queue");
+
+        // display list of devices in range
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("Devices in WiFi Range")
+                .setMessage(peersStr.toString())
+                .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+*/
+        //GlobalClass global = (GlobalClass) getApplicationContext();
 
         Date current = new Date();   // given date
 
@@ -184,5 +219,44 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         Log.i ("Peers:", "got here");
         mManager.requestPeers(mChannel, MainActivity.this);
     }
+
+
+   /* public class Connection extends AsyncTask<Void, Void, Void> {
+
+        private String URL;
+        private String data = "";
+        private GlobalClass global;
+
+        @Override
+        protected Void doInBackground(Void... voids){
+           connect()
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Log.i("RESPONSE:", "BOOOOOM!");
+        }
+
+
+        private void connect(){
+            CertificateFactory cf = null;
+            try{
+                cf = CertificateFactory.getInstance("X.509");
+            }catch(CertificateException e){
+                e.printStackTrace();
+            }
+
+            try{
+                httpsURLConnection
+            }
+
+
+        }
+    }*/
+
+
 
 }

@@ -1,11 +1,13 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
 	"github.com/sajari/regression"
 )
 
@@ -30,7 +32,6 @@ const ( //0,1,...
 )
 
 var SIZE = 10
-
 
 //Rest API structs
 type RegisterRequest struct {
@@ -112,13 +113,6 @@ type GetMenusResponse struct {
 	Status string           `json:"status"`
 }
 
-type MenusInterface struct {
-	Name    string  `json:"name"`
-	Price   float64 `json:"price"`
-	Dietary string  `json:"dietary"`
-	Ratings float64 `json:"ratings"`
-}
-
 type GetCanteensRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -129,21 +123,42 @@ type GetCanteensResponse struct {
 	Status   string             `json:"status"`
 }
 
-type CanteenInterface struct {
-	Name      		string       `json:"name"`
-	Prediction      int          `json:"prediction"`
-}
-
-type GetImagesRequest struct {
+// will only return the names of the images
+type GetImageNamesRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Canteen  string `json:"canteen"`
 	Menu     string `json:"menu"`
 	Page     int    `json:"page,string"`
 }
-type GetImagesResponse struct {
+
+type GetImageNamesResponse struct {
+	Images []string `json:"images"`
+	Status string   `json:"status"`
+}
+
+type GetBulkImagesRequest struct {
+	Username string   `json:"username"`
+	Password string   `json:"password"`
+	Canteen  string   `json:"canteen"`
+	Menu     string   `json:"menu"`
+	Images   []string `json:"images"`
+}
+
+type GetBulkImagesResponse struct {
 	Images []Image `json:"images"`
 	Status string  `json:"status"`
+}
+
+type GetPreFetchImagesMenuRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	NrImages int    `json:"nrimages,string"`
+}
+
+type GetPreFetchImagesMenuResponse struct {
+	Images []ImageMet `json:"images"`
+	Status string     `json:"status"`
 }
 
 type QueueRequest struct {
@@ -154,7 +169,25 @@ type QueueRequest struct {
 }
 type QueueResponse struct {
 	Status string `json:"status"`
-	Queue int `json:"queue"`
+	Queue  int    `json:"queue"`
+}
+
+type MenusInterface struct {
+	Name    string  `json:"name"`
+	Price   float64 `json:"price"`
+	Dietary string  `json:"dietary"`
+	Ratings float64 `json:"ratings"`
+}
+
+type CanteenInterface struct {
+	Name       string `json:"name"`
+	Prediction int    `json:"prediction"`
+}
+
+type ImageMet struct {
+	Image   Image  `json:"image"`
+	Canteen string `json:"canteen"`
+	Menu    string `json:"menu"`
 }
 
 //Business Logic structs
@@ -207,7 +240,6 @@ type User struct {
 var users = make(map[string]*User) //Key is user and Value is password
 
 var places = make(map[string]*Canteen) // Key is the place name and Value is its contents
-
 
 //Aux Functions
 func validadeUser(username, password string) (*User, string, int) {
@@ -385,8 +417,8 @@ func addImageHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest AddImageRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
-	log.Println("New Image Received")
-	log.Println(userRequest)
+	log.Println("Receiving image ...")
+	//log.Println(userRequest)
 
 	//test if the user already exists
 	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
@@ -403,7 +435,8 @@ func addImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	canteen.Menus[userRequest.NameMenu].Gallery = append(canteen.Menus[userRequest.NameMenu].Gallery, Image{Name: userRequest.NameImage, Image: userRequest.Image})
+	//canteen.Menus[userRequest.NameMenu].Gallery = append(canteen.Menus[userRequest.NameMenu].Gallery, Image{Name: userRequest.NameImage, Image: userRequest.Image})
+	canteen.Menus[userRequest.NameMenu].Gallery = append([]Image{Image{Name: userRequest.NameImage, Image: userRequest.Image}}, canteen.Menus[userRequest.NameMenu].Gallery...)
 
 	response := AddImageResponse{
 		Status: "OK"}
@@ -476,15 +509,14 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 
 			if value.Campus == userRequest.Campus {
 				canteens = append(canteens, CanteenInterface{
-					Name:      	key,
-					Prediction:	prediction2})
+					Name:       key,
+					Prediction: prediction2})
 			}
-			
+
 		} else {
 			log.Println(err)
 		}
-	
-		
+
 	}
 	response := GetCanteensResponse{
 		Status:   "OK",
@@ -518,7 +550,6 @@ func getMenusHandler(w http.ResponseWriter, r *http.Request) {
 	var menus []MenusInterface
 
 	for key, value := range canteen.Menus {
-		log.Println("[DEBUG] ", value)
 		sum := 0
 		count := 0
 		for _, rating := range value.Ratings {
@@ -547,10 +578,54 @@ func getMenusHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getImagesHandler(w http.ResponseWriter, r *http.Request) {
-	var userRequest GetImagesRequest
+	var userRequest GetBulkImagesRequest
+	//var userRequest GetTestRequest
+
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
 	log.Println("New request for images Received")
+	log.Println(userRequest)
+
+	//test if the user already exists
+	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	canteen, stmt, status := validadeCanteen(userRequest.Canteen)
+	//_, stmt, status = validadeCanteen(userRequest.Canteen)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+	var matches []Image
+	var response GetBulkImagesResponse
+	log.Println("Sending images...")
+
+	//FIXME: no need to iterate through the entire slice if page is provided
+	for _, imageName := range userRequest.Images {
+		for _, n := range canteen.Menus[userRequest.Menu].Gallery {
+			if imageName == n.Name {
+				matches = append(matches, n)
+			}
+		}
+	}
+
+	response = GetBulkImagesResponse{
+		Status: "OK",
+		Images: matches}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func getImagesNameHandler(w http.ResponseWriter, r *http.Request) {
+	var userRequest GetImageNamesRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("New request for imageNames Received")
 	log.Println(userRequest)
 
 	//test if the user already exists
@@ -569,18 +644,79 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	begin := SIZE * userRequest.Page
 	end := SIZE*userRequest.Page + SIZE
+	var matches []string
 
-	var response GetImagesResponse
+	var response GetImageNamesResponse
+	log.Println("Sending images...")
 
-	if end >= len(canteen.Menus[userRequest.Menu].Gallery) {
-		response = GetImagesResponse{
-			Status: "OK",
-			Images: canteen.Menus[userRequest.Menu].Gallery[begin:]}
-	} else {
-		response = GetImagesResponse{
-			Status: "OK",
-			Images: canteen.Menus[userRequest.Menu].Gallery[begin:end]}
+	for i := begin; i < end && i < len(canteen.Menus[userRequest.Menu].Gallery); i++ {
+		if canteen.Menus[userRequest.Menu].Gallery[i].Name[0] == 'T' {
+			matches = append(matches, canteen.Menus[userRequest.Menu].Gallery[i].Name)
+			log.Print("MATCH: ")
+		}
+		log.Println(canteen.Menus[userRequest.Menu].Gallery[i].Name)
 	}
+	response = GetImageNamesResponse{
+		Status: "OK",
+		Images: matches}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func prefetchMenuImages(w http.ResponseWriter, r *http.Request) {
+	var userRequest GetPreFetchImagesMenuRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("New request to prefetch menu Received")
+	log.Println(userRequest)
+
+	//test if the user already exists
+	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	var images []ImageMet
+
+	type Names struct {
+		Canteen string
+		Menus   []string
+	}
+	var tmp []Names
+	var menunames []string
+	var total int
+	//create tmp struct to view the data differently
+	//now its possible to jump around the canteens
+	for canteenname, canteen := range places {
+		for menuname, menu := range canteen.Menus {
+			menunames = append(menunames, menuname)
+			total += len(menu.Gallery)
+		}
+		tmp = append(tmp, Names{Canteen: canteenname, Menus: menunames})
+	}
+
+	for i, menuctr := 0, 0; i < userRequest.NrImages && i < total; i++ {
+
+		canteen := places[tmp[i%len(places)].Canteen] //picks the canteen
+
+		if menuctr < len(canteen.Menus) { // still has images
+
+			menu := canteen.Menus[tmp[i%len(places)].Menus[menuctr]] //picks the menu
+			log.Println(tmp[i%len(places)].Menus[menuctr])
+			images = append(images, ImageMet{Image: menu.Gallery[menuctr], Canteen: tmp[i%len(places)].Canteen, Menu: tmp[i%len(places)].Menus[menuctr]})
+		}
+
+		if i%len(places) == 0 && i != 0 { //means that it is back at the beginning
+			menuctr++
+		}
+	}
+
+	response := GetPreFetchImagesMenuResponse{
+		Status: "OK",
+		Images: images}
+
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -609,7 +745,6 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("New request to enter queue Received")
 		log.Println(userRequest)
 
-
 		if err != nil {
 			log.Println("[ERROR] Couldnt convert string to int")
 			http.Error(w, "Couldnt convert string to int", http.StatusBadRequest)
@@ -626,7 +761,7 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 
 		for i, n := range canteen.Queue {
 			if user == n { //will only happen once
-		
+
 				canteen.Regression.Train(regression.DataPoint(float64(minutes-user.InQueue.Minutes), []float64{float64(user.InQueue.Number)}))
 				canteen.Regression.Run()
 
@@ -638,7 +773,7 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := QueueResponse{
 		Status: "OK",
-		Queue: user.InQueue.Number,
+		Queue:  user.InQueue.Number,
 	}
 
 	json.NewEncoder(w).Encode(response)
@@ -648,10 +783,10 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 
 func addPlace(name string, typ string, coord Coordinates, times map[string]TimeInterval, campus string) {
 	places[name] = &Canteen{Menus: make(map[string]*Menu),
-		Type:      typ,
-		Location:  coord,
-		OpenHours: times,
-		Campus:    campus,
+		Type:       typ,
+		Location:   coord,
+		OpenHours:  times,
+		Campus:     campus,
 		Regression: new(regression.Regression)}
 }
 
@@ -690,27 +825,27 @@ func initPlaces() { // initiate more if needed
 		Professor:     TimeInterval{Open: twelve_am, Close: three_pm},
 		Researcher:    TimeInterval{Open: twelve_am, Close: three_pm},
 		Staff:         TimeInterval{Open: twelve_am, Close: three_pm}}
-	
+
 	sena := map[string]TimeInterval{
 		GeneralPublic: TimeInterval{Open: eight_am, Close: seven_pm},
 		Student:       TimeInterval{Open: eight_am, Close: seven_pm},
 		Professor:     TimeInterval{Open: eight_am, Close: seven_pm},
 		Researcher:    TimeInterval{Open: eight_am, Close: seven_pm},
-		Staff:         TimeInterval{Open: eight_am, Close: seven_pm}}	
-	
+		Staff:         TimeInterval{Open: eight_am, Close: seven_pm}}
+
 	SAS := map[string]TimeInterval{
 		GeneralPublic: TimeInterval{Open: nine_am, Close: nine_pm},
 		Student:       TimeInterval{Open: nine_am, Close: nine_pm},
 		Professor:     TimeInterval{Open: nine_am, Close: nine_pm},
 		Researcher:    TimeInterval{Open: nine_am, Close: nine_pm},
-		Staff:         TimeInterval{Open: nine_am, Close: nine_pm}}		
-		
+		Staff:         TimeInterval{Open: nine_am, Close: nine_pm}}
+
 	Math := map[string]TimeInterval{
 		GeneralPublic: TimeInterval{Open: one_half_pm, Close: three_pm},
 		Student:       TimeInterval{Open: one_half_pm, Close: three_pm},
 		Professor:     TimeInterval{Open: twelve_am, Close: three_pm},
 		Researcher:    TimeInterval{Open: twelve_am, Close: three_pm},
-		Staff:         TimeInterval{Open: twelve_am, Close: three_pm}}		
+		Staff:         TimeInterval{Open: twelve_am, Close: three_pm}}
 
 	Red := map[string]TimeInterval{
 		GeneralPublic: TimeInterval{Open: eight_am, Close: ten_pm},
@@ -718,7 +853,7 @@ func initPlaces() { // initiate more if needed
 		Professor:     TimeInterval{Open: eight_am, Close: ten_pm},
 		Researcher:    TimeInterval{Open: eight_am, Close: ten_pm},
 		Staff:         TimeInterval{Open: eight_am, Close: ten_pm}}
-		
+
 	Green := map[string]TimeInterval{
 		GeneralPublic: TimeInterval{Open: seven_am, Close: seven_pm},
 		Student:       TimeInterval{Open: seven_am, Close: seven_pm},
@@ -739,19 +874,19 @@ func initPlaces() { // initiate more if needed
 		Professor:     TimeInterval{Open: eight_half_am, Close: four_half_pm},
 		Researcher:    TimeInterval{Open: eight_half_am, Close: four_half_pm},
 		Staff:         TimeInterval{Open: eight_half_am, Close: four_half_pm}}
-//	openingHours := map[string]TimeInterval{
-//		GeneralPublic: TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
-//		Student:       TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
-//		Professor:     TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
-//		Researcher:    TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
-//		Staff:         TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours}}
+	//	openingHours := map[string]TimeInterval{
+	//		GeneralPublic: TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+	//		Student:       TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+	//		Professor:     TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+	//		Researcher:    TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours},
+	//		Staff:         TimeInterval{Open: AbilioOpenHours, Close: AbilioCloseHours}}
 
-//	openingHoursnd := map[string]TimeInterval{
-//		GeneralPublic: TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
-//		Student:       TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
-//		Professor:     TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
-//		Researcher:    TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
-//		Staff:         TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours}}
+	//	openingHoursnd := map[string]TimeInterval{
+	//		GeneralPublic: TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
+	//		Student:       TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
+	//		Professor:     TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
+	//		Researcher:    TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours},
+	//		Staff:         TimeInterval{Open: MonicaOpenHours, Close: MonicaCloseHours}}
 
 	addPlace("Central Bar", "BAR", Coordinates{Lat: 38.736606, Lng: -9.139532}, nine_to_five, "Alameda")
 	addPlace("Civil Bar", "BAR", Coordinates{Lat: 38.736988, Lng: -9.139955}, nine_to_five, "Alameda")
@@ -759,18 +894,18 @@ func initPlaces() { // initiate more if needed
 	addPlace("Sena Pastry Shop", "RESTAURANT", Coordinates{Lat: 38.737677, Lng: -9.138672}, sena, "Alameda")
 	addPlace("Mechy Bar", "BAR", Coordinates{Lat: 38.737247, Lng: -9.137434}, nine_to_five, "Alameda")
 	addPlace("AEIST Bar", "BAR", Coordinates{Lat: 38.736542, Lng: -9.137226}, nine_to_five, "Alameda")
-	addPlace("AEIST Esplanade", "BAR", Coordinates{Lat: 38.736318, Lng:  -9.137820}, nine_to_five, "Alameda")
-	addPlace("Chemy Bar", "BAR", Coordinates{Lat: 38.736240, Lng:  -9.138302}, nine_to_five, "Alameda")
+	addPlace("AEIST Esplanade", "BAR", Coordinates{Lat: 38.736318, Lng: -9.137820}, nine_to_five, "Alameda")
+	addPlace("Chemy Bar", "BAR", Coordinates{Lat: 38.736240, Lng: -9.138302}, nine_to_five, "Alameda")
 	addPlace("SAS Cafeteria", "RESTAURANT", Coordinates{Lat: 38.736571, Lng: -9.137036}, SAS, "Alameda")
 	addPlace("Math Cafeteria", "RESTAURANT", Coordinates{Lat: 38.735508, Lng: -9.139645}, Math, "Alameda")
 	addPlace("Complex Bar", "BAR", Coordinates{Lat: 38.736050, Lng: -9.140156}, nine_to_five, "Alameda")
 
 	addPlace("Tagus Cafeteria", "RESTAURANT", Coordinates{Lat: 38.737802, Lng: -9.303223}, civil_cafeteria, "Taguspark")
-	addPlace("Red Bar", "BAR", Coordinates{Lat: 38.736546, Lng:  -9.302207}, Red, "Taguspark")
-	addPlace("Green Bar", "BAR", Coordinates{Lat: 38.738004, Lng:  -9.303058}, Green, "Taguspark")
+	addPlace("Red Bar", "BAR", Coordinates{Lat: 38.736546, Lng: -9.302207}, Red, "Taguspark")
+	addPlace("Green Bar", "BAR", Coordinates{Lat: 38.738004, Lng: -9.303058}, Green, "Taguspark")
 
-	addPlace("CTN Cafeteria", "RESTAURANT", Coordinates{Lat: 38.812522, Lng:  -9.093773}, CTN_cafeteria, "CTN")
-	addPlace("CTN Bar", "BAR", Coordinates{Lat: 38.812522, Lng:  -9.093773}, CTN_bar, "CTN")
+	addPlace("CTN Cafeteria", "RESTAURANT", Coordinates{Lat: 38.812522, Lng: -9.093773}, CTN_cafeteria, "CTN")
+	addPlace("CTN Bar", "BAR", Coordinates{Lat: 38.812522, Lng: -9.093773}, CTN_bar, "CTN")
 }
 
 func main() {
@@ -801,7 +936,6 @@ func main() {
 	prediction, _ := places["Civil Bar"].Regression.Predict([]float64{2})
 	log.Println("Predict:\n%s\n", prediction)
 
-
 	muxhttp := http.NewServeMux()
 	muxhttp.HandleFunc("/register", registerHandler)
 	muxhttp.HandleFunc("/login", loginHandler)
@@ -812,11 +946,33 @@ func main() {
 	muxhttp.HandleFunc("/predict", getCanteensHandler)
 	muxhttp.HandleFunc("/getMenus", getMenusHandler)
 	muxhttp.HandleFunc("/getImages", getImagesHandler)
+	muxhttp.HandleFunc("/checkImageNames", getImagesNameHandler)
 	muxhttp.HandleFunc("/queue", queueHandler)
+	muxhttp.HandleFunc("/prefetch", prefetchMenuImages)
+
+	config_tls := &tls.Config{
+		MinVersion:               tls.VersionTLS12,
+		CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
+		PreferServerCipherSuites: true,
+		CipherSuites: []uint16{
+			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+			tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+		},
+	}
+
+	server_http_tls := &http.Server{
+		Addr:         ":443",
+		Handler:      muxhttp,
+		TLSConfig:    config_tls,
+		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
+	}
 
 	go func() {
-		log.Println("Serving HTTP")
-		http.ListenAndServe(":8000", muxhttp)
+		log.Println("Serving TLS")
+		//log.fatal(server_http_tls.ListenAndServeTLS("../../ssl/server.crt", "../../ssl/server.key"))
+		server_http_tls.ListenAndServeTLS("ssl/server_tls.crt", "ssl/server_tls.key")
 	}()
 
 	<-finish
