@@ -1,18 +1,30 @@
 package pt.ulisboa.tecnico.cmov.foodist.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import com.anychart.AnyChart;
+import com.anychart.AnyChartView;
+import com.anychart.chart.common.dataentry.DataEntry;
+import com.anychart.chart.common.dataentry.ValueDataEntry;
+import com.anychart.charts.Cartesian;
+import com.anychart.core.cartesian.series.Column;
+import com.anychart.enums.Anchor;
+import com.anychart.enums.Position;
+import com.anychart.enums.TooltipPositionMode;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -21,6 +33,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -39,6 +52,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
@@ -75,6 +90,63 @@ public class FoodServiceActivity extends AppCompatActivity {
         String duration = getIntent().getExtras().getString("duration");
         String queue = getIntent().getExtras().getString("queue");
         fillInfo(duration, queue);
+
+        TextView averageBigView = findViewById(R.id.averageBig);
+        averageBigView.setText(menuState.computeRatingAverage().toString());
+
+        RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
+        averageRatingBar.setRating(menuState.computeRatingAverage().floatValue());
+
+        TextView ratingsCounter = findViewById(R.id.numberOfRatings);
+        ratingsCounter.setText(menuState.computeNumberOfRatings().toString());
+
+        AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
+
+        Cartesian cartesian = AnyChart.column();
+
+        List<DataEntry> data = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> classification: menuState.getRatings().entrySet()) {
+            data.add(new ValueDataEntry(classification.getKey(), classification.getValue()));
+        }
+
+        Column column = cartesian.column(data);
+
+        column.tooltip()
+                .titleFormat("{%X}")
+                .position(Position.CENTER_BOTTOM)
+                .anchor(Anchor.CENTER_BOTTOM)
+                .offsetX(0d)
+                .offsetY(5d)
+                .format("${%Value}{groupsSeparator: }");
+
+        //cartesian.animation(true);
+        cartesian.yScale().minimum(0d);
+
+        //cartesian.yAxis(0).labels().format("${%Value}{groupsSeparator: }");
+
+        cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
+        //cartesian.interactivity().hoverMode(HoverMode.BY_X);
+
+
+        ratingChartView.setChart(cartesian);
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_explore:
+                        Intent intent =  new Intent(FoodServiceActivity.this, ListFoodServicesActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.action_profile:
+                        Intent profileIntent =  new Intent(FoodServiceActivity.this, ProfileActivity.class);
+                        startActivity(profileIntent);
+                        break;
+                }
+                return true;
+            }
+        });
 
     }
 

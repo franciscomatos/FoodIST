@@ -14,12 +14,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -59,6 +63,24 @@ public class AddPictureActivity extends AppCompatActivity {
 		category = intent.getStringExtra("category");
 		price = intent.getStringExtra("price");
 		foodService = intent.getStringExtra("foodService");
+
+		BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+		bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+			@Override
+			public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+				switch (item.getItemId()) {
+					case R.id.action_explore:
+						Intent intent =  new Intent(AddPictureActivity.this, ListFoodServicesActivity.class);
+						startActivity(intent);
+						break;
+					case R.id.action_profile:
+						Intent profileIntent =  new Intent(AddPictureActivity.this, ProfileActivity.class);
+						startActivity(profileIntent);
+						break;
+				}
+				return true;
+			}
+		});
 
 	}
 	//event handlers

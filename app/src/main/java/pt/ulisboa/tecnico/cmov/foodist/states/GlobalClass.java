@@ -24,9 +24,11 @@ import java.util.Map;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.foodist.activities.MainActivity;
+import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+import pt.ulisboa.tecnico.cmov.foodist.domain.User;
 import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 
 public class GlobalClass extends Application  {
@@ -39,6 +41,7 @@ public class GlobalClass extends Application  {
     private double LONGITUDE;
     private String URL = "https://192.168.1.95:443";
     private FoodService currentFoodService;
+    private User user = new User("User1", "ist111111", User.UserCourse.MEIC);
     private AnnotationStatus status = new AnnotationStatus(AnnotationStatus.STUDENT);
     private boolean connected  = false;
     private Context context;
@@ -84,6 +87,12 @@ public class GlobalClass extends Application  {
     private double[] CTNLongitude = new double[]{-9.097291, -9.092026 };
     private ArrayList<FoodService> listFoodServices;
     private Map<String, FoodService> foodServices = new HashMap<String, FoodService>(){{
+        put("CIVIL", new FoodService("CIVIL", "RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.737069, -9.140017, new Menu(user.getDietaryConstraints())));
+        put("ABILIO", new FoodService("ABILIO","BAR", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.737135, -9.137655, new Menu(user.getDietaryConstraints())));
+        put("AE", new FoodService("AE","RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T22:00:00Z", 38.736221, -9.137195, new Menu(user.getDietaryConstraints())));
+        put("GreenBar Tagus",new FoodService("GreenBar Tagus","BAR", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.738019, -9.303139, new Menu(user.getDietaryConstraints()) ));
+        put("Cafetaria", new FoodService("Cafetaria","RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.736582,  -9.302166, new Menu(user.getDietaryConstraints()) ));
+
         //ALAMEDA
         put("Central Bar", new FoodService("Central Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736606, -9.139532, new Menu()));
         put("Civil Bar", new FoodService("Civil Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736988,  -9.139955, new Menu()));
@@ -294,6 +303,25 @@ public class GlobalClass extends Application  {
 
     public FoodService getCurrentFoodService() {
         return this.currentFoodService;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void updateMenuConstraints() {
+        for (String key : foodServices.keySet()) {
+            foodServices.get(key).getMenu().updateConstraints(user.getDietaryConstraints());
+            foodServices.get(key).getMenu().updateConstraintDishes();
+        }
+    }
+
+    public void addDish(String foodServiceName, Dish dish) {
+        foodServices.get(foodServiceName).getMenu().addDish(dish);
     }
 
     public void setStatus(String status) {
