@@ -24,6 +24,8 @@ import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchData;
 
+
+
 public class ListFoodServicesActivity extends AppCompatActivity {
 
 

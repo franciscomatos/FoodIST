@@ -670,7 +670,7 @@ func initPlaces() { // initiate more if needed
 	one_half_pm,_ := time.Parse(timeLayout, "13:30:00")
 	two_pm,_ := time.Parse(timeLayout, "14:00:00")
 	three_pm,_ := time.Parse(timeLayout, "15:00:00")
-	three_half_pm,_ := time.Parse(timeLayout, "15:30:00")
+	//three_half_pm,_ := time.Parse(timeLayout, "15:30:00")
 	four_half_pm,_ := time.Parse(timeLayout, "15:30:00")
 	five_pm,_ := time.Parse(timeLayout, "17:00:00")
 	seven_pm,_ := time.Parse(timeLayout, "19:00:00")
@@ -756,7 +756,7 @@ func initPlaces() { // initiate more if needed
 	addPlace("Central Bar", "BAR", Coordinates{Lat: 38.736606, Lng: -9.139532}, nine_to_five, "Alameda")
 	addPlace("Civil Bar", "BAR", Coordinates{Lat: 38.736988, Lng: -9.139955}, nine_to_five, "Alameda")
 	addPlace("Civil Cafeteria", "RESTAURANT", Coordinates{Lat: 38.737650, Lng: -9.140384}, civil_cafeteria, "Alameda")
-	addPlace("Sena Pastry Shop", "RESTAURANT", Coordinates{Lat: 38.737677, Lng: -9.138672}, Sena, "Alameda")
+	addPlace("Sena Pastry Shop", "RESTAURANT", Coordinates{Lat: 38.737677, Lng: -9.138672}, sena, "Alameda")
 	addPlace("Mechy Bar", "BAR", Coordinates{Lat: 38.737247, Lng: -9.137434}, nine_to_five, "Alameda")
 	addPlace("AEIST Bar", "BAR", Coordinates{Lat: 38.736542, Lng: -9.137226}, nine_to_five, "Alameda")
 	addPlace("AEIST Esplanade", "BAR", Coordinates{Lat: 38.736318, Lng:  -9.137820}, nine_to_five, "Alameda")
@@ -784,7 +784,7 @@ func main() {
 	// r.Train(regression.DataPoint(1,[]float64{2}))
 	// r.Train(regression.DataPoint(1,[]float64{2}))
 
-	places["CIVIL"].Regression.Train(regression.DataPoint(2,[]float64{1}),
+	places["Civil Bar"].Regression.Train(regression.DataPoint(2,[]float64{1}),
 									 regression.DataPoint(2,[]float64{1}),
 									 regression.DataPoint(1,[]float64{0}),	
 									 regression.DataPoint(1,[]float64{0}),	
@@ -793,12 +793,12 @@ func main() {
 	)
 	//r.Train(regression.DataPoint(2,[]float64{4}))
 	//r.Train(regression.DataPoint(6,[]float64{120}))
-	places["CIVIL"].Regression.Run()
+	places["Civil Bar"].Regression.Run()
 
 	
-	log.Println("Regression formula:\n%v\n", places["CIVIL"].Regression.Formula)
-	log.Println("Regression:\n%s\n", places["CIVIL"].Regression)
-	prediction, _ := places["CIVIL"].Regression.Predict([]float64{2})
+	log.Println("Regression formula:\n%v\n", places["Civil Bar"].Regression.Formula)
+	log.Println("Regression:\n%s\n", places["Civil Bar"].Regression)
+	prediction, _ := places["Civil Bar"].Regression.Predict([]float64{2})
 	log.Println("Predict:\n%s\n", prediction)
 
 

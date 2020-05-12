@@ -56,6 +56,7 @@ public class FoodServiceActivity extends AppCompatActivity {
     private MapView mapView2;
     private Bundle sis;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
