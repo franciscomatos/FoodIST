@@ -37,7 +37,7 @@ public class GlobalClass extends Application  {
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
-    private String URL = "https://192.168.1.70:443";
+    private String URL = "https://192.168.1.95:443";
     private FoodService currentFoodService;
     private AnnotationStatus status = new AnnotationStatus(AnnotationStatus.STUDENT);
     private boolean connected  = false;

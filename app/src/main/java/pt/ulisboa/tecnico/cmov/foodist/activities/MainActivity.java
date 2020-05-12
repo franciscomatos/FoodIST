@@ -170,7 +170,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
     public void onPeersAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList) {
 
         makeToast("in queue");
-
+        /*
         // display list of devices in range
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("Devices in WiFi Range")
@@ -180,7 +180,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
                     }
                 })
                 .show();
-*/
+      */
         //GlobalClass global = (GlobalClass) getApplicationContext();
 
         Date current = new Date();   // given date
