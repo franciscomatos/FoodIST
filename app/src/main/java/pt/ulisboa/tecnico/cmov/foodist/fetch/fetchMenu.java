@@ -12,14 +12,14 @@ import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 
-public class fetchMenuCustom extends fetchBaseCustom {
+public class fetchMenu extends fetchBaseCustom {
 
 	private MenuActivity menuActivity;
 
 	private String foodService ;
 	private Menu menu;
 
-	public fetchMenuCustom(MenuActivity activity, Menu m, String foodServiceName, GlobalClass global) {
+	public fetchMenu(MenuActivity activity, Menu m, String foodServiceName, GlobalClass global) {
 		super(global, global.getURL() + "/getMenus");
 		this.menu = m;
 		this.foodService = foodServiceName;

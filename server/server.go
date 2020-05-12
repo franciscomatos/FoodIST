@@ -970,9 +970,10 @@ func main() {
 	}
 
 	go func() {
-		log.Println("Serving TLS")
+		log.Println("Serving Http")
 		//log.fatal(server_http_tls.ListenAndServeTLS("../../ssl/server.crt", "../../ssl/server.key"))
-		server_http_tls.ListenAndServeTLS("ssl/server_tls.crt", "ssl/server_tls.key")
+		server_http_tls.ListenAndServeTLS( "ssl/server_tls.crt", "ssl/server_tls.key")
+		//http.ListenAndServe(":8000", muxhttp)
 	}()
 
 	<-finish

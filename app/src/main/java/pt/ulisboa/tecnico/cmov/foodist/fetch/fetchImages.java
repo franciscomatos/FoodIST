@@ -21,7 +21,7 @@ import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 
-public class fetchImagesCustom extends fetchBaseCustom {
+public class fetchImages extends fetchBaseCustom {
 
 	private String foodService;
 	private String dish;
@@ -32,7 +32,7 @@ public class fetchImagesCustom extends fetchBaseCustom {
 	private List<String> misses ;
 	private List<AppImage> hits ;
 
-    public fetchImagesCustom(GlobalClass global, CarouselView carouselView, String foodService, String dish, List<AppImage> hits, List<String> misses) {
+    public fetchImages(GlobalClass global, CarouselView carouselView, String foodService, String dish, List<AppImage> hits, List<String> misses) {
 		super(global, global.getURL() + "/getImages");
 		this.foodService = foodService;
 		this.page = page;

@@ -2,6 +2,8 @@ package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
 import android.util.Log;
 
+import java.net.HttpURLConnection;
+
 import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.cmov.foodist.activities.ListFoodServicesActivity;
@@ -43,6 +45,11 @@ public class fetchData extends fetchBase {
         return  "{\"locations\":" + destinations + "," +
                 "\"destinations\":" + whereToIndex +"," +
                 "\"metrics\": [\"duration\"]}";
+    }
+
+    @Override
+    protected void requestProperties(HttpURLConnection conn) {
+        conn.setRequestProperty("Authorization", key);
     }
 
 

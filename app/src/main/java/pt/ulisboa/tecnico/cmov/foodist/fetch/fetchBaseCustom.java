@@ -107,6 +107,8 @@ public class fetchBaseCustom extends AsyncTask<Void, Void, Void> {
                     HostnameVerifier hv =
                             HttpsURLConnection.getDefaultHostnameVerifier();
                     //return hv.verify(hostname, session);
+                    Log.i("DEBUG", URL.toString());
+                    Log.i("DEBUG", session.getPeerHost() );
                     return URL.startsWith("https://"+session.getPeerHost());
                 }
             };

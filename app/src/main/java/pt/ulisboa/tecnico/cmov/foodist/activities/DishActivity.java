@@ -14,7 +14,7 @@ import com.synnapps.carouselview.ImageListener;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
-import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchCacheImagesCustom;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchCacheImages;
 
 public class DishActivity extends FragmentActivity {
 
@@ -61,7 +61,7 @@ public class DishActivity extends FragmentActivity {
         TextView priceView = findViewById(R.id.dishPrice);
         priceView.setText(price);
 
-        fetchCacheImagesCustom process = new fetchCacheImagesCustom(global, carouselView, foodService, dishName, 0);
+        fetchCacheImages process = new fetchCacheImages(global, carouselView, foodService, dishName, 0);
         process.execute();
 
 
