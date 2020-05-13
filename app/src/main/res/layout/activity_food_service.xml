@@ -5,9 +5,12 @@
     android:layout_width="match_parent"
     android:id="@+id/background"
     android:layout_height="match_parent"
-    tools:context=".activities.FoodServiceActivity">
+    tools:context=".activities.FoodServiceActivity"
+    android:foreground="@drawable/shape_window_dim">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
     <LinearLayout
-        android:foreground="@drawable/shape_window_dim"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -273,5 +276,5 @@
         app:itemBackground="@color/colorPrimary"
         app:itemIconTint="@android:color/white"
         app:itemTextColor="@android:color/white" />
-
+    </RelativeLayout>
 </FrameLayout>

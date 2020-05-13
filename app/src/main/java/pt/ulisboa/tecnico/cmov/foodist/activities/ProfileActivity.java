@@ -32,7 +32,32 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        GlobalClass global = (GlobalClass) getApplicationContext();
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        BottomNavigationItemView menuItemExplore = findViewById(R.id.action_explore);
+        BottomNavigationItemView menuItemProfile = findViewById(R.id.action_profile);
+
+        bottomNavigationView.setSelectedItemId(R.id.action_profile);
+        menuItemExplore.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_local_pizza_outline_24px));
+        menuItemProfile.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_24px));
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_explore:
+                        Intent intent =  new Intent(ProfileActivity.this, ListFoodServicesActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.action_profile:
+                        // go to profile activity yet to be created
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+        /*GlobalClass global = (GlobalClass) getApplicationContext();
         this.user = global.getUser();
 
         if(user.containsConstraint(Dish.DishCategory.FISH)) checkedBoxes.set(0, true);
@@ -132,5 +157,5 @@ public class ProfileActivity extends AppCompatActivity {
                 }
                 break;
         }
-    }
+    }*/
 }

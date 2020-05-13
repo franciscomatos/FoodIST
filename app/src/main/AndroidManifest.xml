@@ -34,7 +34,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-
+        <activity android:name=".activities.RegisterActivity"></activity>
         <activity android:name=".activities.ProfileActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -55,16 +55,17 @@
             android:name=".activities.FoodServiceActivity"
             android:theme="@style/AppTheme.FullBackground" />
         <activity android:name=".activities.DishActivity" />
-        <activity android:name=".activities.LoginActivity" />
-        <activity android:name=".activities.MenuActivity" />
-        <activity
-            android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.FullBackground">
+        <activity android:name=".activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".activities.MenuActivity" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:theme="@style/AppTheme.FullBackground">
         </activity>
 
         <service
