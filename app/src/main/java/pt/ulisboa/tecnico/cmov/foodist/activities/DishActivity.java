@@ -40,6 +40,7 @@ import java.util.Map;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.rateMenu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchCacheImages;
@@ -125,6 +126,8 @@ public class DishActivity extends FragmentActivity {
 
             String average = "Average:: " + DishActivity.this.dish.computeRatingAverage();
             Toast.makeText(getApplicationContext(), rating + "\n" + average, Toast.LENGTH_LONG).show();
+            rateMenu process = new rateMenu(global, foodServiceName, dishName, ratingBar.getRating() + "");
+            process.execute();
         });
 
         AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
