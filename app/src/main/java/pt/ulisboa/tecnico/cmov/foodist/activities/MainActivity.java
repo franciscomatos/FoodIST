@@ -106,7 +106,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
                     case R.id.action_explore:
                         break;
                     case R.id.action_profile:
-                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
                         startActivity(intent);
                         //Intent intent =  new Intent(MainActivity.this, ProfileActivity.class);
                         //startActivity(intent);
@@ -149,7 +149,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
     }
 
     private void startWifi() {
-        makeToast("Service started");
+        /*makeToast("Service started");
         //SimWifiP2pSocketManager.Init(getApplicationContext());
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -164,7 +164,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         Intent intent = new Intent(MainActivity.this, SimWifiP2pService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         mBound = true;
-        Log.i("WIFI", "wifi on");
+        Log.i("WIFI", "wifi on");*/
 
     }
 
