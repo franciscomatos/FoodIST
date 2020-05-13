@@ -93,13 +93,7 @@ public class Menu {
         return this.constraints.contains(category);
     }
 
-    @Override
-    public String toString() {
-        String dishes = "";
-        for (Dish d : dishList) {
-            dishes += d.toString();
-        }
-        return dishes;
+
         
     /* others */
     public void addRating(Integer classification) {
@@ -124,5 +118,14 @@ public class Menu {
             counter += classification.getValue();
         }
         return counter;
+    }
+
+    @Override
+    public String toString() {
+        String dishes = "";
+        for (Dish d : dishList) {
+            dishes += d.toString();
+        }
+        return dishes;
     }
 }

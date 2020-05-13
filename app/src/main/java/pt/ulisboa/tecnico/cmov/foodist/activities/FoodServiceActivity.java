@@ -104,7 +104,8 @@ public class FoodServiceActivity extends AppCompatActivity {
                 myIntent.putExtra(Intent.EXTRA_SUBJECT, shareBody);
                 myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
                 startActivity(Intent.createChooser(myIntent, "Share using"));
-                
+            }});
+
         TextView averageBigView = findViewById(R.id.averageBig);
         averageBigView.setText(menuState.computeRatingAverage().toString());
 

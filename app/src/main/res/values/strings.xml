@@ -6,7 +6,8 @@
     <string name="service_name">Name</string>
     <string name="opening_hour">Opening</string>
     <string name="is_open">Status</string>
-    <string name="distance">Distance</string>
+    <string name="distance">1675 mins</string>
+    <string name="time">01:00</string>
     <string name="service_photo">Service Photo</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="new_dish">Add a new dish</string>
@@ -29,6 +30,7 @@
     <string name="dietary_constraints">Dietary Constraints</string>
     <string name="Closed">Closed</string>
     <string name="Open">Open</string>
+    <string name="Interval">Interval</string>
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_name">Username</string>
     <string name="prompt_email">Email</string>

@@ -118,11 +118,38 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
             current = presDateFormat.parse(presDateFormat.format(current));
             holder.openingHour.setText(openString + " - " + closeString);
             if (current.compareTo(close) < 0 && current.compareTo(open) > 0) {
-                holder.status.setText(R.string.Open);
-                holder.status.setTextColor(0xFF00AA00);
+                if (mDataset.get(position).getName() == "Complex Bar" &&
+                   (global.getStatus() == "STUDENT" || global.getStatus() == "PUBLIC" )) {
+                    Date intervalStart =  presDateFormat.parse("12:00");
+                    Date intervalEnd =  presDateFormat.parse("14:00");
+                    if (current.compareTo(intervalStart) > 0 && current.compareTo(intervalEnd) < 0) {
+                        holder.status.setText(R.string.Interval);
+                        holder.status.setTextColor(Color.RED);
+                    }
+                    else {
+                        holder.status.setText(R.string.Open);
+                        holder.status.setTextColor(0xFF00AA00);
+                    }
+                } else if (mDataset.get(position).getName() == "CTN Bar"){
+                    Date intervalStart =  presDateFormat.parse("12:00");
+                    Date intervalEnd =  presDateFormat.parse("18:30");
+                    if (current.compareTo(intervalStart) > 0 && current.compareTo(intervalEnd) < 0) {
+                        holder.status.setText(R.string.Interval);
+                        holder.status.setTextColor(Color.RED);
+                    }
+                    else {
+                        holder.status.setText(R.string.Open);
+                        holder.status.setTextColor(0xFF00AA00);
+                    }
+                } else {
+                    holder.status.setText(R.string.Open);
+                    holder.status.setTextColor(0xFF00AA00);
+                }
+
             } else {
                 holder.status.setText(R.string.Closed);
                 holder.status.setTextColor(Color.RED);
+
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -182,7 +209,11 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
     }
 
     private String getTime(int duration) {
-        return duration/60 + " mins";
+        int d = duration/60;
+        if (d == 1) {
+            return d + " min";
+        }
+        return d + " mins";
     }
 
     // Return the size of your dataset (invoked by the layout manager)

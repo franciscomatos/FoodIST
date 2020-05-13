@@ -102,6 +102,25 @@ public class GlobalClass extends Application  {
 
     }};
 
+    private Map<String, String> beaconFoodServiceMapper = new HashMap<String, String>(){{
+        put("CentralBar" , "Central Bar");
+        put("CivilBar" , "Civil Bar");
+        put("CivilCafeteria" , "Civil Cafeteria");
+        put("Sena" , "Sena");
+        put("MechyBar" , "Mechy Bar");
+        put("AEISTBar" , "AEIST Bar");
+        put("AEISTEsplanade" , "AEIST Esplanade");
+        put("ChemyBar" , "Chemy Bar");
+        put("SASCafeteria" , "SAS Cafeteria");
+        put("MathCafeteria" , "Math Cafeteria");
+        put("ComplexBar" , "Complex Bar");
+        put("TagusCafeteria" , "Tagus Cafeteria");
+        put("RedBar" , "Central Bar");
+        put("GreenBar" , "Green Bar");
+        put("CTNCafeteria" , "CTN Cafeteria");
+        put("CTNBar" , "CTN Bar");
+    }};
+
     //FIXME:should be defined by the user
     private String username = "pedro";
     private String password = "123";
@@ -120,9 +139,6 @@ public class GlobalClass extends Application  {
                     android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             activity.startActivity(gpsOptionsIntent);
         }
-
-
-
         locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 60000, 50, locationListener);
     }
 
@@ -276,7 +292,7 @@ public class GlobalClass extends Application  {
     }
 
     public Boolean isFoodService(String foodServiceName) {
-        return foodServices.containsKey(foodServiceName);
+        return beaconFoodServiceMapper.containsKey(foodServiceName);
     }
 
     public void setCurrentFoodService(String foodServiceName) {
@@ -318,6 +334,10 @@ public class GlobalClass extends Application  {
     public void setStatus(String status) {
         this.status = new AnnotationStatus(status);
         Log.i("STATUS",status);
+    }
+
+    public String getStatus() {
+        return status.toString();
     }
 
     public void addImageToCache(String key, AppImage image) {
