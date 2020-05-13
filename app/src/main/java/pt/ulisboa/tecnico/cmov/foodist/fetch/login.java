@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
+import pt.ulisboa.tecnico.cmov.foodist.states.AnnotationStatus;
+import pt.ulisboa.tecnico.cmov.foodist.domain.User;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -17,6 +19,7 @@ public class login extends fetchBaseCustom {
         super(global, global.getURL() + "/login");
         this.username = username;
         this.password = password;
+
     }
 
     @Override
@@ -33,8 +36,14 @@ public class login extends fetchBaseCustom {
                 throw new JSONException("Json wasn't ok");
 
             //will only change if valid
-            getGlobal().getUser().setUsername(username);
-            getGlobal().getUser().setPassword(password);
+            getGlobal().setUser(new User(
+                                            response.getString("username"),
+                                            response.getString("email"),
+                                            response.getString("ist"),
+                                            response.getString("password"),
+                                            new AnnotationStatus(response.getString("level"))
+                                        )
+                                );
             error = false;
 
         } catch (JSONException e) {
