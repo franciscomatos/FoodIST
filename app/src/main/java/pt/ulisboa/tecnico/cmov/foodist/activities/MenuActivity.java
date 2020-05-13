@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,9 +50,15 @@ public class MenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
+
         FrameLayout background = findViewById(R.id.background);
         background.getForeground().setAlpha(0); // restore
         global = (GlobalClass) getApplicationContext();
+
+        FloatingActionButton newDishButton = findViewById(R.id.fab);
+        
+        if(global.getUser() == null) newDishButton.setEnabled(false);
+
         foodServiceName = getIntent().getStringExtra("foodService");
         Log.i("MYLOGS", foodServiceName);
         menuState = global.getFoodService(foodServiceName).getMenu();

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.anychart.AnyChart;
 import com.anychart.AnyChartView;
@@ -278,6 +279,9 @@ public class FoodServiceActivity extends AppCompatActivity {
             data.add(new ValueDataEntry(classification.getKey(), classification.getValue()));
         }
 
+        for(DataEntry entry: data) {
+            Toast.makeText(getApplicationContext(), entry.generateJs(), Toast.LENGTH_LONG).show();
+        }
         Column column = cartesian.column(data);
 
         column.tooltip()
