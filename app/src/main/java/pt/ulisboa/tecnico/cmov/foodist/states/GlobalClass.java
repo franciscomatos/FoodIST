@@ -55,30 +55,7 @@ public class GlobalClass extends Application  {
     };
 
     private LocationManager locationManager;
-    private LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-
-            setLatitude(location.getLatitude());
-            setLongitude(location.getLongitude());
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(intent);
-        }
-    };
+    private LocationListener locationListener;
 
     private double[] AlamedaLatitude = new double[]{38.735090, 38.738468 };
     private double[] AlamedaLongitude = new double[]{-9.140879, -9.136375 };
@@ -95,45 +72,70 @@ public class GlobalClass extends Application  {
         put("Cafetaria", new FoodService("Cafetaria","RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.736582,  -9.302166, new Menu() ));
 
         //ALAMEDA
-        put("Central Bar", new FoodService("Central Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736606, -9.139532, new Menu()));
-        put("Civil Bar", new FoodService("Civil Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736988,  -9.139955, new Menu()));
-        put("Civil Cafeteria", new FoodService("Civil Cafeteria", "RESTAURANT", "0000-01-01T12:00:00Z", "0000-01-01T15:00:00Z", 38.737650,  -9.140384, new Menu()));
-        put("Sena Pastry Shop", new FoodService("Sena Pastry Shop", "RESTAURANT", "0000-01-01T08:00:00Z", "0000-01-01T19:00:00Z", 38.737677,  -9.138672, new Menu()));
-        put("Mechy Bar", new FoodService("Mechy Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.737247,   -9.137434, new Menu()));
-        put("AEIST Bar", new FoodService("AEIST Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736542, -9.137226, new Menu()));
-        put("AEIST Esplanade", new FoodService("AEIST Esplanade", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736318, -9.137820, new Menu()));
-        put("Chemy Bar", new FoodService("Chemy Bar", "BAR", "0000-01-01T09:00:00Z", "0000-01-01T17:00:00Z", 38.736240, -9.138302, new Menu()));
-        put("SAS Cafeteria", new FoodService("SAS Cafeteria", "RESTAURANT", "0000-01-01T09:00:00Z", "0000-01-01T21:00:00Z", 38.736571, -9.137036, new Menu()));
-        if (status.toString() == "STUDENT" || status.toString() == "PUBLIC" ) {
-            put("Math Cafeteria", new FoodService("Math Cafeteria", "RESTAURANT", "0000-01-01T13:30:00:00Z", "0000-01-01T15:00:00Z", 38.735508,-9.139645, new Menu()));
+        put("Central Bar", new FoodService("Central Bar", "BAR", "09:00", "17:00", 38.736606, -9.139532, new Menu()));
+        put("Civil Bar", new FoodService("Civil Bar", "BAR", "09:00", "17:00", 38.736988,  -9.139955, new Menu()));
+        put("Civil Cafeteria", new FoodService("Civil Cafeteria", "RESTAURANT", "12:00", "15:00", 38.737650,  -9.140384, new Menu()));
+        put("Sena Pastry Shop", new FoodService("Sena Pastry Shop", "RESTAURANT", "08:00", "19:00", 38.737677,  -9.138672, new Menu()));
+        put("Mechy Bar", new FoodService("Mechy Bar", "BAR", "09:00", "17:00", 38.737247,   -9.137434, new Menu()));
+        put("AEIST Bar", new FoodService("AEIST Bar", "BAR", "09:00", "17:00", 38.736542, -9.137226, new Menu()));
+        put("AEIST Esplanade", new FoodService("AEIST Esplanade", "BAR", "09:00", "17:00", 38.736318, -9.137820, new Menu()));
+        put("Chemy Bar", new FoodService("Chemy Bar", "BAR", "09:00", "17:00", 38.736240, -9.138302, new Menu()));
+        put("SAS Cafeteria", new FoodService("SAS Cafeteria", "RESTAURANT", "09:00", "21:00", 38.736571, -9.137036, new Menu()));
+        if (status.getStatus() == "STUDENT" || status.getStatus() == "PUBLIC" ) {
+            put("Math Cafeteria", new FoodService("Math Cafeteria", "RESTAURANT", "13:30", "15:00", 38.735508,-9.139645, new Menu()));
         }
         else {
-            put("Math Cafeteria", new FoodService("Math Cafeteria", "RESTAURANT", "0000-01-01T12:00:00Z", "0000-01-01T15:00:00Z", 38.735508,-9.139645, new Menu()));
+            put("Math Cafeteria", new FoodService("Math Cafeteria", "RESTAURANT", "12:00", "15:00", 38.735508,-9.139645, new Menu()));
         }
-        put("Complex Bar", new FoodService("Complex Bar", "BAR", "0000-01-01T09:30:00Z", "0000-01-01T17:00:00Z", 38.736050,-9.140156, new Menu()));
+        put("Complex Bar", new FoodService("Complex Bar", "BAR", "09:30", "17:00", 38.736050,-9.140156, new Menu()));
 
         //TAGUS
-        put("Tagus Cafeteria", new FoodService("Tagus Cafeteria", "RESTAURANT", "0000-01-01T12:00:00Z", "0000-01-01T15:00:00Z", 38.737802,-9.303223, new Menu()));
-        put("Red Bar", new FoodService("Red Bar", "BAR", "0000-01-01T08:00:00Z", "0000-01-01T22:00:00Z", 38.736546,-9.302207, new Menu()));
-        put("Green Bar", new FoodService("Green Bar", "BAR", "0000-01-01T07:00:00Z", "0000-01-01T19:00:00Z", 38.738004,-9.303058, new Menu()));
+        put("Tagus Cafeteria", new FoodService("Tagus Cafeteria", "RESTAURANT", "12:00", "15:00", 38.737802,-9.303223, new Menu()));
+        put("Red Bar", new FoodService("Red Bar", "BAR", "08:00", "22:00", 38.736546,-9.302207, new Menu()));
+        put("Green Bar", new FoodService("Green Bar", "BAR", "07:00", "19:00", 38.738004,-9.303058, new Menu()));
 
         //CTN
-        put("CTN Cafeteria", new FoodService("CTN Cafeteria", "RESTAURANT", "0000-01-01T12:00:00Z", "0000-01-01T14:00:00Z", 38.812522,-9.093773, new Menu()));
-        put("CTN Bar", new FoodService("CTN Bar", "BAR", "0000-01-01T08:30:00Z", "0000-01-01T16:30:00Z", 38.812522,-9.093773, new Menu()));
+        put("CTN Cafeteria", new FoodService("CTN Cafeteria", "RESTAURANT", "12:00", "14:00", 38.812522,-9.093773, new Menu()));
+        put("CTN Bar", new FoodService("CTN Bar", "BAR", "08:30", "16:30", 38.812522,-9.093773, new Menu()));
 
 
 
     }};
 
+    private Map<String, String> beaconFoodServiceMapper = new HashMap<String, String>(){{
+        put("CentralBar" , "Central Bar");
+        put("CivilBar" , "Civil Bar");
+        put("CivilCafeteria" , "Civil Cafeteria");
+        put("Sena" , "Sena");
+        put("MechyBar" , "Mechy Bar");
+        put("AEISTBar" , "AEIST Bar");
+        put("AEISTEsplanade" , "AEIST Esplanade");
+        put("ChemyBar" , "Chemy Bar");
+        put("SASCafeteria" , "SAS Cafeteria");
+        put("MathCafeteria" , "Math Cafeteria");
+        put("ComplexBar" , "Complex Bar");
+        put("TagusCafeteria" , "Tagus Cafeteria");
+        put("RedBar" , "Central Bar");
+        put("GreenBar" , "Green Bar");
+        put("CTNCafeteria" , "CTN Cafeteria");
+        put("CTNBar" , "CTN Bar");
+    }};
+
+
     public void getLocation2(Activity activity){
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
+            Log.i("LOCATION", "no permission");
             ActivityCompat.requestPermissions(activity, new String[] {
                     Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET
             }, 10);
             return;
         }
-        locationManager.requestLocationUpdates("gps", 60000, 50, locationListener);
+        if ( !locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER ) ) {
+            Intent gpsOptionsIntent = new Intent(
+                    android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            activity.startActivity(gpsOptionsIntent);
+        }
+        locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 60000, 50, locationListener);
     }
 
 
@@ -181,6 +183,11 @@ public class GlobalClass extends Application  {
 
     public void setLocationManager(LocationManager locationManager) {
         this.locationManager = locationManager;
+
+    }
+
+    public void setLocationListener(LocationListener locationListener) {
+        this.locationListener = locationListener;
     }
 
     public String getOtherCampus1() {
@@ -273,7 +280,7 @@ public class GlobalClass extends Application  {
     }
 
     public Boolean isFoodService(String foodServiceName) {
-        return foodServices.containsKey(foodServiceName);
+        return beaconFoodServiceMapper.containsKey(foodServiceName);
     }
 
     public void setCurrentFoodService(String foodServiceName) {
@@ -315,6 +322,10 @@ public class GlobalClass extends Application  {
     public void setStatus(String status) {
         this.status = new AnnotationStatus(status);
         Log.i("STATUS",status);
+    }
+
+    public String getStatus() {
+        return status.toString();
     }
 
     public void addImageToCache(String key, AppImage image) {

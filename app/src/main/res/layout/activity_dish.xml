@@ -6,9 +6,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".activities.DishActivity">
@@ -100,6 +98,18 @@
                         android:textStyle="bold"
                         android:gravity="center_vertical"/>
 
+                    <ImageButton
+                        android:id="@+id/share3"
+                        android:layout_width="40dp"
+                        android:layout_height="45dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_weight="0"
+                        android:background="@drawable/share"
+                        android:src="@drawable/share"
+                        tools:src="@drawable/share" />
+
 
                 </LinearLayout>
 
@@ -147,6 +157,7 @@
                         android:textStyle="bold"
                         android:gravity="end|center_vertical"
                         android:paddingEnd="5dp"/>
+
                 </LinearLayout>
 
 
@@ -173,7 +184,7 @@
                     android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="314dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal|start">
 
@@ -184,15 +195,17 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal|start"
                             android:numStars="5"
-                            android:stepSize="1"/>
+                            android:stepSize="1" />
+
                     </LinearLayout>
 
                     <Button
                         android:id="@+id/submitRattingButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Submit"
-                        android:layout_gravity="center_vertical|end" />
+                        android:layout_gravity="center_vertical|end"
+                        android:text="Submit" />
+
                 </LinearLayout>
 
 
@@ -290,6 +303,8 @@
             android:background="@color/colorPrimary"
             app:itemBackground="@color/colorPrimary"
             app:itemIconTint="@android:color/white"
-            app:itemTextColor="@android:color/white" />
+            app:itemTextColor="@android:color/white" >
+
+        </com.google.android.material.bottomnavigation.BottomNavigationView>
     </RelativeLayout>
 </FrameLayout>
