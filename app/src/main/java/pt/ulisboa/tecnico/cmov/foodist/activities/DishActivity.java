@@ -101,6 +101,36 @@ public class DishActivity extends FragmentActivity {
         TextView priceView = findViewById(R.id.dishPrice);
         priceView.setText(price);
 
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_explore:
+                        Intent intent =  new Intent(DishActivity.this, ListFoodServicesActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.action_profile:
+                        Intent profileIntent =  new Intent(DishActivity.this, ProfileActivity.class);
+                        startActivity(profileIntent);
+                        break;
+                }
+                return true;
+            }
+        });
+        fetchCacheImages process = new fetchCacheImages(global, carouselView, foodServiceName, dishName, 0);
+        process.execute();
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        GlobalClass global = (GlobalClass) getApplicationContext();
+
         TextView averageBigView = findViewById(R.id.averageBig);
         averageBigView.setText(dish.computeRatingAverage().toString());
 
@@ -159,28 +189,6 @@ public class DishActivity extends FragmentActivity {
 
 
         ratingChartView.setChart(cartesian);
-
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_explore:
-                        Intent intent =  new Intent(DishActivity.this, ListFoodServicesActivity.class);
-                        startActivity(intent);
-                        break;
-                    case R.id.action_profile:
-                        Intent profileIntent =  new Intent(DishActivity.this, ProfileActivity.class);
-                        startActivity(profileIntent);
-                        break;
-                }
-                return true;
-            }
-        });
-        fetchCacheImages process = new fetchCacheImages(global, carouselView, foodServiceName, dishName, 0);
-        process.execute();
-
-
     }
 
     public void goToAddPictureActivity(View v) {

@@ -91,44 +91,6 @@ public class FoodServiceActivity extends AppCompatActivity {
         String queue = getIntent().getExtras().getString("queue");
         fillInfo(duration, queue);
 
-        TextView averageBigView = findViewById(R.id.averageBig);
-        averageBigView.setText(menuState.computeRatingAverage().toString());
-
-        RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
-        averageRatingBar.setRating(menuState.computeRatingAverage().floatValue());
-
-        TextView ratingsCounter = findViewById(R.id.numberOfRatings);
-        ratingsCounter.setText(menuState.computeNumberOfRatings().toString());
-
-        AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
-
-        Cartesian cartesian = AnyChart.column();
-
-        List<DataEntry> data = new ArrayList<>();
-        for(Map.Entry<Integer, Integer> classification: menuState.getRatings().entrySet()) {
-            data.add(new ValueDataEntry(classification.getKey(), classification.getValue()));
-        }
-
-        Column column = cartesian.column(data);
-
-        column.tooltip()
-                .titleFormat("{%X}")
-                .position(Position.CENTER_BOTTOM)
-                .anchor(Anchor.CENTER_BOTTOM)
-                .offsetX(0d)
-                .offsetY(5d)
-                .format("${%Value}{groupsSeparator: }");
-
-        //cartesian.animation(true);
-        cartesian.yScale().minimum(0d);
-
-        //cartesian.yAxis(0).labels().format("${%Value}{groupsSeparator: }");
-
-        cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
-        //cartesian.interactivity().hoverMode(HoverMode.BY_X);
-
-
-        ratingChartView.setChart(cartesian);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -149,6 +111,7 @@ public class FoodServiceActivity extends AppCompatActivity {
         });
 
     }
+
 
     private void fillInfo(String duration, String queue) {
 
@@ -294,6 +257,45 @@ public class FoodServiceActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         mapView.onResume();
+
+        TextView averageBigView = findViewById(R.id.averageBig);
+        averageBigView.setText(menuState.computeRatingAverage().toString());
+
+        RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
+        averageRatingBar.setRating(menuState.computeRatingAverage().floatValue());
+
+        TextView ratingsCounter = findViewById(R.id.numberOfRatings);
+        ratingsCounter.setText(menuState.computeNumberOfRatings().toString());
+
+        AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
+
+        Cartesian cartesian = AnyChart.column();
+
+        List<DataEntry> data = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> classification: menuState.getRatings().entrySet()) {
+            data.add(new ValueDataEntry(classification.getKey(), classification.getValue()));
+        }
+
+        Column column = cartesian.column(data);
+
+        column.tooltip()
+                .titleFormat("{%X}")
+                .position(Position.CENTER_BOTTOM)
+                .anchor(Anchor.CENTER_BOTTOM)
+                .offsetX(0d)
+                .offsetY(5d)
+                .format("${%Value}{groupsSeparator: }");
+
+        //cartesian.animation(true);
+        cartesian.yScale().minimum(0d);
+
+        //cartesian.yAxis(0).labels().format("${%Value}{groupsSeparator: }");
+
+        cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
+        //cartesian.interactivity().hoverMode(HoverMode.BY_X);
+
+
+        ratingChartView.setChart(cartesian);
     }
     @Override
     public void onStart() {
