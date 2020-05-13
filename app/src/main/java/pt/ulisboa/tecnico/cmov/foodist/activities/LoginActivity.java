@@ -18,6 +18,7 @@ import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
@@ -92,12 +93,29 @@ public class LoginActivity extends Activity implements SimWifiP2pManager.PeerLis
 
         Button createAccountButton = findViewById(R.id.createAccount);
         Button continueAsGuestButton = findViewById(R.id.continueAsGuestButton);
+        Button loginButton = findViewById(R.id.login);
+
+        final EditText emailText = findViewById(R.id.username);
+        final EditText passwordText = findViewById(R.id.password);
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                String email = emailText.getText().toString();
+                String password = passwordText.getText().toString();
+
+                // TO DO: login in server and then update user in global class
+
+                Intent listFoodServicesIntent =  new Intent(LoginActivity.this, ListFoodServicesActivity.class);
+                startActivity(listFoodServicesIntent);
+            }
+        });
 
         createAccountButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                Intent listFoodServicesIntent =  new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(listFoodServicesIntent);
+                Intent createAccountIntent =  new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(createAccountIntent);
             }
         });
 
