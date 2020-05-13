@@ -56,7 +56,7 @@ public class MenuActivity extends AppCompatActivity {
         global = (GlobalClass) getApplicationContext();
 
         FloatingActionButton newDishButton = findViewById(R.id.fab);
-        
+
         if(global.getUser() == null) newDishButton.setEnabled(false);
 
         foodServiceName = getIntent().getStringExtra("foodService");
@@ -129,7 +129,8 @@ public class MenuActivity extends AppCompatActivity {
             dishCategoryLeftView.setText(menuState.getConstraintDish(i).getCategory().getCategory());
 
             TextView dishPriceLeftView = tr.findViewById(R.id.menuDishPriceLeft);
-            dishPriceLeftView.setText(String.format(menuState.getConstraintDish(i).getPrice().toString()));
+            String leftPrice = menuState.getConstraintDish(i).getPrice().toString() + "€";
+            dishPriceLeftView.setText(leftPrice);
 
             LinearLayout leftLayout = tr.findViewById(R.id.menuLeftDish);
 
@@ -145,7 +146,8 @@ public class MenuActivity extends AppCompatActivity {
                 dishCategoryRightView.setText(menuState.getConstraintDish(i + 1).getCategory().getCategory());
 
                 TextView dishPriceRightView = tr.findViewById(R.id.menuDishPriceRight);
-                dishPriceRightView.setText(String.format(menuState.getConstraintDish(i + 1).getPrice().toString()));
+                String rightPrice = menuState.getConstraintDish(i + 1).getPrice().toString() + "€";
+                dishPriceRightView.setText(rightPrice);
 
                 LinearLayout rightLayout = tr.findViewById(R.id.menuRightDish);
 
