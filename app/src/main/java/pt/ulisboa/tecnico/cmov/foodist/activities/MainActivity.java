@@ -15,9 +15,16 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import android.net.wifi.WifiManager;
 
 import java.security.cert.Certificate;
@@ -32,6 +39,7 @@ import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
 import pt.ulisboa.tecnico.cmov.foodist.R;
+import pt.ulisboa.tecnico.cmov.foodist.activities.LoginActivity;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.registerUser;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.toggleQueue;
 import pt.ulisboa.tecnico.cmov.foodist.receivers.WifiBroadcastReceiver;
@@ -92,6 +100,25 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         setContentView(R.layout.activity_main);
         configureFoodListButton();
 
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_explore:
+                        break;
+                    case R.id.action_profile:
+                        Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                        //Intent intent =  new Intent(MainActivity.this, ProfileActivity.class);
+                        //startActivity(intent);
+                        break;
+                }
+                return true;
+            }
+        });
+
+        GlobalClass global = (GlobalClass) getApplicationContext();
         this.global = (GlobalClass) getApplicationContext();
         global.setContext(this);
         global.setLocationManager( (LocationManager) getSystemService(Context.LOCATION_SERVICE));
@@ -149,7 +176,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
     }
 
     private void startWifi() {
-        makeToast("Service started");
+        /*makeToast("Service started");
         //SimWifiP2pSocketManager.Init(getApplicationContext());
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -164,7 +191,7 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         Intent intent = new Intent(MainActivity.this, SimWifiP2pService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         mBound = true;
-        Log.i("WIFI", "wifi on");
+        Log.i("WIFI", "wifi on");*/
 
     }
 

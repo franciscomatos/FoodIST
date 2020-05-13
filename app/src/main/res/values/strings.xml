@@ -12,6 +12,7 @@
     <string name="new_dish">Add a new dish</string>
     <string name="dish_name">Dish name</string>
     <string name="select_category">Dish category:</string>
+    <string name="select_user">User type:</string>
     <string name="dish_price">Dish price</string>
     <string name="fish_category">Fish</string>
     <string name="meat_category">Meat</string>
@@ -28,4 +29,23 @@
     <string name="dietary_constraints">Dietary Constraints</string>
     <string name="Closed">Closed</string>
     <string name="Open">Open</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="prompt_name">Username</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_istNumber">ist1xxxxx</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_log_in">Log in</string>
+    <string name="action_forgot_password">Forgot password?</string>
+    <string name="action_create_account">Create New Account</string>
+    <string name="action_continue_as_guest">Continue as Guest</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="student_user">Student</string>
+    <string name="professor_user">Professor</string>
+    <string name="researcher_user">Researcher</string>
+    <string name="staff_user">Staff</string>
 </resources>

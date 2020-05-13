@@ -2,7 +2,7 @@ package pt.ulisboa.tecnico.cmov.foodist.receivers;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
-import pt.ulisboa.tecnico.cmov.foodist.activities.MainActivity;
+import pt.ulisboa.tecnico.cmov.foodist.activities.LoginActivity;
 import pt.ulisboa.tecnico.cmov.foodist.services.WifiIntentService;
 
 import android.content.BroadcastReceiver;
@@ -13,9 +13,9 @@ import android.net.wifi.WifiManager;
 
 public class WifiBroadcastReceiver extends BroadcastReceiver {
 
-    private MainActivity activity;
+    private LoginActivity activity;
 
-    public WifiBroadcastReceiver(MainActivity activity) {
+    public WifiBroadcastReceiver(LoginActivity activity) {
         super();
         this.activity = activity;
     }

@@ -1,10 +1,12 @@
 package pt.ulisboa.tecnico.cmov.foodist.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +19,8 @@ import android.widget.RadioGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +39,8 @@ public class MenuActivity extends AppCompatActivity {
     private TableLayout tableLayout;
     private Menu menuState;
     private String foodServiceName;
-    private List<Boolean> checkedBoxes = Arrays.asList(true, true, true, true);
+    private List<Boolean> checkedBoxes = Arrays.asList(false, false, false, false);
+    private GlobalClass global;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +49,15 @@ public class MenuActivity extends AppCompatActivity {
 
         FrameLayout background = findViewById(R.id.background);
         background.getForeground().setAlpha(0); // restore
-        GlobalClass global = (GlobalClass) getApplicationContext();
+        global = (GlobalClass) getApplicationContext();
         foodServiceName = getIntent().getStringExtra("foodService");
         Log.i("MYLOGS", foodServiceName);
         menuState = global.getFoodService(foodServiceName).getMenu();
+
+        if(menuState.containsConstraint(Dish.DishCategory.FISH)) checkedBoxes.set(0, true);
+        if(menuState.containsConstraint(Dish.DishCategory.MEAT)) checkedBoxes.set(1, true);
+        if(menuState.containsConstraint(Dish.DishCategory.VEGETARIAN)) checkedBoxes.set(2, true);
+        if(menuState.containsConstraint(Dish.DishCategory.VEGAN)) checkedBoxes.set(3, true);
 
         Log.i("MenuActivity", "got Context");
 /*
@@ -64,9 +74,28 @@ public class MenuActivity extends AppCompatActivity {
         this.tableLayout = findViewById(R.id.menuTable);
 
         Log.i("MenuActivity", "found Table");
-        menuState.clear();
-        fetchMenu process = new fetchMenu(this, menuState, foodServiceName,global);
-        process.execute();
+        //menuState.clear();
+        //fetchMenu process = new fetchMenu(this, menuState, foodServiceName,global);
+        //process.execute();
+        MenuActivity.this.updateDishes();
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_explore:
+                        Intent intent =  new Intent(MenuActivity.this, ListFoodServicesActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.action_profile:
+                        Intent profileIntent =  new Intent(MenuActivity.this, ProfileActivity.class);
+                        startActivity(profileIntent);
+                        break;
+                }
+                return true;
+            }
+        });
 
     }
 
@@ -98,6 +127,7 @@ public class MenuActivity extends AppCompatActivity {
             leftLayout.setTag(menuState.getConstraintDish(i));
 
             final int index = i;
+            final String foodService = this.foodServiceName;
             // right dish
             if(index+1 < menuState.getConstrainedCounter()) {
                 TextView dishNameRightView = tr.findViewById(R.id.menuDishNameRight);
@@ -118,7 +148,8 @@ public class MenuActivity extends AppCompatActivity {
                         intent.putExtra("name", dish.getName());
                         intent.putExtra("category", dish.getCategory().getCategory());
                         intent.putExtra("price", dish.getPrice().toString());
-                        intent.putExtra("foodService", foodServiceName);
+                        intent.putExtra("foodService", foodService);
+                        intent.putExtra("dishIndex", index+1);
                         startActivity(intent);
                     }
                 });
@@ -136,7 +167,9 @@ public class MenuActivity extends AppCompatActivity {
                     intent.putExtra("name", dish.getName());
                     intent.putExtra("category", dish.getCategory().getCategory());
                     intent.putExtra("price", dish.getPrice().toString());
-                    intent.putExtra("foodService", foodServiceName);
+                    intent.putExtra("foodService", foodService);
+                    intent.putExtra("dishIndex", index);
+
                     startActivity(intent);
                 }
             });
@@ -188,6 +221,7 @@ public class MenuActivity extends AppCompatActivity {
                 uploadDish process = new uploadDish(dishPrice,dishName, dishCategory, foodServiceName, (GlobalClass) getApplicationContext());
                 process.execute();
 
+                MenuActivity.this.global.addDish(MenuActivity.this.foodServiceName, new Dish(dishName, dishPrice, category));
                 MenuActivity.this.menuState.addDish(new Dish(dishName, dishPrice, category));
                 MenuActivity.this.updateDishes();
 
