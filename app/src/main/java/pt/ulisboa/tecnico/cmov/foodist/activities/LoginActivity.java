@@ -34,6 +34,7 @@ import pt.ulisboa.tecnico.cmov.foodist.domain.User;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.prefetch;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.registerUser;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.toggleQueue;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.login;
 import pt.ulisboa.tecnico.cmov.foodist.receivers.WifiBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.foodist.states.AnnotationStatus;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
@@ -105,6 +106,8 @@ public class LoginActivity extends Activity implements SimWifiP2pManager.PeerLis
                 String password = passwordText.getText().toString();
 
                 // TO DO: login in server and then update user in global class
+                login login = new login(global, email, password);
+                login.execute();
 
                 Intent listFoodServicesIntent =  new Intent(LoginActivity.this, ListFoodServicesActivity.class);
                 startActivity(listFoodServicesIntent);
@@ -133,14 +136,9 @@ public class LoginActivity extends Activity implements SimWifiP2pManager.PeerLis
         global.setStatus("STUDENT"); //FIXME change this to user preference
         startWifi();
 
-        registerUser(global);
         global.setConnected(isOnline());
     }
 
-    private void registerUser(GlobalClass global) {
-        registerUser registry = new registerUser(global);
-        registry.execute();
-    }
 
     private boolean isOnline() {
         ConnectivityManager connMgr = (ConnectivityManager)

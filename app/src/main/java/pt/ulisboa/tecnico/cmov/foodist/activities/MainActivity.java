@@ -124,14 +124,9 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         global.setStatus("STUDENT"); //FIXME change this to user preference
         startWifi();
 
-        registerUser(global);
         global.setConnected(isOnline());
     }
 
-    private void registerUser(GlobalClass global) {
-        registerUser registry = new registerUser(global);
-        registry.execute();
-    }
 
     private boolean isOnline() {
         ConnectivityManager connMgr = (ConnectivityManager)

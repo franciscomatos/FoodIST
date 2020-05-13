@@ -23,9 +23,9 @@ public class prefetch extends fetchBaseCustom {
 
 	protected String buildBody() {
 		//find total nr of images it needs
-		return "{\"username\":\"" + getGlobal().getUsername() + "\"," +
+		return "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
 				"\"nrimages\":\""+getGlobal().getNrThumbnailsLeft()+"\"," +
-				"\"password\":\"" + getGlobal().getPassword() +"\"}" ;
+				"\"password\":\"" + getGlobal().getUser().getPassword() +"\"}" ;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class prefetch extends fetchBaseCustom {
 				String timestamp = tmp[tmp.length-1];
 				Long time =  Long.parseLong(timestamp);
 				//it will only return thumbnails
-				AppImage img = new AppImage(foodService, dish, new Date(time), getGlobal().getUsername(),img_dec, true);
+				AppImage img = new AppImage(foodService, dish, new Date(time), getGlobal().getUser().getUsername(),img_dec, true);
 				getGlobal().addImageToCache(img.toString(), img);
 			}
 

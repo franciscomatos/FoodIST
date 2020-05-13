@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.User;
-import pt.ulisboa.tecnico.cmov.foodist.fetch.uploadDish;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.registerUser;
 import pt.ulisboa.tecnico.cmov.foodist.states.AnnotationStatus;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
@@ -31,7 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
         final EditText istNumberText = findViewById(R.id.istNumber);
         final EditText passwordText = findViewById(R.id.password);
         final RadioGroup userGroup = findViewById(R.id.userGroup);
-
+        GlobalClass global = (GlobalClass) getApplicationContext();
 
         createAccountButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -46,6 +46,9 @@ public class RegisterActivity extends AppCompatActivity {
                 AnnotationStatus type = new AnnotationStatus(userType);
 
                 // TO DO: create account in server
+                registerUser register = new registerUser (global,email,password);
+                //register register = new login (global,email,password, FIXME: add here userType and dietary stuff);
+                register.execute();
 
                 GlobalClass global = (GlobalClass) getApplicationContext();
                 global.setUser(new User(username, email, istNumber, password, type));
