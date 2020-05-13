@@ -221,7 +221,6 @@ public class MenuActivity extends AppCompatActivity {
                 uploadDish process = new uploadDish(dishPrice,dishName, dishCategory, foodServiceName, (GlobalClass) getApplicationContext());
                 process.execute();
 
-                MenuActivity.this.global.addDish(MenuActivity.this.foodServiceName, new Dish(dishName, dishPrice, category));
                 MenuActivity.this.menuState.addDish(new Dish(dishName, dishPrice, category));
                 MenuActivity.this.updateDishes();
 
