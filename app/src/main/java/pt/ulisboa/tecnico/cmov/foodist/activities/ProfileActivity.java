@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -25,7 +27,7 @@ import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 public class ProfileActivity extends AppCompatActivity {
 
     private User user;
-    private List<Boolean> checkedBoxes = Arrays.asList(true, true, true, true);
+    private List<Boolean> checkedBoxes;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -45,66 +47,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
-    public void onCheckboxClicked(View view) {
-        // Is the view now checked?
-        boolean checked = ((CheckBox) view).isChecked();
-        GlobalClass global = (GlobalClass) getApplicationContext();
-
-        CheckBox box = (CheckBox)view;
-
-        // Check which checkbox was clicked
-        switch(view.getId()) {
-            case R.id.fishCheckbox:
-                if (checked && !this.user.containsConstraint(Dish.DishCategory.FISH)) {
-                    ProfileActivity.this.user.addConstraint(Dish.DishCategory.FISH);
-                    global.updateMenuConstraints();
-                    ProfileActivity.this.checkedBoxes.set(0, true);
-                }
-                else {
-                    ProfileActivity.this.user.removeConstraint(Dish.DishCategory.FISH);
-                    global.updateMenuConstraints();
-                    ProfileActivity.this.checkedBoxes.set(0, false);
-                }
-                break;
-            case R.id.meatCheckbox:
-                if (checked && !this.user.containsConstraint(Dish.DishCategory.MEAT)) {
-                    ProfileActivity.this.user.addConstraint(Dish.DishCategory.MEAT);
-                    global.updateMenuConstraints();
-                    ProfileActivity.this.checkedBoxes.set(1, true);
-                }
-                else {
-                    ProfileActivity.this.user.removeConstraint(Dish.DishCategory.MEAT);
-                    global.updateMenuConstraints();
-                    ProfileActivity.this.checkedBoxes.set(1, false);
-                }
-                break;
-            case R.id.vegetarianCheckbox:
-                if (checked && !this.user.containsConstraint(Dish.DishCategory.VEGETARIAN)) {
-                    ProfileActivity.this.user.addConstraint(Dish.DishCategory.VEGETARIAN);
-                    global.updateMenuConstraints();
-                    ProfileActivity.this.checkedBoxes.set(2, true);
-                }
-                else {
-                    ProfileActivity.this.user.removeConstraint(Dish.DishCategory.VEGETARIAN);
-                    global.updateMenuConstraints();
-                    ProfileActivity.this.checkedBoxes.set(2, false);
-                }
-                break;
-            case R.id.veganCheckbox:
-                if (checked && !this.user.containsConstraint(Dish.DishCategory.VEGAN)) {
-                    ProfileActivity.this.user.addConstraint(Dish.DishCategory.VEGAN);
-                    global.updateMenuConstraints();
-                    ProfileActivity.this.checkedBoxes.set(3, true);
-                }
-                else {
-                    ProfileActivity.this.user.removeConstraint(Dish.DishCategory.VEGAN);
-                    global.updateMenuConstraints();
-                    ProfileActivity.this.checkedBoxes.set(3, false);
-                }
-                break;
-        }
-    }
-
     public void redirectToLoginPage() {
         Intent toLoginPage = new Intent(ProfileActivity.this, LoginActivity.class);
         startActivity(toLoginPage);
@@ -113,6 +55,22 @@ public class ProfileActivity extends AppCompatActivity {
     @SuppressLint("RestrictedApi")
     public void setRegularUserPage() {
         setContentView(R.layout.activity_profile);
+
+        String username = this.user.getUsername();
+        String email = this.user.getEmail();
+        String istNumber = this.user.getIstNumber();
+        String status = this.user.getStatus();
+
+        TextView usernameTextView = findViewById(R.id.username);
+        usernameTextView.setText(username);
+
+        TextView istNumberTextView = findViewById(R.id.istNumber);
+        istNumberTextView.setText(istNumber);
+
+        TextView statusTextView = findViewById(R.id.status);
+        statusTextView.setText(status);
+
+        checkedBoxes= Arrays.asList(false, false, false, false);
 
         if(user.containsConstraint(Dish.DishCategory.FISH)) checkedBoxes.set(0, true);
         if(user.containsConstraint(Dish.DishCategory.MEAT)) checkedBoxes.set(1, true);
@@ -152,5 +110,67 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void onCheckboxClicked(View view) {
+        // Is the view now checked?
+        boolean checked = ((CheckBox) view).isChecked();
+        GlobalClass global = (GlobalClass) getApplicationContext();
+
+        CheckBox box = (CheckBox)view;
+
+        // Check which checkbox was clicked
+        switch(view.getId()) {
+            case R.id.fishCheckbox:
+                if (checked && !global.getUser().containsConstraint(Dish.DishCategory.FISH)) {
+                    global.getUser().addConstraint(Dish.DishCategory.FISH);
+                    global.updateMenuConstraints();
+                    ProfileActivity.this.checkedBoxes.set(0, true);
+                }
+                else {
+                    global.getUser().removeConstraint(Dish.DishCategory.FISH);
+                    global.updateMenuConstraints();
+                    ProfileActivity.this.checkedBoxes.set(0, false);
+                }
+                break;
+            case R.id.meatCheckbox:
+                if (checked && !global.getUser().containsConstraint(Dish.DishCategory.MEAT)) {
+                    global.getUser().addConstraint(Dish.DishCategory.MEAT);
+                    global.updateMenuConstraints();
+                    ProfileActivity.this.checkedBoxes.set(1, true);
+                }
+                else {
+                    global.getUser().removeConstraint(Dish.DishCategory.MEAT);
+                    global.updateMenuConstraints();
+                    ProfileActivity.this.checkedBoxes.set(1, false);
+                }
+                break;
+            case R.id.vegetarianCheckbox:
+                if (checked && !global.getUser().containsConstraint(Dish.DishCategory.VEGETARIAN)) {
+                    global.getUser().addConstraint(Dish.DishCategory.VEGETARIAN);
+                    global.updateMenuConstraints();
+                    ProfileActivity.this.checkedBoxes.set(2, true);
+                }
+                else {
+                    global.getUser().removeConstraint(Dish.DishCategory.VEGETARIAN);
+                    global.updateMenuConstraints();
+                    ProfileActivity.this.checkedBoxes.set(2, false);
+                }
+                break;
+            case R.id.veganCheckbox:
+                if (checked && !global.getUser().containsConstraint(Dish.DishCategory.VEGAN)) {
+                    global.getUser().addConstraint(Dish.DishCategory.VEGAN);
+                    global.updateMenuConstraints();
+                    ProfileActivity.this.checkedBoxes.set(3, true);
+                }
+                else {
+                    global.getUser().removeConstraint(Dish.DishCategory.VEGAN);
+                    global.updateMenuConstraints();
+                    ProfileActivity.this.checkedBoxes.set(3, false);
+                }
+                break;
+        }
+    }
+
+
 
 }
