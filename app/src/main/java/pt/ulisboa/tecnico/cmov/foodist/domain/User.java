@@ -90,17 +90,11 @@ public class User {
     public void setUsername(String user){
         this.name = user;
     }
-    public String getUsername(){
-        return this.name ;
-    }
+
 
     public void setPassword(String pass){
         this.password = pass ;
     }
-    public String getPassword(){
-        return this.password ;
-    }
-
 
 
 }
