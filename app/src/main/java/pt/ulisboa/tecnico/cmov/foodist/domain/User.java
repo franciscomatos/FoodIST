@@ -89,6 +89,14 @@ public class User {
         return this.dietaryConstraints.contains(category);
     }
 
+    public void setUsername(String user){
+        this.name = user;
+    }
+
+
+    public void setPassword(String pass){
+        this.password = pass ;
+    }
 
 
 }

@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -120,18 +122,36 @@ public class MainActivity extends Activity implements SimWifiP2pManager.PeerList
         this.global = (GlobalClass) getApplicationContext();
         global.setContext(this);
         global.setLocationManager( (LocationManager) getSystemService(Context.LOCATION_SERVICE));
+        global.setLocationListener(new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.i("LOCATION", String.valueOf(location.getLatitude()) );
+                global.setLatitude(location.getLatitude());
+                global.setLongitude(location.getLongitude());
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                Log.i("LOCATION", "oh no1");
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+                Log.i("LOCATION", "oh no2");
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+               Log.i("LOCATION", "oh no3");
+            }
+        });
         global.getLocation2(MainActivity.this);
         global.setStatus("STUDENT"); //FIXME change this to user preference
         startWifi();
 
-        registerUser(global);
         global.setConnected(isOnline());
     }
 
-    private void registerUser(GlobalClass global) {
-        registerUser registry = new registerUser(global);
-        registry.execute();
-    }
 
     private boolean isOnline() {
         ConnectivityManager connMgr = (ConnectivityManager)

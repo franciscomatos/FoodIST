@@ -93,6 +93,8 @@ public class Menu {
         return this.constraints.contains(category);
     }
 
+
+        
     /* others */
     public void addRating(Integer classification) {
         Integer current = this.overallRatings.get(classification);
@@ -116,5 +118,14 @@ public class Menu {
             counter += classification.getValue();
         }
         return counter;
+    }
+
+    @Override
+    public String toString() {
+        String dishes = "";
+        for (Dish d : dishList) {
+            dishes += d.toString();
+        }
+        return dishes;
     }
 }

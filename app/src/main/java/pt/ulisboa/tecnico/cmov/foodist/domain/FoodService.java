@@ -4,6 +4,8 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 
 public class FoodService {
@@ -89,5 +91,13 @@ public class FoodService {
 
     public void setMap(JSONObject map) {
         this.map = map;
+    }
+
+    @Override
+    public String toString() {
+
+        return  name + "\n" +
+                openingHour + " - " + closingHour + "\n" +
+                menu.toString();
     }
 }

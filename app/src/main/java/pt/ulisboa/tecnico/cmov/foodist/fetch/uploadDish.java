@@ -28,8 +28,8 @@ public class uploadDish extends fetchBaseCustom {
 
 	@Override
 	protected String buildBody() {
-		return "{\"username\":\"" + getGlobal().getUsername() + "\"," +
-				"\"password\":\"" + getGlobal().getPassword() +"\"," +
+		return "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
+				"\"password\":\"" + getGlobal().getUser().getPassword() +"\"," +
 				"\"price\":\"" +price +"\"," +
 				"\"namemenu\":\"" +dishName +"\"," +
 				"\"dietary\":\"" +dietary +"\"," +

@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -35,6 +37,7 @@ import pt.ulisboa.tecnico.cmov.foodist.domain.User;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.prefetch;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.registerUser;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.toggleQueue;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.login;
 import pt.ulisboa.tecnico.cmov.foodist.receivers.WifiBroadcastReceiver;
 import pt.ulisboa.tecnico.cmov.foodist.states.AnnotationStatus;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
@@ -124,6 +127,8 @@ public class LoginActivity extends Activity implements SimWifiP2pManager.PeerLis
                 }
 
                 // TO DO: login in server and then update user in global class
+                login login = new login(global, username, password);
+                login.execute();
 
                 Intent listFoodServicesIntent =  new Intent(LoginActivity.this, ListFoodServicesActivity.class);
                 startActivity(listFoodServicesIntent);
@@ -148,18 +153,36 @@ public class LoginActivity extends Activity implements SimWifiP2pManager.PeerLis
         this.global = (GlobalClass) getApplicationContext();
         global.setContext(this);
         global.setLocationManager( (LocationManager) getSystemService(Context.LOCATION_SERVICE));
+        global.setLocationListener(new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.i("LOCATION", String.valueOf(location.getLatitude()) );
+                global.setLatitude(location.getLatitude());
+                global.setLongitude(location.getLongitude());
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                Log.i("LOCATION", "oh no1");
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+                Log.i("LOCATION", "oh no2");
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+                Log.i("LOCATION", "oh no3");
+            }
+        });
         global.getLocation2(LoginActivity.this);
         global.setStatus("STUDENT"); //FIXME change this to user preference
         startWifi();
 
-        registerUser(global);
         global.setConnected(isOnline());
     }
 
-    private void registerUser(GlobalClass global) {
-        registerUser registry = new registerUser(global);
-        registry.execute();
-    }
 
     private boolean isOnline() {
         ConnectivityManager connMgr = (ConnectivityManager)

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.domain.User;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.rateMenu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchCacheImages;
@@ -56,6 +58,7 @@ public class DishActivity extends FragmentActivity {
     private Integer dishIndex;
     private Dish dish;
     private Menu menu;
+    private ImageButton shareButton;
 
     private ImageListener imageListener = new ImageListener() {
         @Override
@@ -103,25 +106,6 @@ public class DishActivity extends FragmentActivity {
         priceView.setText(price);
 
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_explore:
-                        Intent intent =  new Intent(DishActivity.this, ListFoodServicesActivity.class);
-                        startActivity(intent);
-                        break;
-                    case R.id.action_profile:
-                        Intent profileIntent =  new Intent(DishActivity.this, ProfileActivity.class);
-                        startActivity(profileIntent);
-                        break;
-                }
-                return true;
-            }
-        });
-        fetchCacheImages process = new fetchCacheImages(global, carouselView, foodServiceName, dishName, 0);
-        process.execute();
 
 
     }
@@ -160,6 +144,8 @@ public class DishActivity extends FragmentActivity {
 
             String average = "Average:: " + DishActivity.this.dish.computeRatingAverage();
             Toast.makeText(getApplicationContext(), rating + "\n" + average, Toast.LENGTH_LONG).show();
+            rateMenu process = new rateMenu(global, foodServiceName, dishName, ratingBar.getRating() + "");
+            process.execute();
         });
 
         AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
@@ -191,6 +177,40 @@ public class DishActivity extends FragmentActivity {
 
 
         ratingChartView.setChart(cartesian);
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_explore:
+                        Intent intent =  new Intent(DishActivity.this, ListFoodServicesActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.action_profile:
+                        Intent profileIntent =  new Intent(DishActivity.this, ProfileActivity.class);
+                        startActivity(profileIntent);
+                        break;
+                }
+                return true;
+            }
+        });
+        fetchCacheImages process = new fetchCacheImages(global, carouselView, foodServiceName, dishName, 0);
+        process.execute();
+
+        shareButton = (ImageButton) findViewById(R.id.share3);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(Intent.ACTION_SEND);
+                myIntent.setType("text/plain");
+                String shareBody = foodServiceName + " " + dish.toString();
+                String shareSub = "Eat in IST";
+                myIntent.putExtra(Intent.EXTRA_SUBJECT, shareBody);
+                myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(myIntent, "Share using"));
+            }});
+
     }
 
     public void goToAddPictureActivity(View v) {

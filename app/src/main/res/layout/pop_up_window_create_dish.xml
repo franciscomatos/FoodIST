@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="@string/dish_name" />
+                android:hint="@string/dish_name" />
 
             <TextView
                 android:id="@+id/selectCategory"
