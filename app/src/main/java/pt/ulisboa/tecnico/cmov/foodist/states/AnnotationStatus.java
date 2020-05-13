@@ -11,11 +11,23 @@ public class AnnotationStatus {
     public static final String PROFESSOR = "PROFESSOR";
     public static final String RESEARCHER = "RESEARCHER";
     public static final String STAFF = "STAFF";
+    private String status;
+
 
     public AnnotationStatus(@Status String status){
+        this.status = status;
     }
 
     @StringDef({PUBLIC, STUDENT, PROFESSOR, RESEARCHER, STAFF })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Status {}
+
+
+//    public void setStatus(String status) {
+//        this.status = status;
+//    }
+    @Status
+    String getStatus() {
+        return status;
+    }
 }
