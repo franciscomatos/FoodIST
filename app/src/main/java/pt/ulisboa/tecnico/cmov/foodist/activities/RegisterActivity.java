@@ -46,12 +46,11 @@ public class RegisterActivity extends AppCompatActivity {
                 AnnotationStatus type = new AnnotationStatus(userType);
 
                 // TO DO: create account in server
-                registerUser register = new registerUser (global,email,password);
+                registerUser register = new registerUser (global,username,password,email,istNumber,userType);
                 //register register = new login (global,email,password, FIXME: add here userType and dietary stuff);
                 register.execute();
 
                 GlobalClass global = (GlobalClass) getApplicationContext();
-                global.setUser(new User(username, email, istNumber, password, type));
 
                 Intent listFoodServicesIntent =  new Intent(RegisterActivity.this, ListFoodServicesActivity.class);
                 startActivity(listFoodServicesIntent);

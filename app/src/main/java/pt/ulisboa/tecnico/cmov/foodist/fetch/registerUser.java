@@ -3,28 +3,37 @@ package pt.ulisboa.tecnico.cmov.foodist.fetch;
 import android.util.Log;
 
 import org.json.JSONObject;
-
 import org.json.JSONException;
 
+import pt.ulisboa.tecnico.cmov.foodist.domain.User;
+import pt.ulisboa.tecnico.cmov.foodist.states.AnnotationStatus;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class registerUser extends fetchBaseCustom {
     private String username ;
     private String password;
+    private String email;
+    private String ist;
+    private String level;
     private boolean error = true;
 
-    public registerUser(GlobalClass global, String username, String password) {
+    public registerUser(GlobalClass global, String username, String password, String email, String ist, String level) {
 
         super(global, global.getURL() + "/register");
         this.username = username;
         this.password = password;
+        this.email = email;
+        this.ist = ist;
+        this.level = level;
     }
     @Override
     protected String buildBody() {
+
         return "{\"username\":\"" + username + "\"," +
                 "\"password\":\"" + password + "\"," +
-                "\"level\":\"" + "1" + "\"," + //FIXME: change this to the user level ?
-                "\"dietary\":[\"Fish\",\"Meat\",\"Vegetarian\",\"Vegan\"] }"; //FIXME: change this to the enum
+                "\"email\":\"" + email + "\"," +
+                "\"ist\":\"" + ist + "\"," +
+                "\"level\":\""+level+"\"}"; //check if this is the correct method
     }
 
     @Override
@@ -34,9 +43,9 @@ public class registerUser extends fetchBaseCustom {
             if(!response.getString("status").equals("OK"))
                 throw new JSONException("Json wasn't ok");
 
+            //REPLACE FOR new User
             //will only change if valid
-            getGlobal().getUser().setUsername(username);
-            getGlobal().getUser().setPassword(password);
+            getGlobal().setUser(new User(username, email, ist, password, new AnnotationStatus(level)));
             error = false;
 
         } catch (JSONException e) {

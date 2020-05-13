@@ -16,29 +16,22 @@ import (
 */
 
 const ( //0,1,...
-	GeneralPublic = "0"
-	Student       = "1"
-	Professor     = "2"
-	Researcher    = "3"
-	Staff         = "4"
-)
-
-//
-const ( //0,1,...
-	Meat = iota
-	Fish
-	Vegetarian
-	Vegan
+	GeneralPublic = "PUBLIC"
+	Student       = "STUDENT"
+	Professor     = "PROFESSOR"
+	Researcher    = "RESEARCHER"
+	Staff         = "STAFF"
 )
 
 var SIZE = 10
 
 //Rest API structs
 type RegisterRequest struct {
-	Username string   `json:"username"`
-	Password string   `json:"password"`
-	Level    string   `json:"level"`   //FIXME: verify field
-	Dietary  []string `json:"dietary"` //FIXME: Test for size!
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	IST      string `json:"ist"`
+	Password string `json:"password"`
+	Level    string `json:"level"` //FIXME: verify field
 }
 
 type RegisterResponse struct {
@@ -51,7 +44,12 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Status string `json:"status"`
+	Status   string `json:"status"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	IST      string `json:"ist"`
+	Level    string `json:"level"`
 }
 
 type LogoutRequest struct {
@@ -229,9 +227,11 @@ type Image struct {
 }
 
 type User struct {
+	Email    string
+	IST      string
+	Name     string
 	Password string
 	Level    string
-	Dietary  []string
 	LoggedIn bool
 	InQueue  Position
 }
@@ -315,8 +315,10 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	users[userRequest.Username] = &User{Password: userRequest.Password,
+		Email:    userRequest.Email,
+		Name:     userRequest.Username,
+		IST:      userRequest.IST,
 		Level:    userRequest.Level,
-		Dietary:  userRequest.Dietary,
 		LoggedIn: false,
 		InQueue:  Position{}}
 	//FIXME: This is probably not needed
@@ -345,7 +347,13 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	user.LoggedIn = true
 	response := LoginResponse{
-		Status: "OK"}
+		Status:   "OK",
+		Username: user.Name,
+		Email:    user.Email,
+		IST:      user.IST,
+		Password: user.Password,
+		Level:    user.Level,
+	}
 
 	json.NewEncoder(w).Encode(response)
 }
@@ -792,25 +800,25 @@ func addPlace(name string, typ string, coord Coordinates, times map[string]TimeI
 
 func initPlaces() { // initiate more if needed
 	timeLayout := "15:04:05"
-//	MonicaOpenHours, _ := time.Parse(timeLayout, "08:00:00")
-//	MonicaCloseHours, _ := time.Parse(timeLayout, "17:00:00")
-//	AbilioOpenHours, _ := time.Parse(timeLayout, "10:00:00")
-//	AbilioCloseHours, _ := time.Parse(timeLayout, "20:00:00")
+	//	MonicaOpenHours, _ := time.Parse(timeLayout, "08:00:00")
+	//	MonicaCloseHours, _ := time.Parse(timeLayout, "17:00:00")
+	//	AbilioOpenHours, _ := time.Parse(timeLayout, "10:00:00")
+	//	AbilioCloseHours, _ := time.Parse(timeLayout, "20:00:00")
 
-	seven_am,_ := time.Parse(timeLayout, "07:00:00")
-	eight_am,_ := time.Parse(timeLayout, "08:00:00")
-	eight_half_am,_ := time.Parse(timeLayout, "08:30:00")
-	nine_am,_ := time.Parse(timeLayout, "09:00:00")
-	twelve_am,_ := time.Parse(timeLayout, "12:00:00")
-	one_half_pm,_ := time.Parse(timeLayout, "13:30:00")
-	two_pm,_ := time.Parse(timeLayout, "14:00:00")
-	three_pm,_ := time.Parse(timeLayout, "15:00:00")
+	seven_am, _ := time.Parse(timeLayout, "07:00:00")
+	eight_am, _ := time.Parse(timeLayout, "08:00:00")
+	eight_half_am, _ := time.Parse(timeLayout, "08:30:00")
+	nine_am, _ := time.Parse(timeLayout, "09:00:00")
+	twelve_am, _ := time.Parse(timeLayout, "12:00:00")
+	one_half_pm, _ := time.Parse(timeLayout, "13:30:00")
+	two_pm, _ := time.Parse(timeLayout, "14:00:00")
+	three_pm, _ := time.Parse(timeLayout, "15:00:00")
 	//three_half_pm,_ := time.Parse(timeLayout, "15:30:00")
-	four_half_pm,_ := time.Parse(timeLayout, "15:30:00")
-	five_pm,_ := time.Parse(timeLayout, "17:00:00")
-	seven_pm,_ := time.Parse(timeLayout, "19:00:00")
-	nine_pm,_ := time.Parse(timeLayout, "21:00:00")
-	ten_pm,_ := time.Parse(timeLayout, "22:00:00")
+	four_half_pm, _ := time.Parse(timeLayout, "15:30:00")
+	five_pm, _ := time.Parse(timeLayout, "17:00:00")
+	seven_pm, _ := time.Parse(timeLayout, "19:00:00")
+	nine_pm, _ := time.Parse(timeLayout, "21:00:00")
+	ten_pm, _ := time.Parse(timeLayout, "22:00:00")
 
 	nine_to_five := map[string]TimeInterval{
 		GeneralPublic: TimeInterval{Open: nine_am, Close: five_pm},
@@ -919,18 +927,17 @@ func main() {
 	// r.Train(regression.DataPoint(1,[]float64{2}))
 	// r.Train(regression.DataPoint(1,[]float64{2}))
 
-	places["Civil Bar"].Regression.Train(regression.DataPoint(2,[]float64{1}),
-									 regression.DataPoint(2,[]float64{1}),
-									 regression.DataPoint(1,[]float64{0}),	
-									 regression.DataPoint(1,[]float64{0}),	
-									 regression.DataPoint(3,[]float64{2}),	
-									 regression.DataPoint(3,[]float64{2}),	
+	places["Civil Bar"].Regression.Train(regression.DataPoint(2, []float64{1}),
+		regression.DataPoint(2, []float64{1}),
+		regression.DataPoint(1, []float64{0}),
+		regression.DataPoint(1, []float64{0}),
+		regression.DataPoint(3, []float64{2}),
+		regression.DataPoint(3, []float64{2}),
 	)
 	//r.Train(regression.DataPoint(2,[]float64{4}))
 	//r.Train(regression.DataPoint(6,[]float64{120}))
 	places["Civil Bar"].Regression.Run()
 
-	
 	log.Println("Regression formula:\n%v\n", places["Civil Bar"].Regression.Formula)
 	log.Println("Regression:\n%s\n", places["Civil Bar"].Regression)
 	prediction, _ := places["Civil Bar"].Regression.Predict([]float64{2})
@@ -972,7 +979,7 @@ func main() {
 	go func() {
 		log.Println("Serving Http")
 		//log.fatal(server_http_tls.ListenAndServeTLS("../../ssl/server.crt", "../../ssl/server.key"))
-		server_http_tls.ListenAndServeTLS( "ssl/server_tls.crt", "ssl/server_tls.key")
+		server_http_tls.ListenAndServeTLS("ssl/server_tls.crt", "ssl/server_tls.key")
 		//http.ListenAndServe(":8000", muxhttp)
 	}()
 
