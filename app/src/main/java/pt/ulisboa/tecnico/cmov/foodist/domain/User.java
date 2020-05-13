@@ -67,7 +67,9 @@ public class User {
 
     public String getPassword() { return this.password; }
 
-    public String getStatus() { return this.status.toString(); }
+    public AnnotationStatus getStatus() {
+        return this.status;
+    }
 
     public List<Dish.DishCategory> getDietaryConstraints() {
         return this.dietaryConstraints;

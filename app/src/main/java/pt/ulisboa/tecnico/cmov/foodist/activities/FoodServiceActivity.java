@@ -43,6 +43,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -259,7 +260,8 @@ public class FoodServiceActivity extends AppCompatActivity {
         mapView.onResume();
 
         TextView averageBigView = findViewById(R.id.averageBig);
-        averageBigView.setText(menuState.computeRatingAverage().toString());
+        DecimalFormat df = new DecimalFormat("#.##");
+        averageBigView.setText(df.format(menuState.computeRatingAverage()));
 
         RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
         averageRatingBar.setRating(menuState.computeRatingAverage().floatValue());

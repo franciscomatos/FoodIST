@@ -32,6 +32,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -132,7 +133,8 @@ public class DishActivity extends FragmentActivity {
         GlobalClass global = (GlobalClass) getApplicationContext();
 
         TextView averageBigView = findViewById(R.id.averageBig);
-        averageBigView.setText(dish.computeRatingAverage().toString());
+        DecimalFormat df = new DecimalFormat("#.##");
+        averageBigView.setText(df.format(dish.computeRatingAverage()));
 
         RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
         averageRatingBar.setRating(dish.computeRatingAverage().floatValue());

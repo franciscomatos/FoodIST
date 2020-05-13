@@ -22,6 +22,7 @@ import java.util.List;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.User;
+import pt.ulisboa.tecnico.cmov.foodist.states.AnnotationStatus;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -59,7 +60,7 @@ public class ProfileActivity extends AppCompatActivity {
         String username = this.user.getUsername();
         String email = this.user.getEmail();
         String istNumber = this.user.getIstNumber();
-        String status = this.user.getStatus();
+        AnnotationStatus status = this.user.getStatus();
 
         TextView usernameTextView = findViewById(R.id.username);
         usernameTextView.setText(username);
@@ -68,7 +69,7 @@ public class ProfileActivity extends AppCompatActivity {
         istNumberTextView.setText(istNumber);
 
         TextView statusTextView = findViewById(R.id.status);
-        statusTextView.setText(status);
+        //statusTextView.setText(status);
 
         checkedBoxes= Arrays.asList(false, false, false, false);
 
