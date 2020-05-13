@@ -39,6 +39,7 @@ import java.util.Map;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+import pt.ulisboa.tecnico.cmov.foodist.domain.User;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchCacheImages;
@@ -113,6 +114,10 @@ public class DishActivity extends FragmentActivity {
         // initiate rating bar and a button
         final RatingBar ratingBar = findViewById(R.id.ratingBar);
         Button submitRatingButton = findViewById(R.id.submitRattingButton);
+
+        User user = global.getUser();
+        // no ratings in guest mode
+        if(user == null) submitRatingButton.setEnabled(false);
         // perform click event on button
         submitRatingButton.setOnClickListener(v -> {
             // get values and then displayed in a toast
