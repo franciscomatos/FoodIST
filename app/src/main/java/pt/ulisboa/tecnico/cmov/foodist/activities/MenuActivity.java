@@ -19,12 +19,15 @@ import android.widget.RadioGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.foodist.InputValidation;
 import pt.ulisboa.tecnico.cmov.foodist.popups.FilterPopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.popups.PopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.R;
@@ -47,9 +50,15 @@ public class MenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
+
         FrameLayout background = findViewById(R.id.background);
         background.getForeground().setAlpha(0); // restore
         global = (GlobalClass) getApplicationContext();
+
+        FloatingActionButton newDishButton = findViewById(R.id.fab);
+
+        if(global.getUser() == null) newDishButton.setEnabled(false);
+
         foodServiceName = getIntent().getStringExtra("foodService");
         Log.i("MYLOGS", foodServiceName);
         menuState = global.getFoodService(foodServiceName).getMenu();
@@ -120,7 +129,8 @@ public class MenuActivity extends AppCompatActivity {
             dishCategoryLeftView.setText(menuState.getConstraintDish(i).getCategory().getCategory());
 
             TextView dishPriceLeftView = tr.findViewById(R.id.menuDishPriceLeft);
-            dishPriceLeftView.setText(String.format(menuState.getConstraintDish(i).getPrice().toString()));
+            String leftPrice = menuState.getConstraintDish(i).getPrice().toString() + "€";
+            dishPriceLeftView.setText(leftPrice);
 
             LinearLayout leftLayout = tr.findViewById(R.id.menuLeftDish);
 
@@ -136,7 +146,8 @@ public class MenuActivity extends AppCompatActivity {
                 dishCategoryRightView.setText(menuState.getConstraintDish(i + 1).getCategory().getCategory());
 
                 TextView dishPriceRightView = tr.findViewById(R.id.menuDishPriceRight);
-                dishPriceRightView.setText(String.format(menuState.getConstraintDish(i + 1).getPrice().toString()));
+                String rightPrice = menuState.getConstraintDish(i + 1).getPrice().toString() + "€";
+                dishPriceRightView.setText(rightPrice);
 
                 LinearLayout rightLayout = tr.findViewById(R.id.menuRightDish);
 
@@ -206,11 +217,35 @@ public class MenuActivity extends AppCompatActivity {
 
         okButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                int checkedCategoryId = dishCategoryGroup.getCheckedRadioButtonId();
-                RadioButton dishCategoryButton = popupView.findViewById(checkedCategoryId);
+
+                InputValidation inputValidatorHelper = new InputValidation();
+                StringBuilder errMsg = new StringBuilder("Unable to save. Please fix the following errors and try again.\n");
+                boolean allowSave = true;
 
                 String dishName = dishNameView.getText().toString();
-                Double dishPrice = Double.parseDouble(dishPriceView.getText().toString());
+                String dishPrice = dishPriceView.getText().toString();
+                Integer checkedCategoryId = dishCategoryGroup.getCheckedRadioButtonId();
+                RadioButton dishCategoryButton = popupView.findViewById(checkedCategoryId);
+
+                if(dishCategoryButton == null) {
+                    errMsg.append("- Invalid dish category.\n");
+                    allowSave = false;
+                }
+                if(inputValidatorHelper.isNullOrEmpty(dishName)) {
+                    errMsg.append("- Dish name cannot be empty.\n");
+                    allowSave = false;
+                }
+                if(inputValidatorHelper.isNullOrEmpty(dishPrice) || !inputValidatorHelper.isNumeric(dishPrice)) {
+                    errMsg.append("- Invalid dish price.\n");
+                    allowSave = false;
+                }
+
+                if(!allowSave) {
+                    Toast.makeText(getApplicationContext(), errMsg.toString(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Double dishPriceValue = Double.parseDouble(dishPriceView.getText().toString());
                 String dishCategory = dishCategoryButton.getText().toString();
                 Dish.DishCategory category = null;
 
@@ -218,11 +253,10 @@ public class MenuActivity extends AppCompatActivity {
                 category = Dish.DishCategory.valueOf(dishCategory.toUpperCase());
 
                 //add the async task here
-                uploadDish process = new uploadDish(dishPrice,dishName, dishCategory, foodServiceName, (GlobalClass) getApplicationContext());
+                uploadDish process = new uploadDish(dishPriceValue,dishName, dishCategory, foodServiceName, (GlobalClass) getApplicationContext());
                 process.execute();
 
-                MenuActivity.this.global.addDish(MenuActivity.this.foodServiceName, new Dish(dishName, dishPrice, category));
-                MenuActivity.this.menuState.addDish(new Dish(dishName, dishPrice, category));
+                MenuActivity.this.menuState.addDish(new Dish(dishName, dishPriceValue, category));
                 MenuActivity.this.updateDishes();
 
                 background.getForeground().setAlpha(0);
