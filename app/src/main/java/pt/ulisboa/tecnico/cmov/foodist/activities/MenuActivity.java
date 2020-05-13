@@ -19,12 +19,14 @@ import android.widget.RadioGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Arrays;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.foodist.InputValidation;
 import pt.ulisboa.tecnico.cmov.foodist.popups.FilterPopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.popups.PopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.R;
@@ -206,11 +208,35 @@ public class MenuActivity extends AppCompatActivity {
 
         okButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                int checkedCategoryId = dishCategoryGroup.getCheckedRadioButtonId();
-                RadioButton dishCategoryButton = popupView.findViewById(checkedCategoryId);
+
+                InputValidation inputValidatorHelper = new InputValidation();
+                StringBuilder errMsg = new StringBuilder("Unable to save. Please fix the following errors and try again.\n");
+                boolean allowSave = true;
 
                 String dishName = dishNameView.getText().toString();
-                Double dishPrice = Double.parseDouble(dishPriceView.getText().toString());
+                String dishPrice = dishPriceView.getText().toString();
+                Integer checkedCategoryId = dishCategoryGroup.getCheckedRadioButtonId();
+                RadioButton dishCategoryButton = popupView.findViewById(checkedCategoryId);
+
+                if(dishCategoryButton == null) {
+                    errMsg.append("- Invalid dish category.\n");
+                    allowSave = false;
+                }
+                if(inputValidatorHelper.isNullOrEmpty(dishName)) {
+                    errMsg.append("- Dish name cannot be empty.\n");
+                    allowSave = false;
+                }
+                if(inputValidatorHelper.isNullOrEmpty(dishPrice) || !inputValidatorHelper.isNumeric(dishPrice)) {
+                    errMsg.append("- Invalid dish price.\n");
+                    allowSave = false;
+                }
+
+                if(!allowSave) {
+                    Toast.makeText(getApplicationContext(), errMsg.toString(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Double dishPriceValue = Double.parseDouble(dishPriceView.getText().toString());
                 String dishCategory = dishCategoryButton.getText().toString();
                 Dish.DishCategory category = null;
 
@@ -218,10 +244,10 @@ public class MenuActivity extends AppCompatActivity {
                 category = Dish.DishCategory.valueOf(dishCategory.toUpperCase());
 
                 //add the async task here
-                uploadDish process = new uploadDish(dishPrice,dishName, dishCategory, foodServiceName, (GlobalClass) getApplicationContext());
+                uploadDish process = new uploadDish(dishPriceValue,dishName, dishCategory, foodServiceName, (GlobalClass) getApplicationContext());
                 process.execute();
 
-                MenuActivity.this.menuState.addDish(new Dish(dishName, dishPrice, category));
+                MenuActivity.this.menuState.addDish(new Dish(dishName, dishPriceValue, category));
                 MenuActivity.this.updateDishes();
 
                 background.getForeground().setAlpha(0);

@@ -29,6 +29,7 @@ import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.ulisboa.tecnico.cmov.foodist.InputValidation;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.User;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.prefetch;
@@ -101,8 +102,26 @@ public class LoginActivity extends Activity implements SimWifiP2pManager.PeerLis
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
+                InputValidation inputValidatorHelper = new InputValidation();
+                StringBuilder errMsg = new StringBuilder("Unable to save. Please fix the following errors and try again.\n");
+                boolean allowSave = true;
+
                 String username = nameText.getText().toString();
                 String password = passwordText.getText().toString();
+
+                if(inputValidatorHelper.isNullOrEmpty(username)) {
+                    errMsg.append("- Username name cannot be empty.\n");
+                    allowSave = false;
+                }
+                if(inputValidatorHelper.isNullOrEmpty(password) || !inputValidatorHelper.isValidPassword(password, true)) {
+                    errMsg.append("- Invalid password.\n");
+                    allowSave = false;
+                }
+
+                if(!allowSave) {
+                    Toast.makeText(getApplicationContext(), errMsg.toString(), Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 // TO DO: login in server and then update user in global class
 
