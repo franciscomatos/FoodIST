@@ -40,8 +40,8 @@ public class fetchCacheImages extends fetchBaseCustom {
 	}
 
 	protected String buildBody() {
-		return "{\"username\":\"" + getGlobal().getUsername() + "\"," +
-				"\"password\":\"" + getGlobal().getPassword() +"\"," +
+		return "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
+				"\"password\":\"" + getGlobal().getUser().getPassword() +"\"," +
                 "\"page\":\"" + page +"\"," +
                 "\"menu\":\"" + dish +"\"," +
 				"\"canteen\":\""+foodService+"\"}";

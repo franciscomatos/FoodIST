@@ -29,8 +29,8 @@ public class uploadImage extends fetchBaseCustom {
 
 		String encoded = Base64.getEncoder().encodeToString(byteArray);
 
-		return "{\"username\":\"" + getGlobal().getUsername() + "\"," +
-				"\"password\":\"" + getGlobal().getPassword() +"\"," +
+		return "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
+				"\"password\":\"" + getGlobal().getUser().getPassword() +"\"," +
 				"\"namemenu\":\"" + image.getDish() +"\"," +
                 "\"nameimage\":\"" + image.toString() +"\"," +
                 "\"namecanteen\":\"" + image.getFoodService() +"\"," +
