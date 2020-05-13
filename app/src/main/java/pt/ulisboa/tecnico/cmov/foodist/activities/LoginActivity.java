@@ -95,13 +95,13 @@ public class LoginActivity extends Activity implements SimWifiP2pManager.PeerLis
         Button continueAsGuestButton = findViewById(R.id.continueAsGuestButton);
         Button loginButton = findViewById(R.id.login);
 
-        final EditText emailText = findViewById(R.id.username);
+        final EditText nameText = findViewById(R.id.username);
         final EditText passwordText = findViewById(R.id.password);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                String email = emailText.getText().toString();
+                String username = nameText.getText().toString();
                 String password = passwordText.getText().toString();
 
                 // TO DO: login in server and then update user in global class
