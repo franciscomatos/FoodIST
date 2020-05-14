@@ -81,7 +81,7 @@ public class GlobalClass extends Application  {
         put("AEIST Esplanade", new FoodService("AEIST Esplanade", "BAR", "09:00", "17:00", 38.736318, -9.137820, new Menu()));
         put("Chemy Bar", new FoodService("Chemy Bar", "BAR", "09:00", "17:00", 38.736240, -9.138302, new Menu()));
         put("SAS Cafeteria", new FoodService("SAS Cafeteria", "RESTAURANT", "09:00", "21:00", 38.736571, -9.137036, new Menu()));
-        if (status.getStatus() == "STUDENT" || status.getStatus() == "PUBLIC" ) {
+        if (status.getStatus() == AnnotationStatus.STUDENT || status.getStatus() == AnnotationStatus.PUBLIC ) {
             put("Math Cafeteria", new FoodService("Math Cafeteria", "RESTAURANT", "13:30", "15:00", 38.735508,-9.139645, new Menu()));
         }
         else {
@@ -130,12 +130,12 @@ public class GlobalClass extends Application  {
             }, 10);
             return;
         }
-        if ( !locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER ) ) {
+        if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
             Intent gpsOptionsIntent = new Intent(
                     android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             activity.startActivity(gpsOptionsIntent);
         }
-        locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 60000, 50, locationListener);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 60000, 50, locationListener);
     }
 
 

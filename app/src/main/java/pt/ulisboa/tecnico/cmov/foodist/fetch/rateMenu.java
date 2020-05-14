@@ -10,7 +10,7 @@ public class rateMenu extends fetchBaseCustom {
     private String rate;
 
     public rateMenu(GlobalClass global, String foodService, String dish, String rate) {
-        super(global, global.getURL() + "/register");
+        super(global, global.getURL() + "/rateMenu");
         this.foodService = foodService;
         this.dish = dish;
         this.rate = rate;
