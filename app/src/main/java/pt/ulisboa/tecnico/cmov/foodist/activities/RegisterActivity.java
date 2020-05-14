@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
                 //register register = new login (global,email,password, FIXME: add here userType and dietary stuff);
                 register.execute();
 
-                GlobalClass global = (GlobalClass) getApplicationContext();
+                //global.setUser(new User(username, email, istNumber, password, type));
 
                 Intent listFoodServicesIntent =  new Intent(RegisterActivity.this, ListFoodServicesActivity.class);
                 startActivity(listFoodServicesIntent);

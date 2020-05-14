@@ -81,10 +81,16 @@ public class FoodServiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         sis = savedInstanceState;
         setContentView(R.layout.activity_food_service);
+
+
         GlobalClass global = (GlobalClass) getApplicationContext();
         FrameLayout background = findViewById(R.id.background);
         background.getForeground().setAlpha(0); // restore
         this.foodService = global.getFoodService(getIntent().getStringExtra("foodService"));
+
+        TextView appBarText = findViewById(R.id.appBarText);
+        appBarText.setText(this.foodService.getName());
+
         this.menuState = this.foodService.getMenu();
         mapView = (MapView) findViewById(R.id.map);
         //mapView.setClickable(false);
@@ -132,7 +138,6 @@ public class FoodServiceActivity extends AppCompatActivity {
 
     private void fillInfo(String duration, String queue) {
 
-        TextView name = (TextView) findViewById(R.id.name);
         TextView openingHour = (TextView) findViewById(R.id.openingHour);
         TextView status = (TextView) findViewById(R.id.is_open);
         TextView distance = (TextView) findViewById(R.id.ETA);
@@ -141,7 +146,6 @@ public class FoodServiceActivity extends AppCompatActivity {
 
         GlobalClass global = (GlobalClass) getApplicationContext();
 
-        name.setText(foodService.getName());
         openingHour.setText(foodService.getName());
 
         if (foodService.getType() == "RESTAURANT") {

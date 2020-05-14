@@ -27,7 +27,7 @@ public class AnnotationStatus {
 //        this.status = status;
 //    }
     @Status
-    String getStatus() {
+    public String getStatus() {
         return status;
     }
 }

@@ -25,6 +25,8 @@ import pt.ulisboa.tecnico.cmov.foodist.domain.User;
 import pt.ulisboa.tecnico.cmov.foodist.states.AnnotationStatus;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
+import pt.ulisboa.tecnico.cmov.foodist.fetch.logout;
+
 public class ProfileActivity extends AppCompatActivity {
 
     private User user;
@@ -69,7 +71,7 @@ public class ProfileActivity extends AppCompatActivity {
         istNumberTextView.setText(istNumber);
 
         TextView statusTextView = findViewById(R.id.status);
-        //statusTextView.setText(status);
+        statusTextView.setText(status.getStatus());
 
         checkedBoxes= Arrays.asList(false, false, false, false);
 
@@ -172,6 +174,16 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    public void logout(View view) {
+
+        GlobalClass global = (GlobalClass) getApplicationContext();
+        logout logout = new logout (global, this.user.getUsername(), this.user.getPassword());
+        //register register = new login (global,email,password, FIXME: add here userType and dietary stuff);
+        logout.execute();
+
+        Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+        startActivity(intent);
+    }
 
 
 }

@@ -83,10 +83,10 @@ public class MenuActivity extends AppCompatActivity {
         this.tableLayout = findViewById(R.id.menuTable);
 
         Log.i("MenuActivity", "found Table");
-        //menuState.clear();
-        //fetchMenu process = new fetchMenu(this, menuState, foodServiceName,global);
-        //process.execute();
-        MenuActivity.this.updateDishes();
+        menuState.clear();
+        fetchMenu process = new fetchMenu(this, menuState, foodServiceName,global);
+        process.execute();
+        //MenuActivity.this.updateDishes();
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
