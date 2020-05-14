@@ -37,7 +37,7 @@ public class User {
     private UserCourse course;
     private AnnotationStatus status;
     private List<Dish.DishCategory> dietaryConstraints = new ArrayList<>();
-    private Bitmap Image;
+    private Bitmap image;
 
     public User(String name, String istNumber, UserCourse course) {
         this.name = name;

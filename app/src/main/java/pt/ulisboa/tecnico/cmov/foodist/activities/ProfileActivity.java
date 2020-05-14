@@ -39,12 +39,12 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // get the button view
-        ImageView fashionImg = (ImageView) findViewById(R.id.profile_image);
+        CircleImageView  img = (CircleImageView) findViewById(R.id.profile_image);
         // set a onclick listener for when the button gets clicked
-        fashionImg.setOnClickListener(new OnClickListener() {
+        img.setOnClickListener(new OnClickListener() {
             // Start new list activity
             public void onClick(View v) {
-                redirectToAddProfPic();
+                redirectToAddProfPic(); // the circle view should also be sent to be changed
             }
         });
     }

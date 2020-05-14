@@ -15,24 +15,21 @@ import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class uploadImageProfile extends fetchBaseCustom {
 
-	private Bitmap image;
-
-	public uploadImageProfile(GlobalClass global, Bitmap image) {
+	public uploadImageProfile(GlobalClass global) {
 		super(global, global.getURL() + "/addImageProfile");
-		this.image = image;
 	}
 	@Override
 	protected String buildBody() {
 
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+		getGlobal().getUser().getImage().compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
 		byte[] byteArray = byteArrayOutputStream .toByteArray();
 
 		String encoded = Base64.getEncoder().encodeToString(byteArray);
 
 		return "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
 				"\"password\":\"" + getGlobal().getUser().getPassword() +"\"," +
-				"\"image\":\""+getGlobal().getUser().getImage()+"\"}";
+				"\"image\":\""+encoded+"\"}";
 	}
 	@Override
 	protected void parse(String data) {

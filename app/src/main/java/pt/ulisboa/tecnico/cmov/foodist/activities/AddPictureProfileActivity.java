@@ -183,7 +183,7 @@ public class AddPictureProfileActivity extends AppCompatActivity {
 		uploadImageProfile process;
 		Date current = new Date();
 
-		global.getUser().setPic(Bitmap.createScaledBitmap(imageBitmap, 500, 500, false));//should be enough
+		global.getUser().setImage(Bitmap.createScaledBitmap(imageBitmap, 500, 500, false));//should be enough
 
 		process = new uploadImageProfile(global);
 		process.execute();
