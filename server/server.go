@@ -474,6 +474,15 @@ func rateMenuHandler(w http.ResponseWriter, r *http.Request) {
 		sum += value
 	}
 
+	count1 := 0
+	sum1 := 0
+	for _, menu := range canteen.Menus {
+		for _, value1 := menu.Ratings {
+			count1++
+			sum1 += value1
+		}
+	}
+
 	response := RateMenuResponse{
 		Status:    "OK",
 		Average:   float64(sum) / float64(count),
