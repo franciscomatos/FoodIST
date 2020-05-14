@@ -2,8 +2,12 @@ package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.synnapps.carouselview.CarouselView;
+import com.synnapps.carouselview.CarouselViewPager;
+import com.synnapps.carouselview.ImageClickListener;
 import com.synnapps.carouselview.ImageListener;
 
 import org.json.JSONArray;
@@ -12,6 +16,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
@@ -28,6 +33,7 @@ public class fetchCacheImages extends fetchBaseCustom {
 	private List<AppImage> cached;
 	private List<AppImage> hits;
 	private List<String> misses;
+	private boolean zoomOut = false;
 
 	public fetchCacheImages(GlobalClass global, CarouselView carouselView, String foodService, String dish, int page) {
 		super(global, global.getURL() + "/checkImageNames");
@@ -89,9 +95,53 @@ public class fetchCacheImages extends fetchBaseCustom {
 				public void setImageForPosition(int position, ImageView imageView) {
 					imageView.setImageBitmap(hits.get(position).getImage());
 				}
-			}
-		);
+
+		});
+
+
 		carouselView.setPageCount(hits.size());
+
+		carouselView.setImageClickListener(new ImageClickListener() {
+			@Override
+			public void onClick(int position) {
+				// image in position i corresponds to hits in position i
+				String fullImageName = "F"+hits.get(position).toString().substring(1);
+				// check if full image is in cache
+				AppImage fullImage = getGlobal().getImageFromCache(fullImageName);
+				if(fullImage == null) {
+					// if not fetch full image from server
+					fetchSingleImage process = new fetchSingleImage(getGlobal(),
+							foodService, dish, fullImageName);
+
+					try {
+						process.execute().get();
+					} catch (ExecutionException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+					// now that image is in cache we can use it
+					fullImage = getGlobal().getImageFromCache(fullImageName);
+
+					CarouselViewPager viewPager = carouselView.getContainerViewPager();
+					final ImageView currentImage = (ImageView) viewPager.getChildAt(position);
+
+					if(zoomOut) {
+						Toast.makeText(getGlobal(), "NORMAL SIZE!", Toast.LENGTH_LONG).show();
+						currentImage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+						currentImage.setAdjustViewBounds(true);
+						zoomOut =false;
+					}else{
+						Toast.makeText(getGlobal(), "FULLSCREEN!", Toast.LENGTH_LONG).show();
+						currentImage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+						currentImage.setScaleType(ImageView.ScaleType.FIT_XY);
+						zoomOut = true;
+					}
+
+				}
+			}
+		});
 
 		if(!misses.isEmpty()) {
 			Log.i("FETCHCACHEIMAGES", "there are misses, accessing server again");

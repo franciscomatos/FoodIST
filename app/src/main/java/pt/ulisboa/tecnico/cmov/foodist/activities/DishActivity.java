@@ -195,6 +195,7 @@ public class DishActivity extends FragmentActivity {
                 return true;
             }
         });
+
         fetchCacheImages process = new fetchCacheImages(global, carouselView, foodServiceName, dishName, 0);
         process.execute();
 
