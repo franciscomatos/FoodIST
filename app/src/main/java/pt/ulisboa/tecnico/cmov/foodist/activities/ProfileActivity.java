@@ -12,9 +12,10 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.widget.ImageView;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import android.view.View.OnClickListener;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +38,15 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // get the button view
+        ImageView fashionImg = (ImageView) findViewById(R.id.profile_image);
+        // set a onclick listener for when the button gets clicked
+        fashionImg.setOnClickListener(new OnClickListener() {
+            // Start new list activity
+            public void onClick(View v) {
+                redirectToAddProfPic();
+            }
+        });
     }
 
     @Override
@@ -53,6 +63,11 @@ public class ProfileActivity extends AppCompatActivity {
     public void redirectToLoginPage() {
         Intent toLoginPage = new Intent(ProfileActivity.this, LoginActivity.class);
         startActivity(toLoginPage);
+    }
+
+    public void redirectToAddProfPic() {
+        Intent toPicPage = new Intent(ProfileActivity.this, AddPictureProfileActivity.class);
+        startActivity(toPicPage);
     }
 
     @SuppressLint("RestrictedApi")

@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.foodist.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.graphics.Bitmap;
 
 import pt.ulisboa.tecnico.cmov.foodist.states.AnnotationStatus;
 
@@ -36,6 +37,7 @@ public class User {
     private UserCourse course;
     private AnnotationStatus status;
     private List<Dish.DishCategory> dietaryConstraints = new ArrayList<>();
+    private Bitmap Image;
 
     public User(String name, String istNumber, UserCourse course) {
         this.name = name;
@@ -96,6 +98,13 @@ public class User {
 
     public void setPassword(String pass){
         this.password = pass ;
+    }
+
+    public void setImage(Bitmap img){
+        this.image = img ;
+    }
+    public Bitmap getImage(){
+        return this.image ;
     }
 
 
