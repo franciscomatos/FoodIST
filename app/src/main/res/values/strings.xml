@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">FoodIST</string>
     <string name="key">5b3ce3597851110001cf6248fb8cf9c19bae4bf08f17f4d3454d90ff</string>
     <string name="foodListButton">See food list</string>
