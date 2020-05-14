@@ -25,6 +25,7 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
@@ -128,7 +129,19 @@ public class LoginActivity extends Activity implements SimWifiP2pManager.PeerLis
 
                 // TO DO: login in server and then update user in global class
                 login login = new login(global, username, password);
-                login.execute();
+                try {
+                    login.execute().get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                // if user is null the login wasn't successfull
+                if(global.getUser() == null) {
+                    Toast.makeText(getApplicationContext(), "Username/password wrong", Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 Intent listFoodServicesIntent =  new Intent(LoginActivity.this, ListFoodServicesActivity.class);
                 startActivity(listFoodServicesIntent);
