@@ -704,22 +704,43 @@ func prefetchMenuImages(w http.ResponseWriter, r *http.Request) {
 		}
 		tmp = append(tmp, Names{Canteen: canteenname, Menus: menunames})
 	}
-
-	for i, menuctr := 0, 0; i < userRequest.NrImages && i < total; i++ {
-
-		canteen := places[tmp[i%len(places)].Canteen] //picks the canteen
-
-		if menuctr < len(canteen.Menus) { // still has images
-
-			menu := canteen.Menus[tmp[i%len(places)].Menus[menuctr]] //picks the menu
-			log.Println(tmp[i%len(places)].Menus[menuctr])
-			images = append(images, ImageMet{Image: menu.Gallery[menuctr], Canteen: tmp[i%len(places)].Canteen, Menu: tmp[i%len(places)].Menus[menuctr]})
+	log.Println(total)
+	ctr := 0
+	for canteenname, canteen := range places {
+		for menuname, menu := range canteen.Menus {
+			for _, image := range menu.Gallery {
+				if ctr < userRequest.NrImages {
+					images = append(images, ImageMet{Image: image, Canteen: canteenname, Menu: menuname})
+				} else {
+					break
+				}
+				ctr++
+			}
+			if ctr >= userRequest.NrImages {
+				break
+			}
 		}
-
-		if i%len(places) == 0 && i != 0 { //means that it is back at the beginning
-			menuctr++
+		if ctr >= userRequest.NrImages {
+			break
 		}
 	}
+
+	// for _, names := range tmp {
+	// 	log.Println("[DEBUGF] ", names.Canteen)
+	// 	for _, menu := range names.Menus {
+	// 		if ctr >= userRequest.NrImages && len(places[names.Canteen].Menus) != 0 {
+	// 			for _, image := range places[names.Canteen].Menus[menu].Gallery {
+	// 				if ctr < userRequest.NrImages {
+	// 					images = append(images, ImageMet{Image: image, Canteen: names.Canteen, Menu: menu})
+	// 				} else {
+	// 					break
+	// 				}
+	// 				ctr++
+	// 			}
+	// 		}
+	// 	}
+
+	// }
 
 	response := GetPreFetchImagesMenuResponse{
 		Status: "OK",

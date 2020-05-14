@@ -42,16 +42,7 @@
                             android:textSize="30sp"
                             android:layout_alignParentStart="true"/>
 
-                        <Button
-                            android:id="@+id/postButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:text="@string/done"
-                            android:background="@null"
-                            android:layout_alignParentEnd="true"
-                            android:clickable="false"
-                            android:textColor="@color/colorPrimaryLight"
-                            android:onClick="addPictureToMenu"/>
+
                     </RelativeLayout>
 
 

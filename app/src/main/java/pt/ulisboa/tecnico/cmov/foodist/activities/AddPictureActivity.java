@@ -55,8 +55,6 @@ public class AddPictureActivity extends AppCompatActivity {
 
 
 		imageView = findViewById(R.id.image_view);
-		postButton = findViewById(R.id.postButton);
-		postButton.setEnabled(false);
 
 		Intent intent = getIntent();
 		dishName = intent.getStringExtra("name");
@@ -247,8 +245,6 @@ public class AddPictureActivity extends AppCompatActivity {
 					Log.d("onActivityResult", "not a valid request code");
 			}
 
-			postButton.setEnabled(true);
-			postButton.setTextColor(Color.WHITE);
 		}
 	}
 	@Override
