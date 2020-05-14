@@ -33,6 +33,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import java.util.Map;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+import pt.ulisboa.tecnico.cmov.foodist.domain.User;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.rateMenu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
@@ -103,8 +105,20 @@ public class DishActivity extends FragmentActivity {
         TextView priceView = findViewById(R.id.dishPrice);
         priceView.setText(price);
 
+
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        GlobalClass global = (GlobalClass) getApplicationContext();
+
         TextView averageBigView = findViewById(R.id.averageBig);
-        averageBigView.setText(dish.computeRatingAverage().toString());
+        DecimalFormat df = new DecimalFormat("#.##");
+        averageBigView.setText(df.format(dish.computeRatingAverage()));
 
         RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
         averageRatingBar.setRating(dish.computeRatingAverage().floatValue());
@@ -116,6 +130,10 @@ public class DishActivity extends FragmentActivity {
         // initiate rating bar and a button
         final RatingBar ratingBar = findViewById(R.id.ratingBar);
         Button submitRatingButton = findViewById(R.id.submitRattingButton);
+
+        User user = global.getUser();
+        // no ratings in guest mode
+        if(user == null) submitRatingButton.setEnabled(false);
         // perform click event on button
         submitRatingButton.setOnClickListener(v -> {
             // get values and then displayed in a toast
@@ -192,7 +210,6 @@ public class DishActivity extends FragmentActivity {
                 myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
                 startActivity(Intent.createChooser(myIntent, "Share using"));
             }});
-
 
     }
 

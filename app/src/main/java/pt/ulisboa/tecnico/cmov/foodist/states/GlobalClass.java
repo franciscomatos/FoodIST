@@ -39,7 +39,7 @@ public class GlobalClass extends Application  {
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
-    private String URL = "https://192.168.1.95:443";
+    private String URL = "https://192.168.1.69:443";
     private FoodService currentFoodService;
     private User user; //= new User("User1", "ist111111", User.UserCourse.MEIC);
     private AnnotationStatus status = new AnnotationStatus(AnnotationStatus.STUDENT);
@@ -120,10 +120,6 @@ public class GlobalClass extends Application  {
         put("CTNCafeteria" , "CTN Cafeteria");
         put("CTNBar" , "CTN Bar");
     }};
-
-    //FIXME:should be defined by the user
-    private String username = "pedro";
-    private String password = "123";
 
 
     public void getLocation2(Activity activity){
@@ -258,14 +254,6 @@ public class GlobalClass extends Application  {
     public void setTagusLatitude(double[] tagusLatitude) {
         TagusLatitude = tagusLatitude;
     }
-
-    public String getUsername() { return this.username; }
-
-    public void setUsername(String user) { this.username = user; }
-
-    public String getPassword() { return this.password; }
-
-    public void setPassword(String pass) { this.password = pass; }
 
     public double[] getTagusLongitude() {
         return TagusLongitude;

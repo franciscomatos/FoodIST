@@ -10,6 +10,48 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                android:paddingEnd="15dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/appBarText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textSize="30sp"
+                        android:gravity="center_vertical"
+                        android:layout_alignParentStart="true"/>
+
+                </RelativeLayout>
+
+            </androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <ScrollView
+            android:id="@+id/menuTableScroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="56dp"
+            android:layout_above="@+id/bottom_navigation"
+            android:scrollbars="none">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,16 +73,7 @@
 
         ]]>
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="0"
-        android:padding="3dp"
-        android:text="@string/service_name"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp" />
+
 
             <LinearLayout
                 android:id="@+id/info"
@@ -97,7 +130,7 @@
                             android:layout_height="wrap_content"
                             android:padding="3dp"
                             android:text="@string/opening_hour"
-                            android:textColor="#FFFFFF" />
+                            android:textColor="@color/black" />
 
                         <TextView
                             android:id="@+id/is_open"
@@ -106,7 +139,7 @@
                             android:layout_weight="0"
                             android:padding="3dp"
                             android:text="@string/opening_hour"
-                            android:textColor="#FFFFFF" />
+                            android:textColor="@color/black" />
 
                     </LinearLayout>
 
@@ -134,7 +167,7 @@
                                     android:id="@+id/walk"
                                     android:layout_width="25dp"
                                     android:layout_height="25dp"
-                                    app:srcCompat="@drawable/walk_white" />
+                                    app:srcCompat="@drawable/walk" />
 
                                 <TextView
                                     android:id="@+id/ETA"
@@ -143,7 +176,7 @@
                                     android:layout_marginLeft="10dp"
                                     android:layout_weight="0"
                                     android:text="@string/distance"
-                                    android:textColor="#ffffff"
+                                    android:textColor="@color/black"
                                     android:textSize="18sp" />
                             </LinearLayout>
 
@@ -158,7 +191,7 @@
                                     android:id="@+id/clock"
                                     android:layout_width="25dp"
                                     android:layout_height="25dp"
-                                    app:srcCompat="@drawable/clock" />
+                                    app:srcCompat="@drawable/clock_black" />
 
                                 <TextView
                                     android:id="@+id/queue"
@@ -167,7 +200,7 @@
                                     android:layout_weight="0"
                                     android:paddingLeft="10dp"
                                     android:text="@string/time"
-                                    android:textColor="#ffffff"
+                                    android:textColor="@color/black"
                                     android:textSize="18sp" />
                             </LinearLayout>
 
@@ -205,7 +238,9 @@
                 android:id="@+id/button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="50dp"
+                android:layout_marginEnd="50dp"
                 android:background="@color/colorPrimary"
                 android:onClick="showMenu"
                 android:text="View Menu"
@@ -217,15 +252,35 @@
 
 
                     ]]>
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location:"/>
+
             <com.google.android.gms.maps.MapView
                 android:id="@+id/map"
                 android:layout_width="match_parent"
                 android:layout_height="230dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 android:onClick="showPopUp" />
 
         </LinearLayout>
 
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ratings:"/>
+
     <LinearLayout
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:orientation="horizontal"
@@ -279,7 +334,9 @@
                 android:layout_height="match_parent"/>
         </LinearLayout>
     </LinearLayout>
+
     </LinearLayout>
+        </ScrollView>
 
 
 

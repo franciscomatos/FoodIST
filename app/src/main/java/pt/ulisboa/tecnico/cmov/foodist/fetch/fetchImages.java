@@ -45,8 +45,8 @@ public class fetchImages extends fetchBaseCustom {
 	protected String buildBody() {
 		String img = String.join("\",\"",misses);
 
-        return  "{\"username\":\"" + getGlobal().getUsername() + "\"," +
-				"\"password\":\"" + getGlobal().getPassword() +"\"," +
+        return  "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
+				"\"password\":\"" + getGlobal().getUser().getPassword() +"\"," +
 				"\"canteen\":\""+foodService+"\"," +
 				"\"menu\":\"" + dish +"\"," +
 				"\"images\":[\""+img+"\"]}" ;
@@ -80,7 +80,7 @@ public class fetchImages extends fetchBaseCustom {
                     String timestamp = tmp[tmp.length-1];
 				Long time =  Long.parseLong(timestamp);
 				//it will only return thumbnails
-				AppImage img = new AppImage(foodService, dish, new Date(time), getGlobal().getUsername(),img_dec, true);
+				AppImage img = new AppImage(foodService, dish, new Date(time), getGlobal().getUser().getUsername(),img_dec, true);
 				getGlobal().addImageToCache(img.toString(), img);
 				hits.add(img);
 			}

@@ -20,8 +20,8 @@ public class rateMenu extends fetchBaseCustom {
     protected String buildBody() {
         return "{" + "\"namemenu\":\"" + dish + "\"," +
                     "\"namecanteen\":\"" + foodService + "\"," +
-                    "\"username\":\"" + getGlobal().getUsername() + "\"," +
-                    "\"password\":\"" + getGlobal().getPassword() + "\"," +
+                    "\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
+                    "\"password\":\"" + getGlobal().getUser().getPassword() + "\"," +
                     "\"rate\":\"" + rate + "\"" +
                 "}";
     }

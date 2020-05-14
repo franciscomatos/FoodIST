@@ -59,6 +59,18 @@ public class User {
         this.dietaryConstraints.add(Dish.DishCategory.VEGAN);
     }
 
+    public String getUsername() { return this.name; }
+
+    public String getEmail() { return this.email; }
+
+    public String getIstNumber() { return this.istNumber; }
+
+    public String getPassword() { return this.password; }
+
+    public AnnotationStatus getStatus() {
+        return this.status;
+    }
+
     public List<Dish.DishCategory> getDietaryConstraints() {
         return this.dietaryConstraints;
     }
@@ -69,12 +81,22 @@ public class User {
 
     public void removeConstraint(Dish.DishCategory category) {
         this.dietaryConstraints.remove(category);
+        System.out.println("removed constraint.");
+        System.out.println("user constraints:" + this.dietaryConstraints.size());
     }
 
     public boolean containsConstraint(Dish.DishCategory category) {
         return this.dietaryConstraints.contains(category);
     }
 
+    public void setUsername(String user){
+        this.name = user;
+    }
+
+
+    public void setPassword(String pass){
+        this.password = pass ;
+    }
 
 
 }

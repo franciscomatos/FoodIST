@@ -2,38 +2,29 @@ package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
 import android.util.Log;
 
-import org.json.JSONObject;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import pt.ulisboa.tecnico.cmov.foodist.domain.User;
 import pt.ulisboa.tecnico.cmov.foodist.states.AnnotationStatus;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
-public class registerUser extends fetchBaseCustom {
+public class logout extends fetchBaseCustom {
     private String username ;
     private String password;
-    private String email;
-    private String ist;
-    private String level;
     private boolean error = true;
 
-    public registerUser(GlobalClass global, String username, String password, String email, String ist, String level) {
+    public logout(GlobalClass global, String username, String password) {
 
-        super(global, global.getURL() + "/register");
+        super(global, global.getURL() + "/logout");
         this.username = username;
         this.password = password;
-        this.email = email;
-        this.ist = ist;
-        this.level = level;
     }
+
     @Override
     protected String buildBody() {
-
         return "{\"username\":\"" + username + "\"," +
-                "\"password\":\"" + password + "\"," +
-                "\"email\":\"" + email + "\"," +
-                "\"ist\":\"" + ist + "\"," +
-                "\"level\":\""+level+"\"}"; //check if this is the correct method
+                "\"password\":\"" + password + "\"}";
     }
 
     @Override
@@ -43,9 +34,8 @@ public class registerUser extends fetchBaseCustom {
             if(!response.getString("status").equals("OK"))
                 throw new JSONException("Json wasn't ok");
 
-            //REPLACE FOR new User
             //will only change if valid
-            getGlobal().setUser(new User(username, email, ist, password, new AnnotationStatus(level)));
+            getGlobal().setUser(null);
             error = false;
 
         } catch (JSONException e) {
@@ -60,11 +50,10 @@ public class registerUser extends fetchBaseCustom {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        Log.i("RESPONSE:", getData());
-        if(!error ){ //if the register worked
-            Log.i("ACTION", "going to login");
-            login login = new login (getGlobal(),username,password);
-            login.execute();
+
+        if(getGlobal().isConnected() && !error){
+            Log.i("ACTION", "going to logout");
         }
+
     }
 }

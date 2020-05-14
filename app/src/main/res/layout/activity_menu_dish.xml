@@ -28,8 +28,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/menu_top_rounded_corners"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/food3" />
+                android:scaleType="centerCrop" />
+<!--                app:srcCompat="@drawable/food3" />-->
 
         </androidx.cardview.widget.CardView>
 
@@ -113,8 +113,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/menu_top_rounded_corners"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/food2" />
+                android:scaleType="centerCrop" />
+<!--                app:srcCompat="@drawable/food2" />-->
 
         </androidx.cardview.widget.CardView>
 

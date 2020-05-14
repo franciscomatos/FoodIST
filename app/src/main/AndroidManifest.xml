@@ -52,8 +52,7 @@
             android:name=".activities.ListFoodServicesActivity"
             android:theme="@style/AppTheme.FullBackground" />
         <activity
-            android:name=".activities.FoodServiceActivity"
-            android:theme="@style/AppTheme.FullBackground" />
+            android:name=".activities.FoodServiceActivity"/>
         <activity android:name=".activities.DishActivity" />
         <activity android:name=".activities.LoginActivity">
             <intent-filter>
