@@ -50,6 +50,7 @@ type LoginResponse struct {
 	Email    string `json:"email"`
 	IST      string `json:"ist"`
 	Level    string `json:"level"`
+	Image    string `json:"image"`
 }
 
 type LogoutRequest struct {
@@ -98,6 +99,16 @@ type AddImageRequest struct {
 }
 
 type AddImageResponse struct {
+	Status string `json:"status"`
+}
+
+type AddImageProfileRequest struct {
+	Image    string `json:"image"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type AddImageProfileResponse struct {
 	Status string `json:"status"`
 }
 
@@ -234,6 +245,7 @@ type User struct {
 	Level    string
 	LoggedIn bool
 	InQueue  Position
+	Image    string
 }
 
 //Global Variables
@@ -353,6 +365,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		IST:      user.IST,
 		Password: user.Password,
 		Level:    user.Level,
+		Image:    user.Image,
 	}
 
 	json.NewEncoder(w).Encode(response)
@@ -447,6 +460,30 @@ func addImageHandler(w http.ResponseWriter, r *http.Request) {
 	canteen.Menus[userRequest.NameMenu].Gallery = append([]Image{Image{Name: userRequest.NameImage, Image: userRequest.Image}}, canteen.Menus[userRequest.NameMenu].Gallery...)
 
 	response := AddImageResponse{
+		Status: "OK"}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func addImageProfileHandler(w http.ResponseWriter, r *http.Request) {
+
+	var userRequest AddImageProfileRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("Receiving profile image ...")
+	//log.Println(userRequest)
+
+	//test if the user already exists
+	user, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	user.Image = userRequest.Image
+
+	response := AddImageProfileResponse{
 		Status: "OK"}
 
 	json.NewEncoder(w).Encode(response)
@@ -986,6 +1023,7 @@ func main() {
 	muxhttp.HandleFunc("/checkImageNames", getImagesNameHandler)
 	muxhttp.HandleFunc("/queue", queueHandler)
 	muxhttp.HandleFunc("/prefetch", prefetchMenuImages)
+	muxhttp.HandleFunc("/addImageProfile", addImageProfileHandler)
 
 	config_tls := &tls.Config{
 		MinVersion:               tls.VersionTLS12,
