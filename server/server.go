@@ -88,6 +88,29 @@ type RateMenuResponse struct {
 	NumRating int     `json:"numrating"`
 }
 
+type GetRatesMenuRequest struct {
+	NameMenu    string `json:"menu"`
+	NameCanteen string `json:"canteen"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+}
+
+type GetRatesMenuResponse struct {
+	Ratings []int `json:"ratings"`
+	Status string `json:"status"`
+}
+
+type GetRatesCanteenRequest struct {
+	NameCanteen string `json:"canteen"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+}
+
+type GetRatesCanteenResponse struct {
+	Ratings []int `json:"ratings"`
+	Status string `json:"status"`
+}
+
 type AddImageRequest struct {
 	NameMenu    string `json:"namemenu"`
 	NameCanteen string `json:"namecanteen"`
@@ -474,6 +497,7 @@ func rateMenuHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	canteen.Menus[userRequest.NameMenu].Ratings[userRequest.Username] = userRequest.Rate
+    log.Print("User ", userRequest.Username, " rating:", canteen.Menus[userRequest.NameMenu].Ratings[userRequest.Username])
 
 	count := 0
 	sum := 0
@@ -498,6 +522,76 @@ func rateMenuHandler(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(response)
 }
+
+func getMenuRatesHandler(w http.ResponseWriter, r *http.Request) {
+	var userRequest GetRatesMenuRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("Get Menu Ratings Request Received")
+	log.Println(userRequest)
+	//test if the user already exists
+	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	canteen, stmt, status := validadeCanteen(userRequest.NameCanteen)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	var ratings []int
+
+	for _, value := range canteen.Menus[userRequest.NameMenu].Ratings {
+    		ratings = append(ratings, value)
+    }
+
+	response := GetRatesMenuResponse{
+		Status:    "OK",
+		Ratings: ratings}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func getCanteenRatesHandler(w http.ResponseWriter, r *http.Request) {
+	var userRequest GetRatesCanteenRequest
+	json.NewDecoder(r.Body).Decode(&userRequest)
+
+	log.Println("Get Canteen Ratings Request Received")
+	log.Println(userRequest)
+	//test if the user already exists
+	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+	canteen, stmt, status := validadeCanteen(userRequest.NameCanteen)
+	if status != http.StatusOK {
+		log.Println("[ERROR] ", stmt)
+		http.Error(w, stmt, status)
+		return
+	}
+
+    var ratings []int
+    for _, menu := range canteen.Menus {
+        for _, value := range menu.Ratings {
+            ratings = append(ratings, value)
+        }
+    }
+
+	response := GetRatesCanteenResponse{
+		Status:    "OK",
+		Ratings:   ratings}
+
+	json.NewEncoder(w).Encode(response)
+}
+
 
 func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest GetCanteensRequest
@@ -980,6 +1074,8 @@ func main() {
 	muxhttp.HandleFunc("/addImage", addImageHandler)
 	muxhttp.HandleFunc("/addMenu", addMenuHandler)
 	muxhttp.HandleFunc("/rateMenu", rateMenuHandler)
+	muxhttp.HandleFunc("/getMenuRates", getMenuRatesHandler)
+	muxhttp.HandleFunc("/getCanteenRates", getCanteenRatesHandler)
 	muxhttp.HandleFunc("/predict", getCanteensHandler)
 	muxhttp.HandleFunc("/getMenus", getMenusHandler)
 	muxhttp.HandleFunc("/getImages", getImagesHandler)

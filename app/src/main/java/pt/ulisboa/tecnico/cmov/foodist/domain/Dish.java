@@ -95,6 +95,7 @@ public class Dish {
     public void addRating(Integer classification) {
         Integer current = this.ratings.get(classification);
         this.ratings.put(classification, current+1);
+        System.out.println("added rating " + classification + "to dish " + getName());
     }
 
     public Double computeRatingAverage() {
@@ -114,6 +115,12 @@ public class Dish {
             counter += classification.getValue();
         }
         return counter;
+    }
+
+    public void clearRatings() {
+        // ratings initialization
+        for(int i = 1; i <= 5; i++)
+            this.ratings.put(i,0);
     }
 
 }
