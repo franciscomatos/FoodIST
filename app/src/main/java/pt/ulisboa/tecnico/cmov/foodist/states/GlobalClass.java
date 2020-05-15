@@ -39,7 +39,7 @@ public class GlobalClass extends Application  {
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
-    private String URL = "https://192.168.1.70:443";
+    private String URL = "https://192.168.1.69:443";
     private FoodService currentFoodService;
     private User user; //= new User("User1", "ist111111", User.UserCourse.MEIC);
     private AnnotationStatus status = new AnnotationStatus(AnnotationStatus.STUDENT);

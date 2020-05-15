@@ -73,6 +73,7 @@
         <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
 
         <activity android:name=".activities.AddPictureActivity" />
+        <activity android:name=".activities.AddPictureProfileActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
