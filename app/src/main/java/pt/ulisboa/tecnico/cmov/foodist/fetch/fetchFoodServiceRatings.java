@@ -50,9 +50,7 @@ public class fetchFoodServiceRatings extends fetchBaseCustom {
     @Override
     protected String buildBody() {
 
-        return  "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
-                "\"password\":\"" + getGlobal().getUser().getPassword() +"\"," +
-                "\"canteen\":\""+foodService+"\"}";
+        return "{\"canteen\":\"" + foodService + "\"}";
     }
 
     @Override

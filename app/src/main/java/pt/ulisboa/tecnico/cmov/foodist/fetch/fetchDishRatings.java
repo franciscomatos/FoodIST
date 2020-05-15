@@ -60,11 +60,9 @@ public class fetchDishRatings extends fetchBaseCustom {
 
     @Override
     protected String buildBody() {
+        return "{\"canteen\":\"" + foodServiceName + "\"," +
+                "\"menu\":\"" + dishName + "\"}";
 
-        return  "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
-                "\"password\":\"" + getGlobal().getUser().getPassword() +"\"," +
-                "\"canteen\":\""+foodServiceName+"\"," +
-                "\"menu\":\"" + dishName +"\"}";
     }
 
     @Override
