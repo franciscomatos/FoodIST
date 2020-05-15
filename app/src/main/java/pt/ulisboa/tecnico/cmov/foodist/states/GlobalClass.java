@@ -133,17 +133,25 @@ public class GlobalClass extends Application  {
         locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 60000, 50, locationListener);
     }
 
+    private boolean comply(FoodService foodservice){
+        for(Dish dish : foodservice.getMenu().getDishList()){
+            if(!user.getDietaryConstraints().contains(dish.getCategory())){
+                return false;
+            }
+        }
+        return true;
+    }
 
     public ArrayList<FoodService> getCampusFoodServices(String campus) {
         listFoodServices = new ArrayList<FoodService>();
         for (Map.Entry<String, FoodService> entry : foodServices.entrySet()){
             if(entry.getValue().getCampus() == campus){
                 if(this.user != null  && !entry.getValue().getMenu().getDishList().isEmpty()){
-                    entry.getValue().getMenu().getDishList().forEach((v) ->{
-                        if(user.getDietaryConstraints().contains(v.getCategory())){
-                            listFoodServices.add(entry.getValue());
-                        }
-                    });
+                    if(comply(entry.getValue())){
+                        Log.i("getCampusFoodServices", entry.getValue().toString());
+                        listFoodServices.add(entry.getValue());
+                    }
+
                 }else{
                     listFoodServices.add(entry.getValue());
                 }
