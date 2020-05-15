@@ -82,7 +82,7 @@ public class fetchSingleImage extends fetchBaseCustom {
         //will update the activity
         Log.i("FETCH SINGLE IMAGE", "completing carousel!");
 
-        if(inMenu) view.setImageBitmap(image.getImage());
+        if(inMenu && image != null) view.setImageBitmap(image.getImage());
 
         Log.i("FETCH SINGLE IMAGE", "finished fetching");
     }
