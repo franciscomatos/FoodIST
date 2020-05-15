@@ -67,7 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
                     allowSave = false;
                 }
                 if(inputValidatorHelper.isNullOrEmpty(password) || !inputValidatorHelper.isValidPassword(password, true)) {
-                    errMsg.append("- Invalid password.\n");
+                    errMsg.append("- Invalid password. Must be between 5 and 19 characters.\n");
                     allowSave = false;
                 }
 
