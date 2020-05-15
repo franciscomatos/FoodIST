@@ -183,7 +183,7 @@ public class MenuActivity extends AppCompatActivity {
                 LinearLayout rightLayout = tr.findViewById(R.id.menuRightDish);
 
                 String picNameRight = menuState.getConstraintDish(index+1).getProfileImageName();
-                if(picName != null) {
+                if(picNameRight != null) {
                     ImageView dishImageRightView = tr.findViewById(R.id.menuDishPhotoRight);
                     AppImage image = global.getImageFromCache(picNameRight);
                     //  if the thumbnail is not in cache get it from server
