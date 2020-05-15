@@ -2,17 +2,22 @@ package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
 public class rateMenu extends fetchBaseCustom {
     private String foodService ;
     private String dish;
-    private String rate;
+    private Integer dishIndex;
+    private Integer rate;
 
-    public rateMenu(GlobalClass global, String foodService, String dish, String rate) {
-        super(global, global.getURL() + "/register");
+    public rateMenu(GlobalClass global, String foodService, String dish, Integer dishIndex, Integer rate) {
+        super(global, global.getURL() + "/rateMenu");
         this.foodService = foodService;
         this.dish = dish;
+        this.dishIndex = dishIndex;
         this.rate = rate;
     }
 
@@ -24,6 +29,27 @@ public class rateMenu extends fetchBaseCustom {
                     "\"password\":\"" + getGlobal().getUser().getPassword() + "\"," +
                     "\"rate\":\"" + rate + "\"" +
                 "}";
+    }
+
+    @Override
+    protected void parse(String data) {
+
+        Log.i("FETCH SINGLE IMAGE", "parsing response ...");
+
+        try {
+            JSONObject response = new JSONObject(data);
+            if (!response.getString("status").equals("OK"))
+                throw new JSONException("Json wasn't ok");
+
+            getGlobal().addRating(foodService, dishIndex, rate);
+            System.out.println("added rating");
+        } catch (JSONException e) {
+            Log.e("ERROR", ": Failed to parse the json");
+            e.printStackTrace();
+        }catch (Exception e) {
+            Log.e("ERROR", data);
+            e.printStackTrace();
+        }
     }
 
     @Override

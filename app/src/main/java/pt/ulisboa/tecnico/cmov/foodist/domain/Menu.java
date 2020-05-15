@@ -99,6 +99,7 @@ public class Menu {
     public void addRating(Integer classification) {
         Integer current = this.overallRatings.get(classification);
         this.overallRatings.put(classification, current+1);
+        System.out.println("added rating " + classification + "to foodService");
     }
 
     public Double computeRatingAverage() {
@@ -118,6 +119,12 @@ public class Menu {
             counter += classification.getValue();
         }
         return counter;
+    }
+
+    public void clearRatings() {
+        // ratings initialization
+        for(int i = 1; i <= 5; i++)
+            this.overallRatings.put(i,0);
     }
 
     @Override

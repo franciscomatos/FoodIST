@@ -58,10 +58,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.FoodService;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchDishRatings;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchFoodServiceRatings;
 import pt.ulisboa.tecnico.cmov.foodist.popups.PopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
@@ -277,48 +280,22 @@ public class FoodServiceActivity extends AppCompatActivity {
         super.onResume();
         mapView.onResume();
 
+        GlobalClass global = (GlobalClass) getApplicationContext();
         TextView averageBigView = findViewById(R.id.averageBig);
-        DecimalFormat df = new DecimalFormat("#.##");
-        averageBigView.setText(df.format(menuState.computeRatingAverage()));
-
         RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
-        averageRatingBar.setRating(menuState.computeRatingAverage().floatValue());
-
         TextView ratingsCounter = findViewById(R.id.numberOfRatings);
-        ratingsCounter.setText(menuState.computeNumberOfRatings().toString());
-
         AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
 
-        Cartesian cartesian = AnyChart.column();
+        fetchFoodServiceRatings process2 = new fetchFoodServiceRatings(global, foodService.getName(),
+                averageBigView, averageRatingBar, ratingsCounter, ratingChartView);
 
-        List<DataEntry> data = new ArrayList<>();
-        for(Map.Entry<Integer, Integer> classification: menuState.getRatings().entrySet()) {
-            data.add(new ValueDataEntry(classification.getKey(), classification.getValue()));
+        try {
+            process2.execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-
-        for(DataEntry entry: data) {
-            Toast.makeText(getApplicationContext(), entry.generateJs(), Toast.LENGTH_LONG).show();
-        }
-        Column column = cartesian.column(data);
-
-        column.tooltip()
-                .titleFormat("{%X}")
-                .position(Position.CENTER_BOTTOM)
-                .anchor(Anchor.CENTER_BOTTOM)
-                .offsetX(0d)
-                .offsetY(5d)
-                .format("${%Value}{groupsSeparator: }");
-
-        //cartesian.animation(true);
-        cartesian.yScale().minimum(0d);
-
-        //cartesian.yAxis(0).labels().format("${%Value}{groupsSeparator: }");
-
-        cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
-        //cartesian.interactivity().hoverMode(HoverMode.BY_X);
-
-
-        ratingChartView.setChart(cartesian);
     }
     @Override
     public void onStart() {

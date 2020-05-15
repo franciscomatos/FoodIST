@@ -37,11 +37,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.domain.User;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchDishRatings;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.rateMenu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
@@ -106,27 +108,6 @@ public class DishActivity extends FragmentActivity {
         priceView.setText(price);
 
 
-
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        GlobalClass global = (GlobalClass) getApplicationContext();
-
-        TextView averageBigView = findViewById(R.id.averageBig);
-        DecimalFormat df = new DecimalFormat("#.##");
-        averageBigView.setText(df.format(dish.computeRatingAverage()));
-
-        RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
-        averageRatingBar.setRating(dish.computeRatingAverage().floatValue());
-
-        TextView ratingsCounter = findViewById(R.id.numberOfRatings);
-        ratingsCounter.setText(dish.computeNumberOfRatings().toString());
-
-
         // initiate rating bar and a button
         final RatingBar ratingBar = findViewById(R.id.ratingBar);
         Button submitRatingButton = findViewById(R.id.submitRattingButton);
@@ -136,47 +117,45 @@ public class DishActivity extends FragmentActivity {
         if(user == null) submitRatingButton.setEnabled(false);
         // perform click event on button
         submitRatingButton.setOnClickListener(v -> {
+            TextView averageBigView = findViewById(R.id.averageBig);
+            RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
+            TextView ratingsCounter = findViewById(R.id.numberOfRatings);
+            AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
+
             // get values and then displayed in a toast
             String totalStars = "Total Stars:: " + ratingBar.getNumStars();
             String rating = "Rating :: " + ratingBar.getRating();
-            DishActivity.this.dish.addRating((int) ratingBar.getRating());
-            DishActivity.this.menu.addRating((int) ratingBar.getRating());
+            rateMenu process = new rateMenu(global, foodServiceName, dishName, dishIndex,
+                    (int)ratingBar.getRating());
+            //process.execute();
+            try {
+                process.execute().get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            fetchDishRatings process2 = new fetchDishRatings(global, foodServiceName, dishName, dishIndex,
+                    averageBigView, averageRatingBar, ratingsCounter, ratingChartView);
+
+            try {
+                process2.execute().get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            //global.addRating(foodServiceName, dishName, (int) ratingBar.getRating());
 
             String average = "Average:: " + DishActivity.this.dish.computeRatingAverage();
             Toast.makeText(getApplicationContext(), rating + "\n" + average, Toast.LENGTH_LONG).show();
-            rateMenu process = new rateMenu(global, foodServiceName, dishName, ratingBar.getRating() + "");
-            process.execute();
+            //updateRatings();
         });
 
-        AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
+        //updateRatings();
 
-        Cartesian cartesian = AnyChart.column();
-
-        List<DataEntry> data = new ArrayList<>();
-        for(Map.Entry<Integer, Integer> classification: dish.getRatings().entrySet()) {
-            data.add(new ValueDataEntry(classification.getKey(), classification.getValue()));
-        }
-
-        Column column = cartesian.column(data);
-
-        column.tooltip()
-                .titleFormat("{%X}")
-                .position(Position.CENTER_BOTTOM)
-                .anchor(Anchor.CENTER_BOTTOM)
-                .offsetX(0d)
-                .offsetY(5d)
-                .format("${%Value}{groupsSeparator: }");
-
-        //cartesian.animation(true);
-        cartesian.yScale().minimum(0d);
-
-        //cartesian.yAxis(0).labels().format("${%Value}{groupsSeparator: }");
-
-        cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
-        //cartesian.interactivity().hoverMode(HoverMode.BY_X);
-
-
-        ratingChartView.setChart(cartesian);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -212,7 +191,31 @@ public class DishActivity extends FragmentActivity {
                 startActivity(Intent.createChooser(myIntent, "Share using"));
             }});
 
+
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        GlobalClass global = (GlobalClass) getApplicationContext();
+        TextView averageBigView = findViewById(R.id.averageBig);
+        RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
+        TextView ratingsCounter = findViewById(R.id.numberOfRatings);
+        AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
+
+        fetchDishRatings process2 = new fetchDishRatings(global, foodServiceName, dishName, dishIndex,
+                averageBigView, averageRatingBar, ratingsCounter, ratingChartView);
+
+        try {
+            process2.execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     public void goToAddPictureActivity(View v) {
         Intent intent =  new Intent(DishActivity.this, AddPictureActivity.class);
@@ -221,6 +224,56 @@ public class DishActivity extends FragmentActivity {
         intent.putExtra("price", price);
         intent.putExtra("foodService", foodServiceName);
         startActivity(intent);
+    }
+
+    public void updateRatings() {
+        GlobalClass global = (GlobalClass) getApplicationContext();
+        menu = global.getFoodService(foodServiceName).getMenu();
+        dish = menu.getDish(dishIndex);
+
+        TextView averageBigView = findViewById(R.id.averageBig);
+        DecimalFormat df = new DecimalFormat("#.##");
+        averageBigView.setText(df.format(dish.computeRatingAverage()));
+
+        RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
+        averageRatingBar.setRating(dish.computeRatingAverage().floatValue());
+
+        TextView ratingsCounter = findViewById(R.id.numberOfRatings);
+        ratingsCounter.setText(dish.computeNumberOfRatings().toString());
+
+        AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
+
+        Cartesian cartesian = AnyChart.column();
+
+        List<DataEntry> data = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> classification: dish.getRatings().entrySet()) {
+            data.add(new ValueDataEntry(classification.getKey(), classification.getValue()));
+        }
+
+        for(DataEntry entry: data) {
+            Toast.makeText(getApplicationContext(), entry.generateJs(), Toast.LENGTH_LONG).show();
+        }
+
+        Column column = cartesian.column(data);
+
+        column.tooltip()
+                .titleFormat("{%X}")
+                .position(Position.CENTER_BOTTOM)
+                .anchor(Anchor.CENTER_BOTTOM)
+                .offsetX(0d)
+                .offsetY(5d)
+                .format("${%Value}{groupsSeparator: }");
+
+        //cartesian.animation(true);
+        cartesian.yScale().minimum(0d);
+
+        //cartesian.yAxis(0).labels().format("${%Value}{groupsSeparator: }");
+
+        cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
+        //cartesian.interactivity().hoverMode(HoverMode.BY_X);
+
+
+        ratingChartView.setChart(cartesian);
     }
 
 

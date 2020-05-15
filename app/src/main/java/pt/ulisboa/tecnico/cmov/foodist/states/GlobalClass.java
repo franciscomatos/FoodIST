@@ -371,4 +371,9 @@ public class GlobalClass extends Application  {
         public Context getContext(){
         return this.context;
     }
+
+    public void addRating(String foodServiceName, int dishIndex, int rating) {
+            getFoodService(foodServiceName).getMenu().addRating(rating);
+            getFoodService(foodServiceName).getMenu().getDish(dishIndex).addRating(rating);
+    }
 }
