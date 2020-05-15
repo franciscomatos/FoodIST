@@ -192,7 +192,6 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
             holder.queue.setText("--:--");
             holder.clock.setVisibility(View.VISIBLE);
         }
-
         holder.share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -202,7 +201,7 @@ public class FoodServicesAdapter extends RecyclerView.Adapter<FoodServicesAdapte
                 String shareSub = "Eat in IST";
                 myIntent.putExtra(Intent.EXTRA_SUBJECT, shareBody);
                 myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
-                context.startActivity(Intent.createChooser(myIntent, "Share using"));
+                view.getContext().startActivity(Intent.createChooser(myIntent, "Share using"));
             }
         });
 
