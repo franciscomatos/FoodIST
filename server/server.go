@@ -119,6 +119,7 @@ type AddImageRequest struct {
 	Image       string `json:"image"`
 	Username    string `json:"username"`
 	Password    string `json:"password"`
+	ProfilePicName string `json:"profilepic"`
 }
 
 type AddImageResponse struct {
@@ -209,6 +210,7 @@ type MenusInterface struct {
 	Price   float64 `json:"price"`
 	Dietary string  `json:"dietary"`
 	Ratings float64 `json:"ratings"`
+	ProfilePicName string `json:"profilepic"`
 }
 
 type CanteenInterface struct {
@@ -252,6 +254,7 @@ type Menu struct {
 	Price   float64 //should work?
 	Gallery []Image //slice of images
 	Dietary string
+	ProfilePicName string
 	Ratings map[string]int //TODO: Update this part with more info (more detailed breakdown of user ratings (e.g.histogram))
 }
 
@@ -481,6 +484,7 @@ func addImageHandler(w http.ResponseWriter, r *http.Request) {
 
 	//canteen.Menus[userRequest.NameMenu].Gallery = append(canteen.Menus[userRequest.NameMenu].Gallery, Image{Name: userRequest.NameImage, Image: userRequest.Image})
 	canteen.Menus[userRequest.NameMenu].Gallery = append([]Image{Image{Name: userRequest.NameImage, Image: userRequest.Image}}, canteen.Menus[userRequest.NameMenu].Gallery...)
+    canteen.Menus[userRequest.NameMenu].ProfilePicName = userRequest.ProfilePicName
 
 	response := AddImageResponse{
 		Status: "OK"}
@@ -709,14 +713,18 @@ func getMenusHandler(w http.ResponseWriter, r *http.Request) {
 				Price:   value.Price,
 				Name:    key,
 				Dietary: value.Dietary,
+				ProfilePicName: value.ProfilePicName,
 				Ratings: 0})
 		} else {
 			menus = append(menus, MenusInterface{
 				Price:   value.Price,
 				Name:    key,
 				Dietary: value.Dietary,
+				ProfilePicName: value.ProfilePicName,
 				Ratings: float64(sum) / float64(count)})
 		}
+		log.Println(value.ProfilePicName)
+
 	}
 	response := GetMenusResponse{
 		Status: "OK",

@@ -47,6 +47,7 @@ public class AddPictureActivity extends AppCompatActivity {
 	private String currentPhotoPath;
 	private Button postButton;
 	private String dishName, category, price, foodService;
+	private Integer dishIndex;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,7 @@ public class AddPictureActivity extends AppCompatActivity {
 		category = intent.getStringExtra("category");
 		price = intent.getStringExtra("price");
 		foodService = intent.getStringExtra("foodService");
+		dishIndex = intent.getIntExtra("dishIndex",10);
 
 		BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
 		bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -196,8 +198,8 @@ public class AddPictureActivity extends AppCompatActivity {
 		global.addImageToCache(img.toString(), img);
 		global.addImageToCache(tbn.toString(), tbn);
 
-		process = new uploadImage(global, img);
-		processTbn = new uploadImage(global, tbn);
+		process = new uploadImage(global, img, dishIndex);
+		processTbn = new uploadImage(global, tbn, dishIndex);
 		process.execute();
 		processTbn.execute();
 

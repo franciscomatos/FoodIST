@@ -1,10 +1,13 @@
 package pt.ulisboa.tecnico.cmov.foodist.fetch;
 
+import android.provider.CalendarContract;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Iterator;
 
 import pt.ulisboa.tecnico.cmov.foodist.activities.MenuActivity;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
@@ -45,11 +48,13 @@ public class fetchMenu extends fetchBaseCustom {
 			for(int i = 0 ; i < dishes.length() ; i++) {
 
 				JSONObject dish = dishes.getJSONObject(i);
-				this.menu.addDish(
-						new Dish(dish.getString("name"),
-								dish.getDouble("price"),
-								Dish.DishCategory.valueOf(dish.getString("dietary").toUpperCase()))
-				);
+
+				Dish newDish = new Dish(dish.getString("name"),
+						dish.getDouble("price"),
+						Dish.DishCategory.valueOf(dish.getString("dietary").toUpperCase()));
+				newDish.setProfileImageName(dish.getString("profilepic"));
+
+				this.menu.addDish(newDish);
 			}
 		} catch (JSONException e) {
 			Log.e("ERROR", ": Failed to parse the json");

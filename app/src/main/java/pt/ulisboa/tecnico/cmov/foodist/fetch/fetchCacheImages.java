@@ -101,47 +101,47 @@ public class fetchCacheImages extends fetchBaseCustom {
 
 		carouselView.setPageCount(hits.size());
 
-		carouselView.setImageClickListener(new ImageClickListener() {
-			@Override
-			public void onClick(int position) {
-				// image in position i corresponds to hits in position i
-				String fullImageName = "F"+hits.get(position).toString().substring(1);
-				// check if full image is in cache
-				AppImage fullImage = getGlobal().getImageFromCache(fullImageName);
-				if(fullImage == null) {
-					// if not fetch full image from server
-					fetchSingleImage process = new fetchSingleImage(getGlobal(),
-							foodService, dish, fullImageName);
-
-					try {
-						process.execute().get();
-					} catch (ExecutionException e) {
-						e.printStackTrace();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-
-					// now that image is in cache we can use it
-					fullImage = getGlobal().getImageFromCache(fullImageName);
-
-					CarouselViewPager viewPager = carouselView.getContainerViewPager();
-					final ImageView currentImage = (ImageView) viewPager.getChildAt(position);
-
-					if(zoomOut) {
-						Toast.makeText(getGlobal(), "NORMAL SIZE!", Toast.LENGTH_LONG).show();
-						currentImage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-						currentImage.setAdjustViewBounds(true);
-						zoomOut =false;
-					}else{
-						Toast.makeText(getGlobal(), "FULLSCREEN!", Toast.LENGTH_LONG).show();
-						currentImage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-						currentImage.setScaleType(ImageView.ScaleType.FIT_XY);
-						zoomOut = true;
-					}
-
-				}
-			}
-		});
+//		carouselView.setImageClickListener(new ImageClickListener() {
+//			@Override
+//			public void onClick(int position) {
+//				// image in position i corresponds to hits in position i
+//				String fullImageName = "F"+hits.get(position).toString().substring(1);
+//				// check if full image is in cache
+//				AppImage fullImage = getGlobal().getImageFromCache(fullImageName);
+//				if(fullImage == null) {
+//					// if not fetch full image from server
+//					fetchSingleImage process = new fetchSingleImage(getGlobal(),
+//							foodService, dish, fullImageName);
+//
+//					try {
+//						process.execute().get();
+//					} catch (ExecutionException e) {
+//						e.printStackTrace();
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//
+//					// now that image is in cache we can use it
+//					fullImage = getGlobal().getImageFromCache(fullImageName);
+//
+//					CarouselViewPager viewPager = carouselView.getContainerViewPager();
+//					final ImageView currentImage = (ImageView) viewPager.getChildAt(position);
+//
+//					if(zoomOut) {
+//						Toast.makeText(getGlobal(), "NORMAL SIZE!", Toast.LENGTH_LONG).show();
+//						currentImage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+//						currentImage.setAdjustViewBounds(true);
+//						zoomOut =false;
+//					}else{
+//						Toast.makeText(getGlobal(), "FULLSCREEN!", Toast.LENGTH_LONG).show();
+//						currentImage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+//						currentImage.setScaleType(ImageView.ScaleType.FIT_XY);
+//						zoomOut = true;
+//					}
+//
+//				}
+//			}
+//		});
 
 		if(!misses.isEmpty()) {
 			Log.i("FETCHCACHEIMAGES", "there are misses, accessing server again");

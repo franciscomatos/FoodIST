@@ -223,6 +223,7 @@ public class DishActivity extends FragmentActivity {
         intent.putExtra("category", category);
         intent.putExtra("price", price);
         intent.putExtra("foodService", foodServiceName);
+        intent.putExtra("dishIndex", dishIndex);
         startActivity(intent);
     }
 
