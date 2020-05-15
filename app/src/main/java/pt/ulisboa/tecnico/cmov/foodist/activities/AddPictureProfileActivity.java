@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -56,6 +57,7 @@ public class AddPictureProfileActivity extends AppCompatActivity {
 		price = intent.getStringExtra("price");
 		foodService = intent.getStringExtra("foodService");
 
+
 		BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
 		bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
 			@Override
@@ -75,6 +77,26 @@ public class AddPictureProfileActivity extends AppCompatActivity {
 		});
 
 	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		GlobalClass global = (GlobalClass) getApplicationContext();
+		ImageButton doneButton = findViewById(R.id.doneButton);
+
+		if(global.getUser().getImage() == null) doneButton.setEnabled(false);
+		else doneButton.setEnabled(true);
+
+		doneButton.setOnClickListener(new View.OnClickListener() {
+			// Start new list activity
+			public void onClick(View v) {
+				Intent intent = new Intent(AddPictureProfileActivity.this, ProfileActivity.class);
+				startActivity(intent);
+			}
+		});
+	}
+
 	//event handlers
 	public void takePictureClick(View view) {
 		//TODO: check if device has camera
