@@ -60,6 +60,7 @@ public class prefetch extends fetchBaseCustom {
 				//it will only return thumbnails
 				AppImage img = new AppImage(foodService, dish, new Date(time), getGlobal().getUser().getUsername(),img_dec, true);
 				getGlobal().addImageToCache(img.toString(), img);
+				Log.i("PREFETCH", "new image added to cache with name: "+img.toString());
 			}
 
 		} catch (JSONException e) {
