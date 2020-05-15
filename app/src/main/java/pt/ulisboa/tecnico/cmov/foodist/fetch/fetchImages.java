@@ -45,11 +45,10 @@ public class fetchImages extends fetchBaseCustom {
 	protected String buildBody() {
 		String img = String.join("\",\"",misses);
 
-        return  "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
-				"\"password\":\"" + getGlobal().getUser().getPassword() +"\"," +
-				"\"canteen\":\""+foodService+"\"," +
-				"\"menu\":\"" + dish +"\"," +
-				"\"images\":[\""+img+"\"]}" ;
+		return "{\"canteen\":\"" + foodService + "\"," +
+				"\"menu\":\"" + dish + "\"," +
+				"\"images\":[\"" + img + "\"]}";
+
 	}
 	@Override
 	protected void parse(String data) {

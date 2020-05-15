@@ -33,9 +33,11 @@ public class fetchCacheImages extends fetchBaseCustom {
 	private List<AppImage> cached;
 	private List<AppImage> hits;
 	private List<String> misses;
-	private boolean zoomOut = false;
+	private List<String> imageNames;
 
-	public fetchCacheImages(GlobalClass global, CarouselView carouselView, String foodService, String dish, int page) {
+
+	public fetchCacheImages(GlobalClass global, CarouselView carouselView, String foodService,
+							String dish, int page, List<String> imageNames) {
 		super(global, global.getURL() + "/checkImageNames");
 		this.foodService = foodService;
 		this.page = page;
@@ -43,14 +45,14 @@ public class fetchCacheImages extends fetchBaseCustom {
 		this.carouselView = carouselView;
 		this.hits = new ArrayList<AppImage>();
 		this.misses = new ArrayList<String>();
+		this.imageNames = imageNames;
 	}
 
 	protected String buildBody() {
-		return "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
-				"\"password\":\"" + getGlobal().getUser().getPassword() +"\"," +
-                "\"page\":\"" + page +"\"," +
-                "\"menu\":\"" + dish +"\"," +
-				"\"canteen\":\""+foodService+"\"}";
+		return "{\"page\":\"" + page + "\"," +
+				"\"menu\":\"" + dish + "\"," +
+				"\"canteen\":\"" + foodService + "\"}";
+
 	}
 
 	protected boolean containsName(final List<AppImage> list, final String name){
@@ -76,6 +78,8 @@ public class fetchCacheImages extends fetchBaseCustom {
 				}else{//miss
 					misses.add(name);
 				}
+				// add thumbnails name to list in dish activity
+				imageNames.add(name);
 			}
 		} catch (JSONException e) {
 			Log.e("ERROR", ": Failed to parse the json");

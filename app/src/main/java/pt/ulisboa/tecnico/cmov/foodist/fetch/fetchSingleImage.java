@@ -37,11 +37,10 @@ public class fetchSingleImage extends fetchBaseCustom {
 
     @Override
     protected String buildBody() {
-        return  "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
-                "\"password\":\"" + getGlobal().getUser().getPassword() +"\"," +
-                "\"canteen\":\""+foodService+"\"," +
-                "\"menu\":\"" + dish +"\"," +
-                "\"images\":[\""+imageName+"\"]}" ;
+
+        return "{\"canteen\":\"" + foodService + "\"," +
+                "\"menu\":\"" + dish + "\"," +
+                "\"images\":[\"" + imageName + "\"]}";
     }
 
     @Override

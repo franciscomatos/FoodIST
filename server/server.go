@@ -92,8 +92,6 @@ type RateMenuResponse struct {
 type GetRatesMenuRequest struct {
 	NameMenu    string `json:"menu"`
 	NameCanteen string `json:"canteen"`
-	Username    string `json:"username"`
-	Password    string `json:"password"`
 }
 
 type GetRatesMenuResponse struct {
@@ -103,8 +101,6 @@ type GetRatesMenuResponse struct {
 
 type GetRatesCanteenRequest struct {
 	NameCanteen string `json:"canteen"`
-	Username    string `json:"username"`
-	Password    string `json:"password"`
 }
 
 type GetRatesCanteenResponse struct {
@@ -118,7 +114,7 @@ type AddImageRequest struct {
 	NameImage   string `json:"nameimage"`
 	Image       string `json:"image"`
 	Username    string `json:"username"`
-	Password    string `json:"password"`
+    Password    string `json:"password"`
 	ProfilePicName string `json:"profilepic"`
 }
 
@@ -129,7 +125,7 @@ type AddImageResponse struct {
 type AddImageProfileRequest struct {
 	Image    string `json:"image"`
 	Username string `json:"username"`
-	Password string `json:"password"`
+    Password string `json:"password"`
 }
 
 type AddImageProfileResponse struct {
@@ -137,8 +133,6 @@ type AddImageProfileResponse struct {
 }
 
 type GetMenusRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
 	Canteen  string `json:"canteen"`
 }
 type GetMenusResponse struct {
@@ -147,8 +141,6 @@ type GetMenusResponse struct {
 }
 
 type GetCanteensRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
 	Campus   string `json:"campus"`
 }
 type GetCanteensResponse struct {
@@ -158,8 +150,6 @@ type GetCanteensResponse struct {
 
 // will only return the names of the images
 type GetImageNamesRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
 	Canteen  string `json:"canteen"`
 	Menu     string `json:"menu"`
 	Page     int    `json:"page,string"`
@@ -171,8 +161,6 @@ type GetImageNamesResponse struct {
 }
 
 type GetBulkImagesRequest struct {
-	Username string   `json:"username"`
-	Password string   `json:"password"`
 	Canteen  string   `json:"canteen"`
 	Menu     string   `json:"menu"`
 	Images   []string `json:"images"`
@@ -184,8 +172,6 @@ type GetBulkImagesResponse struct {
 }
 
 type GetPreFetchImagesMenuRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
 	NrImages int    `json:"nrimages,string"`
 }
 
@@ -195,10 +181,10 @@ type GetPreFetchImagesMenuResponse struct {
 }
 
 type QueueRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
 	Canteen  string `json:"canteen"`
 	Minutes  string `json:"minutes"`
+	Username string `json:"username"`
+    Password string `json:"password"`
 }
 type QueueResponse struct {
 	Status string `json:"status"`
@@ -570,13 +556,6 @@ func getMenuRatesHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("Get Menu Ratings Request Received")
 	log.Println(userRequest)
-	//test if the user already exists
-	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
-	if status != http.StatusOK {
-		log.Println("[ERROR] ", stmt)
-		http.Error(w, stmt, status)
-		return
-	}
 
 	canteen, stmt, status := validadeCanteen(userRequest.NameCanteen)
 	if status != http.StatusOK {
@@ -604,13 +583,7 @@ func getCanteenRatesHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("Get Canteen Ratings Request Received")
 	log.Println(userRequest)
-	//test if the user already exists
-	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
-	if status != http.StatusOK {
-		log.Println("[ERROR] ", stmt)
-		http.Error(w, stmt, status)
-		return
-	}
+
 
 	canteen, stmt, status := validadeCanteen(userRequest.NameCanteen)
 	if status != http.StatusOK {
@@ -640,13 +613,7 @@ func getCanteensHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("New request for canteens Received")
 	log.Println(userRequest)
-	//test if the user already exists
-	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
-	if status != http.StatusOK {
-		log.Println("[ERROR] ", stmt)
-		http.Error(w, stmt, status)
-		return
-	}
+
 
 	var canteens []CanteenInterface
 
@@ -684,13 +651,6 @@ func getMenusHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("New request for menus Received")
 	log.Println(userRequest)
 
-	//test if the user already exists
-	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
-	if status != http.StatusOK {
-		log.Println("[ERROR] ", stmt)
-		http.Error(w, stmt, status)
-		return
-	}
 
 	canteen, stmt, status := validadeCanteen(userRequest.Canteen)
 	if status != http.StatusOK {
@@ -742,13 +702,6 @@ func getImagesHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("New request for images Received")
 	log.Println(userRequest)
 
-	//test if the user already exists
-	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
-	if status != http.StatusOK {
-		log.Println("[ERROR] ", stmt)
-		http.Error(w, stmt, status)
-		return
-	}
 
 	canteen, stmt, status := validadeCanteen(userRequest.Canteen)
 	//_, stmt, status = validadeCanteen(userRequest.Canteen)
@@ -784,13 +737,6 @@ func getImagesNameHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("New request for imageNames Received")
 	log.Println(userRequest)
 
-	//test if the user already exists
-	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
-	if status != http.StatusOK {
-		log.Println("[ERROR] ", stmt)
-		http.Error(w, stmt, status)
-		return
-	}
 
 	canteen, stmt, status := validadeCanteen(userRequest.Canteen)
 	if status != http.StatusOK {
@@ -826,13 +772,6 @@ func prefetchMenuImages(w http.ResponseWriter, r *http.Request) {
 	log.Println("New request to prefetch menu Received")
 	log.Println(userRequest)
 
-	//test if the user already exists
-	_, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
-	if status != http.StatusOK {
-		log.Println("[ERROR] ", stmt)
-		http.Error(w, stmt, status)
-		return
-	}
 
 	var images []ImageMet
 
@@ -901,7 +840,7 @@ func queueHandler(w http.ResponseWriter, r *http.Request) {
 	var userRequest QueueRequest
 	json.NewDecoder(r.Body).Decode(&userRequest)
 
-	//test if the user already exists
+    //test if the user already exists
 	user, stmt, status := validadeUser(userRequest.Username, userRequest.Password)
 	if status != http.StatusOK {
 		log.Println("[ERROR] ", stmt)

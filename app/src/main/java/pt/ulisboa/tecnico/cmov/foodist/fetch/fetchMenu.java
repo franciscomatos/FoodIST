@@ -31,9 +31,12 @@ public class fetchMenu extends fetchBaseCustom {
 
 	@Override
 	protected String buildBody() {
-		return "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
-				"\"password\":\"" + getGlobal().getUser().getPassword() +"\"," +
-				"\"canteen\":\""+foodService+"\"}";
+		if(getGlobal().getUser() != null) {
+			return "{\"canteen\":\"" + foodService + "\"}";
+		}
+		return "{\"username\":\"" + "" + "\"," +
+				"\"password\":\"" + "" + "\"," +
+				"\"canteen\":\"" + foodService + "\"}";
 	}
 
 	@Override

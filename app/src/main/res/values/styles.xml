@@ -19,6 +19,11 @@
 
     <style name="AppTheme.FullBackground" parent="AppTheme">
         <item name="android:windowBackground">@drawable/background</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="noAnimTheme" parent="AppTheme">
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
 </resources>

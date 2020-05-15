@@ -23,9 +23,7 @@ public class prefetch extends fetchBaseCustom {
 
 	protected String buildBody() {
 		//find total nr of images it needs
-		return "{\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
-				"\"nrimages\":\""+getGlobal().getNrThumbnailsLeft()+"\"," +
-				"\"password\":\"" + getGlobal().getUser().getPassword() +"\"}" ;
+		return "{\"nrimages\":\""+getGlobal().getNrThumbnailsLeft()+"\"}" ;
 	}
 
 	@Override

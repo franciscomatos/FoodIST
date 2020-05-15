@@ -15,9 +15,16 @@ public class toggleQueue extends fetchBaseCustom {
 
     @Override
     protected String buildBody() {
-        return "{\"canteen\":\"" + foodService + "\"," +
-                "\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
-                "\"password\":\"" + getGlobal().getUser().getPassword() + "\"," +
-                "\"minutes\":\"" + currentTime +"\" }";
+        if(getGlobal().getUser() != null) {
+            return "{\"canteen\":\"" + foodService + "\"," +
+                    "\"username\":\"" + getGlobal().getUser().getUsername() + "\"," +
+                    "\"password\":\"" + getGlobal().getUser().getPassword() + "\"," +
+                    "\"minutes\":\"" + currentTime + "\" }";
+        } else {
+            return "{\"canteen\":\"" + foodService + "\"," +
+                    "\"username\":\"" + "" + "\"," +
+                    "\"password\":\"" + "" + "\"," +
+                    "\"minutes\":\"" + currentTime + "\" }";
+        }
     }
 }

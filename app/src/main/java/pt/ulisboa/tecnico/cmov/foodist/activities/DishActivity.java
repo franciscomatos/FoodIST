@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,8 @@ import com.anychart.enums.TooltipPositionMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.synnapps.carouselview.CarouselView;
+import com.synnapps.carouselview.CarouselViewPager;
+import com.synnapps.carouselview.ImageClickListener;
 import com.synnapps.carouselview.ImageListener;
 
 import java.text.DecimalFormat;
@@ -40,10 +43,12 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
+import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Menu;
 import pt.ulisboa.tecnico.cmov.foodist.domain.User;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchDishRatings;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchSingleImage;
 import pt.ulisboa.tecnico.cmov.foodist.fetch.rateMenu;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
@@ -61,6 +66,8 @@ public class DishActivity extends FragmentActivity {
     private Dish dish;
     private Menu menu;
     private ImageButton shareButton;
+    private List<String> imageNames = new ArrayList<>();
+    private Boolean zoomOut = false;
 
     private ImageListener imageListener = new ImageListener() {
         @Override
@@ -175,8 +182,7 @@ public class DishActivity extends FragmentActivity {
             }
         });
 
-        fetchCacheImages process = new fetchCacheImages(global, carouselView, foodServiceName, dishName, 0);
-        process.execute();
+
 
         shareButton = (ImageButton) findViewById(R.id.share3);
         shareButton.setOnClickListener(new View.OnClickListener() {
@@ -198,10 +204,35 @@ public class DishActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         GlobalClass global = (GlobalClass) getApplicationContext();
+
+        fetchCacheImages process = new fetchCacheImages(global, carouselView, foodServiceName,
+                dishName, 0, imageNames);
+        process.execute();
+
         TextView averageBigView = findViewById(R.id.averageBig);
         RatingBar averageRatingBar = findViewById(R.id.averageRatingBarDisplay);
         TextView ratingsCounter = findViewById(R.id.numberOfRatings);
         AnyChartView ratingChartView = findViewById(R.id.rating_chart_view);
+
+        carouselView.setImageClickListener(new ImageClickListener() {
+			@Override
+			public void onClick(int position) {
+				// image in position i corresponds to hits in position i
+				String fullImageName = "F"+imageNames.get(position).substring(1);
+				System.out.println("Full image name:" + fullImageName);
+
+
+
+					// now that image is in cache we can use it
+					Intent intent = new Intent(DishActivity.this, FullscreenImageActivity.class);
+                    intent.putExtra("foodServiceName", foodServiceName);
+                    intent.putExtra("dishName", dishName);
+					intent.putExtra("imageName", fullImageName);
+					startActivity(intent);
+
+				}
+
+		});
 
         fetchDishRatings process2 = new fetchDishRatings(global, foodServiceName, dishName, dishIndex,
                 averageBigView, averageRatingBar, ratingsCounter, ratingChartView);
