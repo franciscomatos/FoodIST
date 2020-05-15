@@ -108,10 +108,14 @@ public class fetchCacheImages extends fetchBaseCustom {
 //				String fullImageName = "F"+hits.get(position).toString().substring(1);
 //				// check if full image is in cache
 //				AppImage fullImage = getGlobal().getImageFromCache(fullImageName);
+//
+//				CarouselViewPager viewPager = carouselView.getContainerViewPager();
+//				ImageView currentImage = (ImageView) viewPager.getChildAt(position);
+//
 //				if(fullImage == null) {
 //					// if not fetch full image from server
 //					fetchSingleImage process = new fetchSingleImage(getGlobal(),
-//							foodService, dish, fullImageName);
+//							foodService, dish, fullImageName, currentImage, false);
 //
 //					try {
 //						process.execute().get();
@@ -124,8 +128,6 @@ public class fetchCacheImages extends fetchBaseCustom {
 //					// now that image is in cache we can use it
 //					fullImage = getGlobal().getImageFromCache(fullImageName);
 //
-//					CarouselViewPager viewPager = carouselView.getContainerViewPager();
-//					final ImageView currentImage = (ImageView) viewPager.getChildAt(position);
 //
 //					if(zoomOut) {
 //						Toast.makeText(getGlobal(), "NORMAL SIZE!", Toast.LENGTH_LONG).show();

@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -82,6 +83,27 @@ public class AddPictureActivity extends AppCompatActivity {
 			}
 		});
 
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		ImageButton doneButton = findViewById(R.id.doneButton);
+
+		doneButton.setOnClickListener(new View.OnClickListener() {
+			// Start new list activity
+			public void onClick(View v) {
+				Intent intent = new Intent(AddPictureActivity.this, DishActivity.class);
+				intent.putExtra("name", dishName);
+				intent.putExtra("category", category);
+				intent.putExtra("price", price);
+				intent.putExtra("foodService", foodService);
+				intent.putExtra("dishIndex", dishIndex);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+			}
+		});
 	}
 	//event handlers
 	public void takePictureClick(View view) {

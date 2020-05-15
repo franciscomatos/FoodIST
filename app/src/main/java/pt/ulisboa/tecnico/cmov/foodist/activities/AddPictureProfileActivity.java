@@ -92,6 +92,7 @@ public class AddPictureProfileActivity extends AppCompatActivity {
 			// Start new list activity
 			public void onClick(View v) {
 				Intent intent = new Intent(AddPictureProfileActivity.this, ProfileActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 			}
 		});

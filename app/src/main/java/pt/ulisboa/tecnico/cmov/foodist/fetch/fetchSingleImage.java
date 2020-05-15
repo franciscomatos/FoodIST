@@ -23,15 +23,16 @@ public class fetchSingleImage extends fetchBaseCustom {
     private String imageName;
     private ImageView view;
     private AppImage image;
-
+    private Boolean inMenu;
 
     public fetchSingleImage(GlobalClass global, String foodService, String dish,
-                            String imageName, ImageView view) {
+                            String imageName, ImageView view, Boolean inMenu) {
         super(global, global.getURL() + "/getImages");
         this.foodService = foodService;
         this.dish = dish;
         this.imageName = imageName;
         this.view = view;
+        this.inMenu = inMenu;
     }
 
     @Override
@@ -82,7 +83,7 @@ public class fetchSingleImage extends fetchBaseCustom {
         //will update the activity
         Log.i("FETCH SINGLE IMAGE", "completing carousel!");
 
-        view.setImageBitmap(image.getImage());
+        if(inMenu) view.setImageBitmap(image.getImage());
 
         Log.i("FETCH SINGLE IMAGE", "finished fetching");
     }

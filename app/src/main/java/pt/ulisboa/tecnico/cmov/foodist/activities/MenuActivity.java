@@ -153,7 +153,7 @@ public class MenuActivity extends AppCompatActivity {
                 if(image == null) {
                     fetchSingleImage process1 = new fetchSingleImage(global, foodServiceName,
                             menuState.getConstraintDish(i).getName(), menuState.getConstraintDish(i).getProfileImageName(),
-                            dishImageLeftView);
+                            dishImageLeftView, true);
                     try {
                         process1.execute().get();
                     } catch (ExecutionException e) {
@@ -191,7 +191,7 @@ public class MenuActivity extends AppCompatActivity {
                         fetchSingleImage process2 = new fetchSingleImage(global, foodServiceName,
                                 menuState.getConstraintDish(index+1).getName(),
                                 menuState.getConstraintDish(index+1).getProfileImageName(),
-                                dishImageRightView);
+                                dishImageRightView, true);
                         try {
                             process2.execute().get();
                         } catch (ExecutionException e) {
