@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmov.foodist.domain;
 
+import android.graphics.Bitmap;
+
 import java.text.DecimalFormat;
 
 import static java.lang.Math.round;
@@ -36,6 +38,7 @@ public class Dish {
     private Double price;
     private DishCategory category;
     private Map<Integer, Integer> ratings = new HashMap<>();
+    private String profileImageName;
 
     public Dish(String name, Double price, DishCategory category) {
         this.name = name;
@@ -70,6 +73,8 @@ public class Dish {
         return this.ratings;
     }
 
+    public String getProfileImageName() { return this.profileImageName; }
+
     /* setters*/
 
     public void setName(String name) {
@@ -83,6 +88,8 @@ public class Dish {
     public void setCategory(DishCategory category) {
         this.category = category;
     }
+
+    public void setProfileImageName(String imageName) { this.profileImageName = imageName; }
 
     @Override
     public String toString() {

@@ -2,14 +2,9 @@ package pt.ulisboa.tecnico.cmov.foodist.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -32,14 +27,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import android.database.Cursor;
 
 import pt.ulisboa.tecnico.cmov.foodist.R;
-import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
-import pt.ulisboa.tecnico.cmov.foodist.fetch.uploadImage;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.uploadImageProfile;
+import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 
-public class AddPictureActivity extends AppCompatActivity {
+public class AddPictureProfileActivity extends AppCompatActivity {
 	//TODO: fix rotation, (save the image views)
 
 	static final int REQUEST_TAKE_PHOTO = 1;
@@ -48,7 +42,6 @@ public class AddPictureActivity extends AppCompatActivity {
 	private String currentPhotoPath;
 	private Button postButton;
 	private String dishName, category, price, foodService;
-	private Integer dishIndex;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +56,7 @@ public class AddPictureActivity extends AppCompatActivity {
 		category = intent.getStringExtra("category");
 		price = intent.getStringExtra("price");
 		foodService = intent.getStringExtra("foodService");
-		dishIndex = intent.getIntExtra("dishIndex",10);
+
 
 		BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
 		bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -71,11 +64,11 @@ public class AddPictureActivity extends AppCompatActivity {
 			public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 				switch (item.getItemId()) {
 					case R.id.action_explore:
-						Intent intent =  new Intent(AddPictureActivity.this, ListFoodServicesActivity.class);
+						Intent intent =  new Intent(AddPictureProfileActivity.this, ListFoodServicesActivity.class);
 						startActivity(intent);
 						break;
 					case R.id.action_profile:
-						Intent profileIntent =  new Intent(AddPictureActivity.this, ProfileActivity.class);
+						Intent profileIntent =  new Intent(AddPictureProfileActivity.this, ProfileActivity.class);
 						startActivity(profileIntent);
 						break;
 				}
@@ -89,22 +82,22 @@ public class AddPictureActivity extends AppCompatActivity {
 	public void onResume() {
 		super.onResume();
 
+		GlobalClass global = (GlobalClass) getApplicationContext();
 		ImageButton doneButton = findViewById(R.id.doneButton);
+
+		if(global.getUser().getImage() == null) doneButton.setEnabled(false);
+		else doneButton.setEnabled(true);
 
 		doneButton.setOnClickListener(new View.OnClickListener() {
 			// Start new list activity
 			public void onClick(View v) {
-				Intent intent = new Intent(AddPictureActivity.this, DishActivity.class);
-				intent.putExtra("name", dishName);
-				intent.putExtra("category", category);
-				intent.putExtra("price", price);
-				intent.putExtra("foodService", foodService);
-				intent.putExtra("dishIndex", dishIndex);
+				Intent intent = new Intent(AddPictureProfileActivity.this, ProfileActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 			}
 		});
 	}
+
 	//event handlers
 	public void takePictureClick(View view) {
 		//TODO: check if device has camera
@@ -117,7 +110,7 @@ public class AddPictureActivity extends AppCompatActivity {
 
 	public void addPictureToMenu(View v) {
 		// MISSING: SEND PICTURE TO SERVER
-		Intent intent = new Intent(AddPictureActivity.this, DishActivity.class);
+		Intent intent = new Intent(AddPictureProfileActivity.this, DishActivity.class);
 		intent.putExtra("name", dishName);
 		intent.putExtra("category", category);
 		intent.putExtra("price", price);
@@ -210,20 +203,13 @@ public class AddPictureActivity extends AppCompatActivity {
 	public void sendImage(GlobalClass global,Bitmap imageBitmap){
 		AppImage img, tbn;
 		Uri uri;
-		uploadImage process, processTbn;
+		uploadImageProfile process;
 		Date current = new Date();
-		img = new AppImage(foodService, dishName, current, global.getUser().getUsername(), imageBitmap, false);
 
-		//TODO: change width and height of the thumbnail
-		tbn = new AppImage(foodService, dishName, current, global.getUser().getUsername(), Bitmap.createScaledBitmap(imageBitmap, 500, 500, false), true);
+		global.getUser().setImage(Bitmap.createScaledBitmap(imageBitmap, 500, 500, false));//should be enough
 
-		global.addImageToCache(img.toString(), img);
-		global.addImageToCache(tbn.toString(), tbn);
-
-		process = new uploadImage(global, img, dishIndex);
-		processTbn = new uploadImage(global, tbn, dishIndex);
+		process = new uploadImageProfile(global);
 		process.execute();
-		processTbn.execute();
 
 	}
 

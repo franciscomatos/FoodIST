@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -26,8 +27,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.foodist.InputValidation;
+import pt.ulisboa.tecnico.cmov.foodist.domain.AppImage;
+import pt.ulisboa.tecnico.cmov.foodist.fetch.fetchSingleImage;
 import pt.ulisboa.tecnico.cmov.foodist.popups.FilterPopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.popups.PopUpClass;
 import pt.ulisboa.tecnico.cmov.foodist.R;
@@ -107,6 +111,11 @@ public class MenuActivity extends AppCompatActivity {
         });
 
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateDishes();
+    }
 
     public void updateDishes() {
 
@@ -136,6 +145,28 @@ public class MenuActivity extends AppCompatActivity {
 
             leftLayout.setTag(menuState.getConstraintDish(i));
 
+            String picName = menuState.getConstraintDish(i).getProfileImageName();
+            if(picName != null) {
+                ImageView dishImageLeftView = tr.findViewById(R.id.menuDishPhotoLeft);
+                AppImage image = global.getImageFromCache(picName);
+                //  if the thumbnail is not in cache get it from server
+                if(image == null) {
+                    fetchSingleImage process1 = new fetchSingleImage(global, foodServiceName,
+                            menuState.getConstraintDish(i).getName(), menuState.getConstraintDish(i).getProfileImageName(),
+                            dishImageLeftView, true);
+                    try {
+                        process1.execute().get();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    dishImageLeftView.setImageBitmap(image.getImage());
+                }
+            }
+
             final int index = i;
             final String foodService = this.foodServiceName;
             // right dish
@@ -150,6 +181,29 @@ public class MenuActivity extends AppCompatActivity {
                 dishPriceRightView.setText(rightPrice);
 
                 LinearLayout rightLayout = tr.findViewById(R.id.menuRightDish);
+
+                String picNameRight = menuState.getConstraintDish(index+1).getProfileImageName();
+                if(picNameRight != null) {
+                    ImageView dishImageRightView = tr.findViewById(R.id.menuDishPhotoRight);
+                    AppImage image = global.getImageFromCache(picNameRight);
+                    //  if the thumbnail is not in cache get it from server
+                    if(image == null) {
+                        fetchSingleImage process2 = new fetchSingleImage(global, foodServiceName,
+                                menuState.getConstraintDish(index+1).getName(),
+                                menuState.getConstraintDish(index+1).getProfileImageName(),
+                                dishImageRightView, true);
+                        try {
+                            process2.execute().get();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else {
+                        dishImageRightView.setImageBitmap(image.getImage());
+                    }
+                }
 
                 rightLayout.setTag(menuState.getConstraintDish(i + 1));
                 rightLayout.setOnClickListener(new View.OnClickListener() {

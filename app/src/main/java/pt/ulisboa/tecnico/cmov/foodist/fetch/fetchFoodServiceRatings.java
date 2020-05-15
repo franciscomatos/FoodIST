@@ -102,10 +102,6 @@ public class fetchFoodServiceRatings extends fetchBaseCustom {
             data.add(new ValueDataEntry(classification.getKey(), classification.getValue()));
         }
 
-        for(DataEntry entry: data) {
-            Toast.makeText(getGlobal(), entry.generateJs(), Toast.LENGTH_LONG).show();
-        }
-
         Column column = cartesian.column(data);
 
         column.tooltip()

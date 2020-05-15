@@ -12,13 +12,15 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.widget.ImageView;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import android.view.View.OnClickListener;
 
 import java.util.Arrays;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import pt.ulisboa.tecnico.cmov.foodist.R;
 import pt.ulisboa.tecnico.cmov.foodist.domain.Dish;
 import pt.ulisboa.tecnico.cmov.foodist.domain.User;
@@ -36,7 +38,6 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -53,6 +54,11 @@ public class ProfileActivity extends AppCompatActivity {
     public void redirectToLoginPage() {
         Intent toLoginPage = new Intent(ProfileActivity.this, LoginActivity.class);
         startActivity(toLoginPage);
+    }
+
+    public void redirectToAddProfPic() {
+        Intent toPicPage = new Intent(ProfileActivity.this, AddPictureProfileActivity.class);
+        startActivity(toPicPage);
     }
 
     @SuppressLint("RestrictedApi")
@@ -72,6 +78,22 @@ public class ProfileActivity extends AppCompatActivity {
 
         TextView statusTextView = findViewById(R.id.status);
         statusTextView.setText(status.getStatus());
+
+        // get the button view
+        CircleImageView img = (CircleImageView) findViewById(R.id.profile_image);
+
+        // if the profile pic was updated
+        if(user.getImage() != null) {
+            img.setImageBitmap(user.getImage());
+        }
+        
+        // set a onclick listener for when the button gets clicked
+        img.setOnClickListener(new OnClickListener() {
+            // Start new list activity
+            public void onClick(View v) {
+                redirectToAddProfPic(); // the circle view should also be sent to be changed
+            }
+        });
 
         checkedBoxes= Arrays.asList(false, false, false, false);
 
