@@ -39,7 +39,7 @@ public class GlobalClass extends Application  {
     private String OTHERCAMPUS;
     private double LATITUDE;
     private double LONGITUDE;
-    private String URL = "https://192.168.1.69:443";
+    private String URL = "https://192.168.1.70:443";
     private FoodService currentFoodService;
     private User user; //= new User("User1", "ist111111", User.UserCourse.MEIC);
     private AnnotationStatus status = new AnnotationStatus(AnnotationStatus.STUDENT);
@@ -65,38 +65,33 @@ public class GlobalClass extends Application  {
     private double[] CTNLongitude = new double[]{-9.097291, -9.092026 };
     private ArrayList<FoodService> listFoodServices;
     private Map<String, FoodService> foodServices = new HashMap<String, FoodService>(){{
-        put("CIVIL", new FoodService("CIVIL", "RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.737069, -9.140017, new Menu()));
-        put("ABILIO", new FoodService("ABILIO","BAR", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.737135, -9.137655, new Menu()));
-        put("AE", new FoodService("AE","RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T22:00:00Z", 38.736221, -9.137195, new Menu()));
-        put("GreenBar Tagus",new FoodService("GreenBar Tagus","BAR", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.738019, -9.303139, new Menu() ));
-        put("Cafetaria", new FoodService("Cafetaria","RESTAURANT", "0000-01-01T10:00:00Z", "0000-01-01T20:00:00Z", 38.736582,  -9.302166, new Menu() ));
 
         //ALAMEDA
-        put("Central Bar", new FoodService("Central Bar", "BAR", "09:00", "17:00", 38.736606, -9.139532, new Menu()));
-        put("Civil Bar", new FoodService("Civil Bar", "BAR", "09:00", "17:00", 38.736988,  -9.139955, new Menu()));
-        put("Civil Cafeteria", new FoodService("Civil Cafeteria", "RESTAURANT", "12:00", "15:00", 38.737650,  -9.140384, new Menu()));
-        put("Sena Pastry Shop", new FoodService("Sena Pastry Shop", "RESTAURANT", "08:00", "19:00", 38.737677,  -9.138672, new Menu()));
-        put("Mechy Bar", new FoodService("Mechy Bar", "BAR", "09:00", "17:00", 38.737247,   -9.137434, new Menu()));
-        put("AEIST Bar", new FoodService("AEIST Bar", "BAR", "09:00", "17:00", 38.736542, -9.137226, new Menu()));
-        put("AEIST Esplanade", new FoodService("AEIST Esplanade", "BAR", "09:00", "17:00", 38.736318, -9.137820, new Menu()));
-        put("Chemy Bar", new FoodService("Chemy Bar", "BAR", "09:00", "17:00", 38.736240, -9.138302, new Menu()));
-        put("SAS Cafeteria", new FoodService("SAS Cafeteria", "RESTAURANT", "09:00", "21:00", 38.736571, -9.137036, new Menu()));
+        put("Central Bar", new FoodService("Central Bar","Alameda", "BAR", "09:00", "17:00", 38.736606, -9.139532, new Menu()));
+        put("Civil Bar", new FoodService("Civil Bar","Alameda", "BAR", "09:00", "17:00", 38.736988,  -9.139955, new Menu()));
+        put("Civil Cafeteria", new FoodService("Civil Cafeteria","Alameda", "RESTAURANT", "12:00", "15:00", 38.737650,  -9.140384, new Menu()));
+        put("Sena Pastry Shop", new FoodService("Sena Pastry Shop","Alameda", "RESTAURANT", "08:00", "19:00", 38.737677,  -9.138672, new Menu()));
+        put("Mechy Bar", new FoodService("Mechy Bar","Alameda", "BAR", "09:00", "17:00", 38.737247,   -9.137434, new Menu()));
+        put("AEIST Bar", new FoodService("AEIST Bar","Alameda", "BAR", "09:00", "17:00", 38.736542, -9.137226, new Menu()));
+        put("AEIST Esplanade", new FoodService("AEIST Esplanade","Alameda", "BAR", "09:00", "17:00", 38.736318, -9.137820, new Menu()));
+        put("Chemy Bar", new FoodService("Chemy Bar","Alameda", "BAR", "09:00", "17:00", 38.736240, -9.138302, new Menu()));
+        put("SAS Cafeteria", new FoodService("SAS Cafeteria","Alameda", "RESTAURANT", "09:00", "21:00", 38.736571, -9.137036, new Menu()));
         if (status.getStatus() == AnnotationStatus.STUDENT || status.getStatus() == AnnotationStatus.PUBLIC ) {
-            put("Math Cafeteria", new FoodService("Math Cafeteria", "RESTAURANT", "13:30", "15:00", 38.735508,-9.139645, new Menu()));
+            put("Math Cafeteria", new FoodService("Math Cafeteria","Alameda", "RESTAURANT", "13:30", "15:00", 38.735508,-9.139645, new Menu()));
         }
         else {
-            put("Math Cafeteria", new FoodService("Math Cafeteria", "RESTAURANT", "12:00", "15:00", 38.735508,-9.139645, new Menu()));
+            put("Math Cafeteria", new FoodService("Math Cafeteria","Alameda", "RESTAURANT", "12:00", "15:00", 38.735508,-9.139645, new Menu()));
         }
-        put("Complex Bar", new FoodService("Complex Bar", "BAR", "09:30", "17:00", 38.736050,-9.140156, new Menu()));
+        put("Complex Bar", new FoodService("Complex Bar","ALAMEDA", "BAR", "09:30", "17:00", 38.736050,-9.140156, new Menu()));
 
         //TAGUS
-        put("Tagus Cafeteria", new FoodService("Tagus Cafeteria", "RESTAURANT", "12:00", "15:00", 38.737802,-9.303223, new Menu()));
-        put("Red Bar", new FoodService("Red Bar", "BAR", "08:00", "22:00", 38.736546,-9.302207, new Menu()));
-        put("Green Bar", new FoodService("Green Bar", "BAR", "07:00", "19:00", 38.738004,-9.303058, new Menu()));
+        put("Tagus Cafeteria", new FoodService("Tagus Cafeteria","Taguspark", "RESTAURANT", "12:00", "15:00", 38.737802,-9.303223, new Menu()));
+        put("Red Bar", new FoodService("Red Bar","Taguspark", "BAR", "08:00", "22:00", 38.736546,-9.302207, new Menu()));
+        put("Green Bar", new FoodService("Green Bar","Taguspark", "BAR", "07:00", "19:00", 38.738004,-9.303058, new Menu()));
 
         //CTN
-        put("CTN Cafeteria", new FoodService("CTN Cafeteria", "RESTAURANT", "12:00", "14:00", 38.812522,-9.093773, new Menu()));
-        put("CTN Bar", new FoodService("CTN Bar", "BAR", "08:30", "16:30", 38.812522,-9.093773, new Menu()));
+        put("CTN Cafeteria", new FoodService("CTN Cafeteria","CTN", "RESTAURANT", "12:00", "14:00", 38.812522,-9.093773, new Menu()));
+        put("CTN Bar", new FoodService("CTN Bar","CTN", "BAR", "08:30", "16:30", 38.812522,-9.093773, new Menu()));
 
 
 
@@ -141,25 +136,18 @@ public class GlobalClass extends Application  {
 
     public ArrayList<FoodService> getCampusFoodServices(String campus) {
         listFoodServices = new ArrayList<FoodService>();
-        if (campus == "Alameda") {
-            listFoodServices.add(foodServices.get("Central Bar"));
-            listFoodServices.add(foodServices.get("Civil Bar"));
-            listFoodServices.add(foodServices.get("Civil Cafeteria"));
-            listFoodServices.add(foodServices.get("Sena Pastry Shop"));
-            listFoodServices.add(foodServices.get("Mechy Bar"));
-            listFoodServices.add(foodServices.get("AEIST Bar"));
-            listFoodServices.add(foodServices.get("AEIST Esplanade"));
-            listFoodServices.add(foodServices.get("Chemy Bar"));
-            listFoodServices.add(foodServices.get("SAS Cafeteria"));
-            listFoodServices.add(foodServices.get("Math Cafeteria"));
-            listFoodServices.add(foodServices.get("Complex Bar"));
-        } else if (campus == "Taguspark") {
-            listFoodServices.add(foodServices.get("Tagus Cafeteria"));
-            listFoodServices.add(foodServices.get("Red Bar"));
-            listFoodServices.add(foodServices.get("Green Bar"));
-        } else if (campus == "CTN") {
-            listFoodServices.add(foodServices.get("CTN Cafeteria"));
-            listFoodServices.add(foodServices.get("CTN Bar"));
+        for (Map.Entry<String, FoodService> entry : foodServices.entrySet()){
+            if(entry.getValue().getCampus() == campus){
+                if(this.user != null  && !entry.getValue().getMenu().getDishList().isEmpty()){
+                    entry.getValue().getMenu().getDishList().forEach((v) ->{
+                        if(user.getDietaryConstraints().contains(v.getCategory())){
+                            listFoodServices.add(entry.getValue());
+                        }
+                    });
+                }else{
+                    listFoodServices.add(entry.getValue());
+                }
+            }
         }
         return listFoodServices;
     }

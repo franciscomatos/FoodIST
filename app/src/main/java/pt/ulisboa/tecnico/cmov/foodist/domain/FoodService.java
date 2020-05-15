@@ -16,13 +16,14 @@ public class FoodService {
     private double latitude;
     private double longitude;
     private String type;
+    private String campus;
     private Menu menu;
     private JSONObject map;
     public String getName() {
         return name;
     }
 
-    public FoodService(String name, String type, String openingHour, String closingHour , double latitude, double longitude, Menu menu) {
+    public FoodService(String name,String campus, String type, String openingHour, String closingHour , double latitude, double longitude, Menu menu) {
         this.name = name;
         this.type = type;
         this.openingHour = openingHour;
@@ -30,6 +31,10 @@ public class FoodService {
         this.latitude = latitude;
         this.longitude = longitude;
         this.menu = menu;
+        this.campus = campus;
+    }
+    public String getCampus(){
+        return this.campus;
     }
 
     public void setName(String name) {
