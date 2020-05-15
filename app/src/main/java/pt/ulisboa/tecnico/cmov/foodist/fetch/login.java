@@ -4,7 +4,10 @@ import pt.ulisboa.tecnico.cmov.foodist.states.GlobalClass;
 import pt.ulisboa.tecnico.cmov.foodist.states.AnnotationStatus;
 import pt.ulisboa.tecnico.cmov.foodist.domain.User;
 import android.util.Log;
+import java.util.Base64;
 
+import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -45,6 +48,10 @@ public class login extends fetchBaseCustom {
                                         )
                                 );
             error = false;
+            //will error if image not set (which will always happen the first login)
+            byte[] decodedString = Base64.getDecoder().decode(response.getString("image")) ;
+            getGlobal().getUser().setImage(BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length));
+
 
         } catch (JSONException e) {
             Log.e("ERROR", ": Failed to parse the json");
